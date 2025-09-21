@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- A Vue.js application that implements an infinite Cartesian grid with a draggable item and zoom functionality. It is literally almost all AI generated-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Infinite Cartesian Grid</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .grid-container {
+            position: relative;
+            background-color: white;
+            /* make grid smaller so it fits on most screens */
+            width: 90vw;
+            height: 60vh;
+            max-width: 900px;
+            max-height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .grid-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-lines {
+            background-image: linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+        }
+
+        .axis {
+            position: absolute;
+            background-color: #9ca3af;
+        }
+
+        .axis-x { height: 1px; width: 100%; }
+        .axis-y { width: 1px; height: 100%; }
+        
+        .draggable-item {
+            position: absolute;
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.1s;
+            transform: translate(-50%, -50%);
+        }
+
+        .draggable-item.grabbing {
+            cursor: grabbing;
+        }
+
+        .origin-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .grid-tile {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div id="app" class="flex flex-col items-center space-y-6 w-full max-w-2xl mx-auto">
+
+        <div 
+            ref="grid" 
+            class="grid-container"
+            @mousedown="handleMouseDown"
+            @touchstart="handleMouseDown"
+        >
+            <div 
+                class="grid-content"
+            >
+                <div 
+                    class="grid-lines absolute w-full h-full"
+                    :style="gridLineStyles"
+                ></div>
+                
+                <div class="axis axis-x" :style="axisXStyles"></div>
+                <div class="axis axis-y" :style="axisYStyles"></div>
+                
+                <div 
+                    class="origin-marker w-2 h-2 bg-red-500 rounded-full" 
+                    :style="originMarkerStyles"
+                ></div>
+
+                <div 
+                    v-for="(tile, index) in tiles" 
+                    :key="index"
+                    class="grid-tile w-16 h-16 rounded-md shadow-md"
+                    :style="tileStyles(tile)"
+                ></div>
+
+                <div 
+                    class="draggable-item bg-blue-500 rounded-lg shadow-xl flex items-center justify-center text-white font-bold"
+                    :style="itemStyles"
+                >
+                    1
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between w-full space-y-4 sm:space-y-0 sm:space-x-4">
+            <div class="flex items-center space-x-2">
+                <button @click="zoomOut" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Zoom Out
+                </button>
+                <span class="text-lg font-mono px-2 py-1 rounded-md bg-gray-100">{{ cellSize }}px</span>
+                <button @click="zoomIn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Zoom In
+                </button>
+            </div>
+
+            <div class="flex flex-col items-start bg-gray-100 p-3 rounded-lg font-mono text-sm">
+                <span class="text-gray-700">X: {{ position.x.toFixed(2) }}</span>
+                <span class="text-gray-700">Y: {{ position.y.toFixed(2) }}</span>
+            </div>
+            
+            <button @click="addExampleTiles" class="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                Add Tiles
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, reactive } = Vue;
+
+        const app = createApp({
+            setup() {
+                // start with a slightly smaller cell size so more fits in the reduced grid
+                const cellSize = ref(24);
+                const position = reactive({ x: 0, y: 0 });
+                const gridTranslation = reactive({ x: 0, y: 0 });
+                const isGridDragging = ref(false);
+                const isItemDragging = ref(false);
+                const lastMousePosition = reactive({ x: 0, y: 0 });
+                const grid = ref(null);
+
+                // NEW: Array to hold tile data
+                const tiles = ref([{x:4, y:-2, color:'lightblue'}, {x:-3, y:-1, color:'lightgreen'}]);
+
+                const gridLineStyles = computed(() => {
+                    // if grid not mounted yet, fall back to simple positioning
+                    if (!grid.value) {
+                        return {
+                            backgroundSize: `${cellSize.value}px ${cellSize.value}px`,
+                            backgroundPosition: `${gridTranslation.x % cellSize.value}px ${gridTranslation.y % cellSize.value}px`,
+                        };
+                    }
+
+                    const rect = grid.value.getBoundingClientRect();
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+
+                    // Compute a normalized background-position so a line appears at the visual origin
+                    const mod = (v, m) => ((v % m) + m) % m;
+                    // shift the pattern by half a cell so the origin (center) falls in the middle of a cell
+                    const half = cellSize.value / 2;
+                    const bpX = mod(gridTranslation.x + cx + half, cellSize.value);
+                    const bpY = mod(gridTranslation.y + cy + half, cellSize.value);
+
+                    return {
+                        backgroundSize: `${cellSize.value}px ${cellSize.value}px`,
+                        backgroundPosition: `${bpX}px ${bpY}px`,
+                    };
+                 });
+
+                const axisXStyles = computed(() => ({
+                    top: `calc(50% + ${gridTranslation.y}px)`,
+                }));
+                const axisYStyles = computed(() => ({
+                    left: `calc(50% + ${gridTranslation.x}px)`,
+                }));
+                
+                const originMarkerStyles = computed(() => ({
+                    left: `calc(50% + ${gridTranslation.x}px)`,
+                    top: `calc(50% + ${gridTranslation.y}px)`,
+                }));
+
+                const itemStyles = computed(() => {
+                    const x = position.x * cellSize.value;
+                    const y = -position.y * cellSize.value;
+                    const size = cellSize.value;
+                    return {
+                        left: `calc(50% + ${x + gridTranslation.x}px)`,
+                        top: `calc(50% + ${y + gridTranslation.y}px)`,
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        lineHeight: `${size}px`,
+                        fontSize: `${Math.max(10, Math.floor(size * 0.45))}px`,
+                        borderRadius: `${Math.max(4, Math.floor(size * 0.12))}px`,
+                    };
+                });
+
+                // NEW: Computed style for the tiles
+                const tileStyles = (tile) => {
+                    const x = tile.x * cellSize.value;
+                    const y = -tile.y * cellSize.value;
+                    return {
+                        left: `calc(50% + ${x + gridTranslation.x}px)`,
+                        top: `calc(50% + ${y + gridTranslation.y}px)`,
+                        backgroundColor: tile.color,
+                        width: `${cellSize.value}px`,
+                        height: `${cellSize.value}px`
+                    };
+                };
+
+                // NEW: Method to add tiles from an array
+                const addTiles = (newTiles) => {
+                    newTiles.forEach(newTile => {
+                        // Check for existing tile at the same coordinates to avoid duplicates
+                        const existingTileIndex = tiles.value.findIndex(tile => tile.x === newTile.x && tile.y === newTile.y);
+                        if (existingTileIndex > -1) {
+                            // If a tile already exists, update its color
+                            tiles.value[existingTileIndex].color = newTile.color;
+                        } else {
+                            // Otherwise, add the new tile
+                            tiles.value.push(newTile);
+                        }
+                    });
+                };
+
+                // NEW: An example function to demonstrate adding tiles
+                const fetcNewPositions = () => {
+                    const exampleData = [
+                        { x: -2, y: 2, color: 'salmon' },
+                        { x: 1, y: -3, color: 'lightseagreen' },
+                        { x: 4, y: 0, color: 'chocolate' }
+                    ];
+                    addTiles(exampleData);
+                };
+                
+                const handleMouseDown = (e) => {
+                    e.preventDefault(); 
+                    e.stopPropagation();
+
+                    const isItem = e.target.classList.contains('draggable-item');
+                    if (isItem) {
+                        isItemDragging.value = true;
+                        e.target.classList.add('grabbing');
+                    } else {
+                        isGridDragging.value = true;
+                    }
+                    
+                    const clientX = e.clientX || e.touches[0].clientX;
+                    const clientY = e.clientY || e.touches[0].clientY;
+                    lastMousePosition.x = clientX;
+                    lastMousePosition.y = clientY;
+                };
+
+                const handleMouseMove = (e) => {
+                    const clientX = e.clientX || e.touches[0].clientX;
+                    const clientY = e.clientY || e.touches[0].clientY;
+                    
+                    const dx = clientX - lastMousePosition.x;
+                    const dy = clientY - lastMousePosition.y;
+
+                    if (isGridDragging.value) {
+                        gridTranslation.x += dx;
+                        gridTranslation.y += dy;
+                    } else if (isItemDragging.value) {
+                        const gridRect = grid.value.getBoundingClientRect();
+                        const newX = (clientX - gridRect.left - (gridRect.width / 2) - gridTranslation.x) / cellSize.value;
+                        const newY = -(clientY - gridRect.top - (gridRect.height / 2) - gridTranslation.y) / cellSize.value;
+                        
+                        position.x = newX;
+                        position.y = newY;
+                    }
+                    
+                    lastMousePosition.x = clientX;
+                    lastMousePosition.y = clientY;
+                };
+
+                const handleMouseUp = (e) => {
+                    if (isItemDragging.value) {
+                        e.target.classList.remove('grabbing');
+                        position.x = Math.round(position.x);
+                        position.y = Math.round(position.y);
+                    }
+                    isGridDragging.value = false;
+                    isItemDragging.value = false;
+                };
+
+                const zoomIn = () => {
+                    const oldCellSize = cellSize.value;
+                    cellSize.value = Math.min(100, oldCellSize + 4);
+                    gridTranslation.x = gridTranslation.x * (cellSize.value / oldCellSize);
+                    gridTranslation.y = gridTranslation.y * (cellSize.value / oldCellSize);
+                };
+
+                const zoomOut = () => {
+                    const oldCellSize = cellSize.value;
+                    // allow zooming out more (smaller cells) so content fits better
+                    cellSize.value = Math.max(16, oldCellSize - 4);
+                    gridTranslation.x = gridTranslation.x * (cellSize.value / oldCellSize);
+                    gridTranslation.y = gridTranslation.y * (cellSize.value / oldCellSize);
+                };
+
+                onMounted(() => {
+                    window.addEventListener('mousemove', handleMouseMove);
+                    window.addEventListener('mouseup', handleMouseUp);
+                    window.addEventListener('touchmove', handleMouseMove);
+                    window.addEventListener('touchend', handleMouseUp);
+                });
+
+                return {
+                    cellSize,
+                    position,
+                    grid,
+                    gridLineStyles,
+                    axisXStyles,
+                    axisYStyles,
+                    originMarkerStyles,
+                    itemStyles,
+                    handleMouseDown,
+                    zoomIn,
+                    zoomOut,
+                    // NEW: Export the tiles and the tile styles/methods
+                    tiles,
+                    tileStyles,
+                    addExampleTiles
+                };
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>

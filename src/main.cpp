@@ -24,6 +24,7 @@
 #include"world.hpp"
 #include"agent.hpp"
 #include"percepts.hpp"
+#include"logger.hpp"
 
 /* The main sim loop. */
 void loop(
@@ -71,6 +72,11 @@ inline unsigned screen_width = 1000;
 inline unsigned screen_height = 850;
 
 int main(int argc, char **argv) {
+
+    //NEW: initializes the logging object and starts the worker thread
+
+    
+
 
     /**************************************************************
     VARS
