@@ -27,7 +27,6 @@ struct logObj {
 
 
 
-
 //this will be used to push the data to the logger where it will be processed independently by the worker thread
 class sendQ {
 public:
@@ -83,7 +82,7 @@ class lgr {
     int houndCount;
     static sendQ logQ;
     //the url/port of the remote goes here, hardcoded for now. 
-    std::string connString;
+    std::string connString ="http://127.0.0.1:3005/addLog";
 
 
     void run(){
@@ -91,13 +90,12 @@ class lgr {
             auto item = logQ.pop();
 
             //will add persist logic thats toggle-able, but not right now, the node server has to work for that. 
-            send(item.value());
+            //send(item.value());
 
             if (!item) break; // queue shutdown + empty, exit thread
         }
     }
 
-    void send(logObj);
     void fileWrite(logObj);
     //this method should be called during initialization to confirm whether the server is responding to prevent logs from cluttering memory
     void initServer();
@@ -106,10 +104,15 @@ class lgr {
 public:
     // parameterized constructor, also acts as default due to default args
     lgr(): logWorker([this]{this->run();}) {}
+    lgr(int x){
+
+    }
     
     void addLogItem(logObj obj){
         logQ.push(obj);
     }
+
+        void send();
 
     void shutDown(){
         logQ.shutdown();

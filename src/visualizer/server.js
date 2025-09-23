@@ -3,21 +3,17 @@
 let express = require("express");
 let app = express();
 
+app.use(express.json()); 
 
+app.post("/addLog",(req,res)=>{
+    
+    let data = req.body;
+    
 
-app.get("/old",(req,res)=>{
-    res.send()
+    res.sendStatus(300);
+
 })
 
-
-
-
-
-
-
-async function confirmData(){
-
-}
 
 
 
