@@ -24,3 +24,4 @@ struct Percepts {
     std::vector<Sighting> sightings;
     double scent;
 };
+

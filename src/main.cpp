@@ -75,7 +75,6 @@ int main(int argc, char **argv) {
 
     //NEW: initializes the logging object and starts the worker thread
 
-    
 
 
     /**************************************************************

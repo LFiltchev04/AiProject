@@ -136,7 +136,7 @@
             setup() {
                 // start with a slightly smaller cell size so more fits in the reduced grid
                 const cellSize = ref(24);
-                const position = reactive({ x: 0, y: 0 });
+                const   position = reactive({ x: 0, y: 0 });
                 const gridTranslation = reactive({ x: 0, y: 0 });
                 const isGridDragging = ref(false);
                 const isItemDragging = ref(false);
@@ -144,7 +144,7 @@
                 const grid = ref(null);
 
                 // NEW: Array to hold tile data
-                const tiles = ref([{x:4, y:-2, color:'lightblue'}, {x:-3, y:-1, color:'lightgreen'}]);
+                const tiles = ref([{x:0, y:0, color:'lightblue'}, {x:-3, y:-1, color:'lightgreen'}, {x:1, y:1, color:"lightblue"},{x:2,y:2,color:"lightblue"}]);
 
                 const gridLineStyles = computed(() => {
                     // if grid not mounted yet, fall back to simple positioning
@@ -325,7 +325,7 @@
                     // NEW: Export the tiles and the tile styles/methods
                     tiles,
                     tileStyles,
-                    addExampleTiles
+                    //addExampleTiles
                 };
             }
         });
