@@ -1,22 +1,30 @@
 #include "internalMap.hpp"
 #include <unordered_map>
 
+std::unordered_map<size_t, std::string> fastAccess;
 
 
 internalMap::internalMap(Percepts initData){
 
+    pastState initial;
+    initial.absPos = {0,0};
+    initial.heading = {1,0};
+    initial.vizData = initData;
+    
+    inMap.push_back(initial);
 
     //pushing the initial vizibility to the fast map, has to be redone
-    //fastAccess.emplace(hashCords(absPos.x, absPos.y),&inMap[0]);
+    fastAccess.emplace(hashCords(initial.absPos.x,initial.absPos.y),&inMap[0]);
 }
 
-void internalMap::updateMap(Percepts nVizData){
+void internalMap::updateMap(Vec2 cAbsPos,Vec2 heading,Percepts nVizData){
 
+    pastState toAdd;
+    toAdd.absPos = cAbsPos;
     
     //spin the percepts so they align with the internal absolute map
     
-    //heading.x==0 and heading.y==1
-    if(heading == 'f'){
+    if(heading.x==0 and heading.y==1){
         //aligns with internal map, dump as is into hash map
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
@@ -36,9 +44,7 @@ void internalMap::updateMap(Percepts nVizData){
 
 
     //rotated relative right
-    //heading.x==1 and heading.y==0
-
-    if(heading == 'r'){
+    if(heading.x==1 and heading.y==0){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),nVizData.forward[relDist]);
@@ -56,8 +62,7 @@ void internalMap::updateMap(Percepts nVizData){
     }
 
     //rotated relative back
-    //heading.x==0 and heading.y==-1
-    if(heading == 'b'){
+    if(heading.x==0 and heading.y==-1){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y-1-relDist),nVizData.forward[relDist]);
@@ -77,8 +82,7 @@ void internalMap::updateMap(Percepts nVizData){
     }
 
     //rotated relative left
-    //
-    if(heading == 'l'){
+    if(heading.x==-1 and heading.y==0){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),nVizData.forward[relDist]);
@@ -95,26 +99,5 @@ void internalMap::updateMap(Percepts nVizData){
         return;
     }
 
-}
 
-
-
-
-void internalMap::parseCmds(std::vector<std::string> &commandList){
-
-    for(std::string cmd : commandList){
-
-    }
-
-
-}
-
-
-peerHound::peerHound(char heading, Vec2 relCoords){
-    reorient(heading,relCoords);
-
-    //this has to be called at the very first move
-    Vec2 origin = {0,0};
-    absCoords = getAbsolute(relCoords,'f',origin);
-    linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
 }
