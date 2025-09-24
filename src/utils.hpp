@@ -66,6 +66,9 @@ void reorient(char heading, Vec2& relLoc){
 
 }
 //i will simply write something to see wich branch i am on
+
+
+
 //takes an orientation and turns a relative coordinate into an internal absolute coordinate
 Vec2 getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
     reorient(heading,relCoord);
