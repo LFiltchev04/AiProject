@@ -97,14 +97,103 @@ void internalMap::updateMap(Percepts nVizData){
 
 }
 
+Vec2 internalMap::trueDir(char direction){
+
+    //thank god i have a swivel chair, would have been harder otherwise
+    if(heading == 'f'){
+        
+        if(direction == 'f'){
+              return {0,1};
+        }
+
+        if(direction == 'r'){
+              return {1,0};
+        }
+
+        if(direction == 'b'){
+            return {0,-1};
+        }
+
+        if(direction == 'l'){
+            return {-1,0};
+        }
+    }
+    
+
+    if(heading == 'r'){
+        
+        if(direction == 'f'){
+            return {1,0};
+        }
+
+        if(direction == 'r'){
+            return {0,-1};
+        }
+
+        if(direction == 'b'){
+            return {-1,0};
+        }
+
+        if(direction == 'l'){
+            return {0,1};
+        }
+    }
+
+
+    if(direction == 'b'){
+
+        if(heading == 'f'){
+            return {0,-1};
+        }
+
+        if(heading == 'r'){
+            return {-1,0};
+        }
+
+        if(heading == 'b'){
+            return {0,1};
+        }
+
+        if(heading == 'l'){
+            return {1,0};
+        }
+    }
+
+
+    if(direction == 'l'){
+
+        if(heading == 'f'){
+            return {-1,0};
+        }
+
+        if(heading == 'r'){
+            return {0,1};
+        }
+
+        if(heading == 'b'){
+            return {1,0};
+        }
+
+        if(heading == 'l'){
+            return {0,-1};
+        }
+    }
+
+    return {0,0};
+
+}
 
 
 
 void internalMap::parseCmds(std::vector<std::string> &commandList){
 
-    for(std::string cmd : commandList){
 
+    //is supposed to figure out what coordinate to feed the internal map, happens right before the end of the function
+    for(std::string cmd : commandList){
+        cAbsPos + trueDir(cmd.at(0));
     }
+
+    fastAccess.emplace(cAbsPos);
 
 
 }

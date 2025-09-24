@@ -1,22 +1,41 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include "json.hpp"
+using json = nlohmann::json;
 
-//transforms a vector of strings into an array representation 
-std::string vectorToJson(const std::vector<std::string>& vec) {
-    std::ostringstream oss;
-    oss << "[";
 
-    for (size_t i = 0; i < vec.size(); ++i) {
-        oss << "\"" << vec[i] << "\"";
-        if (i + 1 < vec.size()) {
-            oss << ",";
-        }
+
+
+//jsonifies the percepts so i can push them to the logging server
+inline std::string agentTypeToString(AgentType t) {
+    switch(t) {
+        case AgentType::FOX:   return "FOX";
+        case AgentType::HOUND: return "HOUND";
+        case AgentType::NONE:  return "NONE";
     }
-
-    oss << "]";
-    return oss.str();
 }
+
+void to_json(json& j, const Sighting& s) {
+    j = json{
+        {"type", agentTypeToString(s.type)},
+        {"direction", s.direction},
+        {"distance", s.distance}
+    };
+}
+
+void to_json(json& j, const Percepts& p) {
+    j = json{
+        {"current", p.current},
+        {"forward", p.forward},
+        {"backward", p.backward},
+        {"left", p.left},
+        {"right", p.right},
+        {"sightings", p.sightings},
+        {"scent", p.scent}
+    };
+}
+
 
 
 //crams two 32bit integers into a 64 bit one for hashing purpouses
@@ -75,5 +94,5 @@ Vec2 getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
 
 //computes linear sustance between coordinate pairs
 float linDist(Vec2 posOne, Vec2 posTwo){
-    return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y))); 
+    return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y)));
 }

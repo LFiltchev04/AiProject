@@ -14,4 +14,7 @@ public:
         Percepts& percepts,
         AgentComm * comms
     );
+
+    //attempts to fix a fox`s position using scent data and comms from other hounds, hounds bark their nearest fox, if any of the hounds corrected absolute positions solve a pythagorean theorem the location is known. 
+    Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos, double scent);
 };

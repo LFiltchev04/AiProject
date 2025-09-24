@@ -1,4 +1,5 @@
-#include"hound_ai.hpp"
+#include "hound_ai.hpp"
+#include "utils.hpp"
 
 /***************************************************************
 HOUND AI CLASS DEFINITION
@@ -12,6 +13,79 @@ HoundAI::HoundAI(
     : AI(id, agent_speed, rng)
 {
 }
+
+
+
+//the absolute position has to be passed from the map class, the rotations are handled there 
+Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
+
+    auto brks = commData->bark.begin();     
+    auto dir = commData->direction.begin();
+
+    //i am assuming that they will always be of equal length and that the two things align, so rel location vector 9 is the same as the distance vector
+    while(brks != commData->bark.end() and dir != commData->direction.end()){
+
+        //as of right now the unsigned does not embed anything besides the distance.
+
+        double distBarker = linDist(cAbsPos,*dir);
+        
+        (a + b > c) && (a + c > b) && (b + c > a)
+
+
+
+        
+        
+
+        brks++;
+        dir++;
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 std::vector<std::string> HoundAI::Run(
     Percepts& percepts,
@@ -93,3 +167,6 @@ std::vector<std::string> HoundAI::Run(
     }
     return cmds;
 }
+
+
+
