@@ -30,7 +30,7 @@ size_t hashCords(int x, int y){
                   + (hash1 >> 2));
 }
 
-
+//test
 //single 90 degree clockwise rotation, chain however many you need
 void ninetyClockwise(Vec2 & relCord){
     relCord.SwapXY(); 
