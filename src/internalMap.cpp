@@ -103,8 +103,18 @@ void internalMap::updateMap(Percepts nVizData){
 void internalMap::parseCmds(std::vector<std::string> &commandList){
 
     for(std::string cmd : commandList){
-        
+
     }
 
 
+}
+
+
+peerHound::peerHound(char heading, Vec2 relCoords){
+    reorient(heading,relCoords);
+
+    //this has to be called at the very first move
+    Vec2 origin = {0,0};
+    absCoords = getAbsolute(relCoords,'f',origin);
+    linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
 }
