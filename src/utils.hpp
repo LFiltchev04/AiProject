@@ -19,6 +19,7 @@ std::string vectorToJson(const std::vector<std::string>& vec) {
 }
 
 
+//crams two 32bit integers into a 64 bit one for hashing purpouses
 size_t hashCords(int x, int y){
         // Hash the first element
         size_t hash1 = std::hash<int>{}(x);
@@ -31,10 +32,12 @@ size_t hashCords(int x, int y){
 }
 
 //takes an orientation and turns a relative coordinate into an internal absolute coordinate
-Vec2 getAbsolute(Vec2 pos, Vec2 heading, Vec2 relCoord){
-    if(heading.x == 1 and heading.y == 0){
-        return pos+relCoord;
-    }else if(heading.x == 0 and heading.y ==1){
-    }
+Vec2 getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
+    
 }
 
+
+//single 90 degree clockwise rotation, chain however many you need
+Vec2 ninetyClockwise(Vec2 relCord){
+
+}

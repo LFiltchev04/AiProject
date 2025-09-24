@@ -7,36 +7,64 @@
 #include <unordered_map>
 #include "utils.hpp"
 
-std::unordered_map<size_t, std::string> fastAccess;
 
-struct pastState {
-    Vec2 heading;
-    Vec2 absPos;
-    Percepts vizData; 
-};
+
 
 class internalMap{
-    Vec2 cHeading;
-    std::vector<pastState> inMap;
+    char heading;
+    Vec2 cAbsPos;
+    std::unordered_map<size_t, std::string> fastAccess;
+
 
     public:
     internalMap(Percepts);
     
-    //used to return the visual data of an old state, starting from the initial turn 0
-    pastState* operator[](unsigned int);
-    
-    //exclusivley for when a fox uses a teleporter 
-    void wipeData();
+    virtual void parseCmds(std::vector<std::string>&) = 0;
     
     //used to update the map
-    void updateMap(Vec2 ,Vec2, Percepts);
+    void updateMap(Percepts);
+
+};
 
 
+class foxMap : private internalMap{
+    public:
+    foxMap(Percepts p): internalMap(p){};
 
+    //called when a fox it uses a teleporter 
+    void wipeMap();
+
+    virtual void parseCmds(std::vector<std::string>);
+     
+};
+
+//generates an instance per hond for ever internal map, so it has actalized coordinates 
+class peerHound{
+    //may be optonal
+    unsigned int uid;
+    Vec2 absCoords;
+
+
+    public:
+    
+    peerHound(int id, char heading ,Vec2 relCoords);
+    Vec2 getNormal();
 
 
 };
 
+class houndMap : private internalMap {
+    //this holds re-embedded IDs that are barked per instance
+    //i can cheat here, if the random id is passed to the same arra i can simply lift the indexes and not bother with consistent hashing
+    //i am not sre i even really need them to be addressable, but it cant hurt and if it does prove simple wont even matter whether or whether not all that much
+
+    std::vector<int> peerHounds; 
+
+
+    public:
+
+
+};
 
 
 
