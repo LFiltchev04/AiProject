@@ -21,7 +21,8 @@ void internalMap::updateMap(Percepts nVizData){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
-
+            
+            mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
             
         }
 
@@ -191,6 +192,7 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
 
 
     //is supposed to figure out what coordinate to feed the internal map, happens right before the end of the function
+    //assming that a singel command is alwas a single move maximm
     for(std::string cmd : commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
@@ -202,11 +204,14 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
 
 
 peerHound::peerHound(char heading, Vec2 relCoords){
+    
     reorient(heading,relCoords);
 
     //this has to be called at the very first move
     Vec2 origin = {0,0};
     absCoords = getAbsolute(relCoords,'f',origin);
     linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
+
 }
+
 
