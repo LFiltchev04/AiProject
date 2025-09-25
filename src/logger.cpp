@@ -5,6 +5,20 @@
 
 sendQ lgr::logQ;
 
+
+bool lgr::initServer(std::string connString){
+    
+    try{
+        http::Request checkServer(connString+"/checkIsOn");
+        checkServer.send("GET");
+    }catch(std::exception error){
+        std::cerr<<"failed to find server instance at: "<< connString <<std::endl<<"by error: "<< error.what();
+        return false;
+    }
+
+
+}
+
 //this unpackages the log data objects and sends them to the log server, always runs in worker thread
 void lgr::send(){
 

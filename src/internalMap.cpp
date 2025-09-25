@@ -1,6 +1,6 @@
 #include "internalMap.hpp"
 #include <unordered_map>
-
+#include "utils.hpp"
 
 
 internalMap::internalMap(Percepts initData){
@@ -21,6 +21,8 @@ void internalMap::updateMap(Percepts nVizData){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
+
+            
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
@@ -207,3 +209,4 @@ peerHound::peerHound(char heading, Vec2 relCoords){
     absCoords = getAbsolute(relCoords,'f',origin);
     linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
 }
+
