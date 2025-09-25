@@ -29,9 +29,9 @@ Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
 
         double distBarker = linDist(cAbsPos,*dir);
         
-        (a + b > c) && (a + c > b) && (b + c > a)
+        //(a + b > c) && (a + c > b) && (b + c > a)
 
-
+        
 
         
         
