@@ -1,6 +1,7 @@
 #include "hound_ai.hpp"
 #include "utils.hpp"
 
+
 /***************************************************************
 HOUND AI CLASS DEFINITION
 */
@@ -28,11 +29,13 @@ Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
         //as of right now the unsigned does not embed anything besides the distance.
 
         double distBarker = linDist(cAbsPos,*dir);
+        
+        (a + b > c) && (a + c > b) && (b + c > a)
 
-        //verifies its a valid triangle
-        if((scent + distBarker > *brks) && (distBarker + *brks > scent) && (scent + *brks > distBarker)){
-            return *dir;
-        }        
+
+
+        
+        
 
         brks++;
         dir++;
@@ -165,6 +168,18 @@ std::vector<std::string> HoundAI::Run(
         std::shuffle(arr.begin(), arr.end(), *rng);
         cmds.push_back(arr[0]);
     }
+
+
+
+
+    
+
+
+
+
+
+
+
     return cmds;
 }
 

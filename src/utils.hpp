@@ -6,35 +6,37 @@ using json = nlohmann::json;
 
 
 
+//this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
+enum entity{
+    empty,
+    wall,
+    fox,
+    hound,
+    teleporter,
+    exit,
+    goal
+};
 
-//jsonifies the percepts so i can push them to the logging server
-inline std::string agentTypeToString(AgentType t) {
-    switch(t) {
-        case AgentType::FOX:   return "FOX";
-        case AgentType::HOUND: return "HOUND";
-        case AgentType::NONE:  return "NONE";
-    }
+//aggregates the reporting data for visualization or persisting on disk, that too should probably go into a utils file
+struct logObj {
+    entity sightType;
+    Vec2 absLocation;
+    unsigned id;
+};
+
+
+inline void to_json(json& j, const Vec2& v) {
+    j = json{{"x", v.x}, {"y", v.y}};
 }
 
-void to_json(json& j, const Sighting& s) {
+inline void to_json(json& j, const logObj& l) {
     j = json{
-        {"type", agentTypeToString(s.type)},
-        {"direction", s.direction},
-        {"distance", s.distance}
+        {"sightType", static_cast<int>(l.sightType)},
+        {"absLocation", l.absLocation},              
+        {"id", l.id}
     };
 }
 
-void to_json(json& j, const Percepts& p) {
-    j = json{
-        {"current", p.current},
-        {"forward", p.forward},
-        {"backward", p.backward},
-        {"left", p.left},
-        {"right", p.right},
-        {"sightings", p.sightings},
-        {"scent", p.scent}
-    };
-}
 
 
 
@@ -96,3 +98,10 @@ Vec2 getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
 float linDist(Vec2 posOne, Vec2 posTwo){
     return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y)));
 }
+
+std::string logObjParser(logObj input){
+
+}
+
+
+lgr mainLogger("http://127.0.0.1:3005");

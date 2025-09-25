@@ -11,18 +11,7 @@
 #include "percepts.hpp"
 #include "json.hpp"
 #include "vec2.hpp"
-
-
-
-
-//aggregates the reporting data for visualization or persisting on disk, that too should probably go into a utils file
-struct logObj {
-    Percepts vizData;
-    Vec2 inCord;
-    char mode;
-    unsigned id;
-};
-
+#include "utils.hpp"
 
 
 
@@ -58,6 +47,12 @@ public:
         }
         cv.notify_all();
     }
+    void push(logObj logItem);
+
+    // pop waits until an item is available, returns std::nullopt if shutdown
+    std::optional<logObj> pop();
+    //called to eliminate the thread if the logger cannot be initialized
+    void shutdown();
 
 private:
     std::queue<std::string> opQ;
@@ -77,7 +72,7 @@ private:
 class lgr {
 
     std::thread logWorker;
-
+    bool inited = false;
     int foxCount;
     int houndCount;
     static sendQ logQ;
@@ -85,34 +80,37 @@ class lgr {
     std::string connString ="http://127.0.0.1:3005/addLog";
 
 
-    void run(){
-        while (true) {
-            auto item = logQ.pop();
-
-            //will add persist logic thats toggle-able, but not right now, the node server has to work for that. 
-            //send(item.value());
-
-            if (!item) break; // queue shutdown + empty, exit thread
-        }
-    }
+    void run();
 
     void fileWrite(logObj);
     //this method should be called during initialization to confirm whether the server is responding to prevent logs from cluttering memory
-    void initServer();
+    bool initServer(std::string connStr);
 
     
 public:
-    // parameterized constructor, also acts as default due to default args
-    lgr(): logWorker([this]{this->run();}) {}
-    lgr(int x){
+//refactor this bullshit in the cpps later
+    lgr(std:: string connString): logWorker([this]{this->run();}) {
+        
+        if(connString.empty()){
+            logQ.shutdown();
+            return;
+        }
 
+        if(!initServer(connString)){
+            logQ.shutdown();
+            return;
+        }
+
+        std::cout << "logger succesfully initialized"<<std::endl;
     }
     
-    void addLogItem(std::string obj){
+    void addLogItem(logObj obj, Vec2 pos){
+        
         logQ.push(obj);
     }
 
-    void send();
+    void send(logObj parse);
+
 
     void shutDown(){
         logQ.shutdown();
@@ -122,24 +120,18 @@ public:
         }
     }
 
-    logObj debugFunction();
-
-    static std::string foxLockJsonify(unsigned int id, Vec2 foxPos);
-
+    //add item to visualizer is absoloute position only
+    logObj buildLogObj(std::string saw, Vec2 pos);
 };
 
 
-
-
+ 
+//the string should look like this: http://(address):(port number), no trailing slash
+//initializes the logger globally here:
 
 
 
 
 
 #endif // LOGGER_HPP
-
-
-
-
-
 
