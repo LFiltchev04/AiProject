@@ -8,6 +8,7 @@ using json = nlohmann::json;
 
 //this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
 enum entity{
+    empty,
     wall,
     fox,
     hound,
@@ -101,3 +102,6 @@ float linDist(Vec2 posOne, Vec2 posTwo){
 std::string logObjParser(logObj input){
 
 }
+
+
+lgr mainLogger("http://127.0.0.1:3005");

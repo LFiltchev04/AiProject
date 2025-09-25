@@ -96,5 +96,6 @@ std::vector<std::string> FoxAI::Run(
         cmds.push_back(arr[0]);
     }
     
+    
     return cmds;
 }

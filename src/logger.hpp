@@ -19,34 +19,12 @@
 //this will be used to push the data to the logger where it will be processed independently by the worker thread
 class sendQ {
 public:
-    void push(logObj logItem) {
-        {
-            std::lock_guard<std::mutex> lock(lockGuard);
-            opQ.push(std::move(logItem));
-        }
-        cv.notify_one(); // wake the worker if it’s waiting
-    }
+    void push(logObj logItem);
 
     // pop waits until an item is available, returns std::nullopt if shutdown
-    std::optional<logObj> pop() {
-        std::unique_lock<std::mutex> lock(lockGuard);
-        cv.wait(lock, [this] { return !opQ.empty() || shutdown_; });
-
-        if (shutdown_ && opQ.empty())
-            return std::nullopt; // signal worker to stop
-
-        logObj item = std::move(opQ.front());
-        opQ.pop();
-        return item;
-    }
-
-    void shutdown() {
-        {
-            std::lock_guard<std::mutex> lock(lockGuard);
-            shutdown_ = true;
-        }
-        cv.notify_all();
-    }
+    std::optional<logObj> pop();
+    //called to eliminate the thread if the logger cannot be initialized
+    void shutdown();
 
 private:
     std::queue<logObj> opQ;
@@ -74,16 +52,7 @@ class lgr {
     std::string connString ="http://127.0.0.1:3005/addLog";
 
 
-    void run(){
-        while (true) {
-            auto item = logQ.pop();
-
-            //will add persist logic thats toggle-able, but not right now, the node server has to work for that. 
-            send(item.value());
-
-            if (!item) break; // queue shutdown + empty, exit thread
-        }
-    }
+    void run();
 
     void fileWrite(logObj);
     //this method should be called during initialization to confirm whether the server is responding to prevent logs from cluttering memory
@@ -91,6 +60,7 @@ class lgr {
 
     
 public:
+//refactor this bullshit in the cpps later
     lgr(std:: string connString): logWorker([this]{this->run();}) {
         
         if(connString.empty()){
@@ -106,7 +76,8 @@ public:
         std::cout << "logger succesfully initialized"<<std::endl;
     }
     
-    void addLogItem(logObj obj){
+    void addLogItem(logObj obj, Vec2 pos){
+        
         logQ.push(obj);
     }
 
@@ -122,20 +93,14 @@ public:
 
     }
 
-    logObj debugFunction();
-
-
-
-    void setNpos(Vec2 newPos);
-    void setSight(Vec2 position, entity type);
-    void endTurn();
+    //add item to visualizer is absoloute position only
+    logObj buildLogObj(std::string saw, Vec2 pos);
 };
 
 
  
 //the string should look like this: http://(address):(port number), no trailing slash
 //initializes the logger globally here:
-lgr mainLogger("http://127.0.0.1:3005");
 
 
 
