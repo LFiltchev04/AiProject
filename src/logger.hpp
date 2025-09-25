@@ -11,18 +11,7 @@
 #include "percepts.hpp"
 #include "json.hpp"
 #include "vec2.hpp"
-
-
-
-
-//aggregates the reporting data for visualization or persisting on disk, that too should probably go into a utils file
-struct logObj {
-    Percepts vizData;
-    Vec2 inCord;
-    char mode;
-    unsigned id;
-};
-
+#include "utils.hpp"
 
 
 
@@ -77,7 +66,7 @@ private:
 class lgr {
 
     std::thread logWorker;
-
+    bool inited = false;
     int foxCount;
     int houndCount;
     static sendQ logQ;
@@ -98,21 +87,28 @@ class lgr {
 
     void fileWrite(logObj);
     //this method should be called during initialization to confirm whether the server is responding to prevent logs from cluttering memory
-    void initServer();
+    bool initServer(std::string connStr);
 
     
 public:
-    // parameterized constructor, also acts as default due to default args
-    lgr(): logWorker([this]{this->run();}) {}
-    lgr(int x){
+    lgr(std:: string connString): logWorker([this]{this->run();}) {
+        
+        if(connString.empty()){
+            return;
+        }
 
+        if(!initServer(connString)){
+            return;
+        }
+        std::cout << "logger succesfully initialized"<<std::endl;
     }
     
     void addLogItem(logObj obj){
         logQ.push(obj);
     }
 
-        void send();
+    void send();
+
 
     void shutDown(){
         logQ.shutdown();
@@ -125,20 +121,22 @@ public:
 
     logObj debugFunction();
 
+
+
+    void setNpos(Vec2 newPos);
+    void setSight(Vec2 position, entity type);
+    void endTurn();
 };
 
 
-
-
+ 
+//the string should look like this: http://(address):(port number), no trailing slash
+//initializes the logger globally here:
+lgr mainLogger("http://127.0.0.1:3005");
 
 
 
 
 
 #endif // LOGGER_HPP
-
-
-
-
-
 

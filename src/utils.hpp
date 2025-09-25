@@ -6,35 +6,26 @@ using json = nlohmann::json;
 
 
 
+//this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
+enum entity{
+    wall,
+    fox,
+    hound,
+    teleporter,
+    exit,
+    goal
+};
 
-//jsonifies the percepts so i can push them to the logging server
-inline std::string agentTypeToString(AgentType t) {
-    switch(t) {
-        case AgentType::FOX:   return "FOX";
-        case AgentType::HOUND: return "HOUND";
-        case AgentType::NONE:  return "NONE";
-    }
-}
+//aggregates the reporting data for visualization or persisting on disk, that too should probably go into a utils file
+struct logObj {
+    entity sightType;
+    Vec2 absLocation;
+    unsigned id;
+};
 
-void to_json(json& j, const Sighting& s) {
-    j = json{
-        {"type", agentTypeToString(s.type)},
-        {"direction", s.direction},
-        {"distance", s.distance}
-    };
-}
 
-void to_json(json& j, const Percepts& p) {
-    j = json{
-        {"current", p.current},
-        {"forward", p.forward},
-        {"backward", p.backward},
-        {"left", p.left},
-        {"right", p.right},
-        {"sightings", p.sightings},
-        {"scent", p.scent}
-    };
-}
+
+
 
 
 
@@ -95,4 +86,8 @@ Vec2 getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
 //computes linear sustance between coordinate pairs
 float linDist(Vec2 posOne, Vec2 posTwo){
     return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y)));
+}
+
+std::string logObjParser(logObj input){
+
 }

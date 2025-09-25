@@ -5,6 +5,13 @@ let app = express();
 
 app.use(express.json()); 
 
+
+
+app.get("/checkIsOn",(res)=>{
+    res.sendStatus(300);
+})
+  
+
 app.post("/addLog",(req,res)=>{
     
     let data = req.body;
@@ -13,6 +20,8 @@ app.post("/addLog",(req,res)=>{
     res.sendStatus(300);
 
 })
+
+
 
 
 
