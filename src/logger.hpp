@@ -79,7 +79,7 @@ class lgr {
             auto item = logQ.pop();
 
             //will add persist logic thats toggle-able, but not right now, the node server has to work for that. 
-            //send(item.value());
+            send(item.value());
 
             if (!item) break; // queue shutdown + empty, exit thread
         }
@@ -94,12 +94,15 @@ public:
     lgr(std:: string connString): logWorker([this]{this->run();}) {
         
         if(connString.empty()){
+            logQ.shutdown();
             return;
         }
 
         if(!initServer(connString)){
+            logQ.shutdown();
             return;
         }
+
         std::cout << "logger succesfully initialized"<<std::endl;
     }
     
@@ -107,7 +110,7 @@ public:
         logQ.push(obj);
     }
 
-    void send();
+    void send(logObj parse);
 
 
     void shutDown(){

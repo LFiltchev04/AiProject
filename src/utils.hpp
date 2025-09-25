@@ -24,7 +24,17 @@ struct logObj {
 };
 
 
+inline void to_json(json& j, const Vec2& v) {
+    j = json{{"x", v.x}, {"y", v.y}};
+}
 
+inline void to_json(json& j, const logObj& l) {
+    j = json{
+        {"sightType", static_cast<int>(l.sightType)},
+        {"absLocation", l.absLocation},              
+        {"id", l.id}
+    };
+}
 
 
 

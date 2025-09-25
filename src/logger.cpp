@@ -20,25 +20,23 @@ bool lgr::initServer(std::string connString){
 }
 
 //this unpackages the log data objects and sends them to the log server, always runs in worker thread
-void lgr::send(){
+void lgr::send(logObj parse){
 
     //all the unpackaged data has to be transformed into a json format and crammed into this string, then ill just JSON.parse() on the other end 
-    std::string reqBody = "";
-
-    std::string debugString = R"({"thisisatest":"On", "wheteher":["this","will","work"]})";
 
     try{
-       http::Request postData(connString);
-       
-        //http::HeaderFields hdr("Content-Type","application/json");
-        
-        const auto res = postData.send("POST", debugString, {{"Content-Type","application/json"}});
 
-           std::cout << std::string{res.body.begin(), res.body.end()} << '\n'; // i should remove this.
+       http::Request postData(connString+"/addLog");
+       
+        json parsed = parse;
+        std::string jString = parsed.dump(-1);
+        
+        postData.send("POST", jString , {{"Content-Type","application/json"}});
 
     }catch(const std::exception& error){
         std::cerr<<"network failure from thread: " << error.what() << std::endl ;
     }
+
 }
 
 
