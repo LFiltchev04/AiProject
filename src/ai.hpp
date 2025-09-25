@@ -8,6 +8,8 @@
 #include<iostream>
 #include"percepts.hpp"
 #include"comm.hpp"
+#include "internalMap.hpp"
+
 
 class AI {
 protected:

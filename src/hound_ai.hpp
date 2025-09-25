@@ -1,9 +1,10 @@
 #pragma once
 
-#include"ai.hpp"
+#include "ai.hpp"
 
 class HoundAI : public AI {
 private:
+    houndMap map;
 public:
     HoundAI(
         unsigned id,

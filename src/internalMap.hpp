@@ -22,10 +22,12 @@ class internalMap{
     public:
     internalMap(Percepts);
     
-    virtual void parseCmds(std::vector<std::string>&) = 0;
+    void parseCmds(std::vector<std::string>&);
     
     //used to update the map
     void updateMap(Percepts);
+
+    
 
 };
 
@@ -37,7 +39,6 @@ class foxMap : private internalMap{
     //called when a fox it uses a teleporter 
     void wipeMap();
 
-    virtual void parseCmds(std::vector<std::string>);
      
 };
 
@@ -64,6 +65,7 @@ class houndMap : private internalMap {
     
     public:
     houndMap(Percepts p):internalMap(p){};
+    void foxLock(unsigned int id, Vec2 location);
     
 };
 

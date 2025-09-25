@@ -30,7 +30,7 @@ struct logObj {
 //this will be used to push the data to the logger where it will be processed independently by the worker thread
 class sendQ {
 public:
-    void push(logObj logItem) {
+    void push(std::string logItem) {
         {
             std::lock_guard<std::mutex> lock(lockGuard);
             opQ.push(std::move(logItem));
@@ -39,14 +39,14 @@ public:
     }
 
     // pop waits until an item is available, returns std::nullopt if shutdown
-    std::optional<logObj> pop() {
+    std::optional<std::string> pop() {
         std::unique_lock<std::mutex> lock(lockGuard);
         cv.wait(lock, [this] { return !opQ.empty() || shutdown_; });
 
         if (shutdown_ && opQ.empty())
             return std::nullopt; // signal worker to stop
 
-        logObj item = std::move(opQ.front());
+        std::string item = std::move(opQ.front());
         opQ.pop();
         return item;
     }
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    std::queue<logObj> opQ;
+    std::queue<std::string> opQ;
     std::mutex lockGuard;
     std::condition_variable cv;
     bool shutdown_ = false;
@@ -108,11 +108,11 @@ public:
 
     }
     
-    void addLogItem(logObj obj){
+    void addLogItem(std::string obj){
         logQ.push(obj);
     }
 
-        void send();
+    void send();
 
     void shutDown(){
         logQ.shutdown();
@@ -120,10 +120,11 @@ public:
         if(logWorker.joinable()){
             logWorker.join();
         }
-
     }
 
     logObj debugFunction();
+
+    static std::string foxLockJsonify(unsigned int id, Vec2 foxPos);
 
 };
 
