@@ -11,9 +11,7 @@ HoundAI::HoundAI(
     unsigned agent_speed,
     std::mt19937_64* rng
 )
-    : AI(id, agent_speed, rng)
-{
-}
+    : AI(id, agent_speed, rng){}
 
 
 
@@ -29,8 +27,12 @@ Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
         //as of right now the unsigned does not embed anything besides the distance.
 
         double distBarker = linDist(cAbsPos,*dir);
+
+        //verifies its a valid triangle
+        if((scent + distBarker > *brks) && (distBarker + *brks > scent) && (scent + *brks > distBarker)){
+            return *dir;
+        }        
         
-        (a + b > c) && (a + c > b) && (b + c > a)
 
 
 

@@ -4,7 +4,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 //this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
 enum entity{
@@ -13,7 +14,7 @@ enum entity{
     fox,
     hound,
     teleporter,
-    exit,
+    Exit,
     goal
 };
 
@@ -104,4 +105,17 @@ std::string logObjParser(logObj input){
 }
 
 
-lgr mainLogger("http://127.0.0.1:3005");
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

@@ -203,6 +203,26 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
 }
 
 
+
+
+Vec2 internalMap::getLocation(){
+    return cAbsPos;
+}
+
+
+char internalMap::getHeading(){
+    return heading;
+}
+
+
+
+
+
+
+
+
+
+
 peerHound::peerHound(char heading, Vec2 relCoords){
     
     reorient(heading,relCoords);

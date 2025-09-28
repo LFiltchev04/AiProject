@@ -19,43 +19,19 @@
 //this will be used to push the data to the logger where it will be processed independently by the worker thread
 class sendQ {
 public:
-    void push(std::string logItem) {
-        {
-            std::lock_guard<std::mutex> lock(lockGuard);
-            opQ.push(std::move(logItem));
-        }
-        cv.notify_one(); // wake the worker if it’s waiting
-    }
-
-    // pop waits until an item is available, returns std::nullopt if shutdown
-    std::optional<std::string> pop() {
-        std::unique_lock<std::mutex> lock(lockGuard);
-        cv.wait(lock, [this] { return !opQ.empty() || shutdown_; });
-
-        if (shutdown_ && opQ.empty())
-            return std::nullopt; // signal worker to stop
-
-        std::string item = std::move(opQ.front());
-        opQ.pop();
-        return item;
-    }
-
-    void shutdown() {
-        {
-            std::lock_guard<std::mutex> lock(lockGuard);
-            shutdown_ = true;
-        }
-        cv.notify_all();
-    }
-    void push(logObj logItem);
+    void push(std::string logItem);
 
     // pop waits until an item is available, returns std::nullopt if shutdown
     std::optional<logObj> pop();
+
+    void push(logObj logItem);
+
+    // pop waits until an item is available, returns std::nullopt if shutdown
     //called to eliminate the thread if the logger cannot be initialized
     void shutdown();
 
 private:
-    std::queue<std::string> opQ;
+    std::queue<logObj> opQ;
     std::mutex lockGuard;
     std::condition_variable cv;
     bool shutdown_ = false;

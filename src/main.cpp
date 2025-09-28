@@ -74,6 +74,7 @@ inline unsigned screen_height = 850;
 int main(int argc, char **argv) {
 
     //NEW: initializes the logging object and starts the worker thread
+    lgr mainLogger("http://127.0.0.1:3005");
 
 
 

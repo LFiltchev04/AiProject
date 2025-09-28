@@ -26,6 +26,8 @@ class internalMap{
     
     //used to update the map
     void updateMap(Percepts);
+    Vec2 getLocation();
+    char getHeading();
 
     
 
@@ -64,6 +66,7 @@ class houndMap : private internalMap {
     std::vector<peerHound> peerHounds;
     
     public:
+    houndMap();
     houndMap(Percepts p):internalMap(p){};
     void foxLock(unsigned int id, Vec2 location);
     

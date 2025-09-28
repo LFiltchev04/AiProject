@@ -65,30 +65,17 @@ void lgr::run(){
 //this unpackages the log data objects and sends them to the log server, always runs in worker thread
 void lgr::send(logObj parse){
 
-    std::string jsn = *logQ.pop();
 
     try{
 
+        json jString = parse;
        http::Request postData(connString+"/addLog");
        
         
-        postData.send("POST", jString , {{"Content-Type","application/json"}});
+        postData.send("POST", jString.dump() , {{"Content-Type","application/json"}});
 
     }catch(const std::exception& error){
         std::cerr<<"network failure from thread: " << error.what() << std::endl ;
     }
 }
 
-
-
-logObj lgr::debugFunction(){
-
-    Vec2 testCoords;
-    testCoords.x = 20;
-    testCoords.y = -20;
-    
-    logObj test;
-    return test;
-
-
-}
