@@ -202,6 +202,22 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
 
 }
 
+Vec2 internalMap::getHeadingVector(){
+    return trueDir(heading);
+}
+
+Vec2 internalMap::currentPos(){
+    return cAbsPos;
+}
+
+bool internalMap::isWall(Vec2 checkPos){
+    if(fastAccess.at(hashCords(checkPos.x,checkPos.y)) == "W"){
+        return true;
+    }
+
+    return false;
+};
+
 
 peerHound::peerHound(char heading, Vec2 relCoords){
     

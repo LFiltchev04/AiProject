@@ -104,4 +104,14 @@ std::string logObjParser(logObj input){
 }
 
 
+//gets the degrees difference between two Vec2 vectors
+double angleBetween(Vec2 a, Vec2 b) {
+    double dot = a.x*b.x + a.y*b.y;
+    double cross = a.x*b.y - a.y*b.x;  
+    double angle = std::atan2(cross, dot);  
+    return angle * 180.0 / M_PI;            
+}
+
+
+
 lgr mainLogger("http://127.0.0.1:3005");

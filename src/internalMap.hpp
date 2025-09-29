@@ -21,11 +21,13 @@ class internalMap{
 
     public:
     internalMap(Percepts);
-    
     virtual void parseCmds(std::vector<std::string>&) = 0;
     
     //used to update the map
     void updateMap(Percepts);
+    Vec2 getHeadingVector();
+    bool isWall(Vec2 checkPos);
+    Vec2 currentPos();
 
 };
 
