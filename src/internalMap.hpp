@@ -8,13 +8,16 @@
 #include "utils.hpp"
 
 
+struct node{
 
+};
 
 class internalMap{
     char heading;
     Vec2 cAbsPos;
     std::unordered_map<size_t, std::string> fastAccess;
 
+    Vec2 trueDir(char direction);
 
     public:
     internalMap(Percepts);

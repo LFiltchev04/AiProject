@@ -1,6 +1,6 @@
 #include "internalMap.hpp"
 #include <unordered_map>
-
+#include "utils.hpp"
 
 
 internalMap::internalMap(Percepts initData){
@@ -21,6 +21,9 @@ void internalMap::updateMap(Percepts nVizData){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
+            
+            mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
+            
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
@@ -97,24 +100,118 @@ void internalMap::updateMap(Percepts nVizData){
 
 }
 
+Vec2 internalMap::trueDir(char direction){
+
+    //thank god i have a swivel chair, would have been harder otherwise
+    if(heading == 'f'){
+        
+        if(direction == 'f'){
+              return {0,1};
+        }
+
+        if(direction == 'r'){
+              return {1,0};
+        }
+
+        if(direction == 'b'){
+            return {0,-1};
+        }
+
+        if(direction == 'l'){
+            return {-1,0};
+        }
+    }
+    
+
+    if(heading == 'r'){
+        
+        if(direction == 'f'){
+            return {1,0};
+        }
+
+        if(direction == 'r'){
+            return {0,-1};
+        }
+
+        if(direction == 'b'){
+            return {-1,0};
+        }
+
+        if(direction == 'l'){
+            return {0,1};
+        }
+    }
+
+
+    if(direction == 'b'){
+
+        if(heading == 'f'){
+            return {0,-1};
+        }
+
+        if(heading == 'r'){
+            return {-1,0};
+        }
+
+        if(heading == 'b'){
+            return {0,1};
+        }
+
+        if(heading == 'l'){
+            return {1,0};
+        }
+    }
+
+
+    if(direction == 'l'){
+
+        if(heading == 'f'){
+            return {-1,0};
+        }
+
+        if(heading == 'r'){
+            return {0,1};
+        }
+
+        if(heading == 'b'){
+            return {1,0};
+        }
+
+        if(heading == 'l'){
+            return {0,-1};
+        }
+    }
+
+    return {0,0};
+
+}
 
 
 
 void internalMap::parseCmds(std::vector<std::string> &commandList){
 
-    for(std::string cmd : commandList){
 
+    //is supposed to figure out what coordinate to feed the internal map, happens right before the end of the function
+    //assming that a singel command is alwas a single move maximm
+    for(std::string cmd : commandList){
+        cAbsPos + trueDir(cmd.at(0));
     }
+
+    fastAccess.emplace(cAbsPos);
 
 
 }
 
 
 peerHound::peerHound(char heading, Vec2 relCoords){
+    
     reorient(heading,relCoords);
 
     //this has to be called at the very first move
     Vec2 origin = {0,0};
     absCoords = getAbsolute(relCoords,'f',origin);
     linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
+
 }
+
+
