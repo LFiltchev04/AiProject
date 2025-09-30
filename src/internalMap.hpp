@@ -9,6 +9,8 @@
 
 
 struct node{
+    char type;
+    int visits;
 
 };
 
@@ -28,6 +30,7 @@ class internalMap{
     Vec2 getHeadingVector();
     bool isWall(Vec2 checkPos);
     Vec2 currentPos();
+    bool priorVisit(Vec2);
 
 };
 

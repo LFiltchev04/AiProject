@@ -218,6 +218,13 @@ bool internalMap::isWall(Vec2 checkPos){
     return false;
 };
 
+bool internalMap::priorVisit(Vec2 checkThis){
+    if(fastAccess.find(hashCords(checkThis.x,checkThis.y)) == fastAccess.end()){
+        return false;
+    }
+
+    return true;
+}
 
 peerHound::peerHound(char heading, Vec2 relCoords){
     
