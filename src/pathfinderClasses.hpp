@@ -21,15 +21,17 @@ class pathfinder {
     char unstuck();
     void wallRedirect();
 
+    void LPApathfind();
 
 
 
 };
 
 
-
-
-
-class navigateKnown{
-    
+struct pathNode{
+    int x;
+    int y;
+    char type;
 };
+
+

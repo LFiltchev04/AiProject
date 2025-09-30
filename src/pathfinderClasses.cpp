@@ -56,3 +56,8 @@ char pathfinder::unstuck(){
     
 }
 
+
+
+void pathfinder::LPApathfind(){
+    
+}
