@@ -1,7 +1,7 @@
 #include "pathfinderClasses.hpp"
 
 //this is for a hound, fox will need some minor changes
-char pathfinder::heuristic(){
+char pathfinder::greedyPathfind(){
 
     double cDist = linDist(mapInstance->currentPos(),targetCoord);
     
@@ -60,6 +60,14 @@ char pathfinder::heuristic(){
 
 
 
+   //=============================
+  //                          \ || /
+ //                            \  / 
+//THE IMPORTANT STUFF IS HERE   \/
+                                 
+
+
+
 
 
 int pathfinder::h(Vec2 head){
@@ -81,26 +89,62 @@ void pathfinder::LPApathfind(){
     searchNode parrent = bestGuess.top();
     bestGuess.pop();
 
-    for(int x = 0; x<4; x++){
-        if(mapInstance->isWall(cPos+tempVec)){
+    while(parrent.nodePosition != targetCoord){
+        //doing a ninety cockwise basically goes to next neighbour, if it is a wall its not inserted for expansion, which i think ought to act the same as ignoring it.
+        //it would require a 45 c-wise if it were 8-connected 
+        for(int x = 0; x<4; x++){
+
+            if(mapInstance->isWall(cPos+tempVec)){
+                ninetyClockwise(tempVec);
+                continue;
+            }
+
+            
+
+            bestGuess.emplace(searchNode(cPos+tempVec,parrent,getNodeScore(cPos,tempVec)));
             ninetyClockwise(tempVec);
-            continue;
         }
 
-        if(mapInstance->getPrior(/*cPos+tempVec*/).type == 'G'){
-            //construct path function, should go in a stack. 
-        }
-
-        bestGuess.emplace(searchNode(cPos+tempVec,parrent,getNodeScore(cPos,tempVec)));
-        ninetyClockwise(tempVec);
+        parrent = bestGuess.top();
+        bestGuess.pop();
+        
     }
+    
+    constrctPath(parrent.nodePosition);
 
 }
 
-
-void pathfinder::constrctPath(){
+void pathfinder::constrctPath(Vec2 goalNode){
     
+    //if i use recursion ill probably run out of memory
 
+    //some if function to toggle logging
+
+
+    Vec2 next = mapInstance->getPrior(/*goalNode*/).expandedNode->parrentCoords;
+    while(next != startCoord){
+
+        completePath.push(next);
+        next = mapInstance->getPrior(/*get*/).expandedNode->parrentCoords;
+    }
+
+    return;
+
+}
+
+std::stack<Vec2>* pathfinder::getPath(){
+    return &completePath;
+}
+
+internalMap* pathfinder::getMap(){
+    return mapInstance;
+}
+
+
+
+char houndPathfinder::nextStep(){
+    std::stack<Vec2>* completePath = getPath();
+    
 
     
 }

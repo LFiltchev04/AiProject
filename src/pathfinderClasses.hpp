@@ -6,35 +6,35 @@
 
 class pathfinder {
     Vec2 targetCoord;
-    //if a node passes trought nodes that have already been visited too much it means its probably stuck
-    //this gets incremented and if it passes a vertain threshold, it changes strategy from greedy optimisation of distance to trying to not go on 
-    //previously visited nodes. If that is not possible, it goes along nodes who have been visited least
+    Vec2 startCoord;
+    
     int pastVisits;
     internalMap* mapInstance;
     searchNode cNode;
+
+    //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
-    std::stack<searchNode> completePath;
+    std::stack<Vec2> completePath;
 
-
+    public:
     //should take a reference to the instantiated map, will be done later for convenience
     pathfinder();
 
-    char heuristic();
+    char greedyPathfind();
     void newTarget(Vec2 newTgt);
 
     void LPApathfind();
     int getNodeScore(Vec2 nodePos, Vec2 head);
     int h(Vec2 head);
-    void constrctPath();
+    void constrctPath(Vec2 goalNode);
 
+    std::stack<Vec2>* getPath();
+    internalMap* getMap();
 
 };
 
-
-struct pathNode{
-    int x;
-    int y;
-    char type;
+class houndPathfinder: private pathfinder{
+    public:
+    char nextStep();
 };
-
 
