@@ -211,7 +211,7 @@ Vec2 internalMap::currentPos(){
 }
 
 bool internalMap::isWall(Vec2 checkPos){
-    if(fastAccess.at(hashCords(checkPos.x,checkPos.y)) == "W"){
+    if(fastAccess.at(hashCords(checkPos.x,checkPos.y)).type == 'W'){
         return true;
     }
 

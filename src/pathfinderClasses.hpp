@@ -11,6 +11,9 @@ class pathfinder {
     //previously visited nodes. If that is not possible, it goes along nodes who have been visited least
     int pastVisits;
     internalMap* mapInstance;
+    searchNode cNode;
+    std::priority_queue<searchNode> bestGuess;
+    std::stack<searchNode> completePath;
 
 
     //should take a reference to the instantiated map, will be done later for convenience
@@ -18,11 +21,11 @@ class pathfinder {
 
     char heuristic();
     void newTarget(Vec2 newTgt);
-    char unstuck();
-    void wallRedirect();
 
     void LPApathfind();
-
+    int getNodeScore(Vec2 nodePos, Vec2 head);
+    int h(Vec2 head);
+    void constrctPath();
 
 
 };
