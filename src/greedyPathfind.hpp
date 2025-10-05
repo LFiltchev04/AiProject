@@ -1,7 +1,7 @@
 #include "vec2.hpp"
 #include "internalMap.hpp"
 #include "logger.hpp"
-#include "util.h"
+#include "utils.hpp"
 
 
 class pathfinder {

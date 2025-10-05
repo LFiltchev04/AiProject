@@ -29,7 +29,7 @@ char pathfinder::heuristic(){
     }
 
     ninetyClockwise(tempHeading);
-    if(cDist > linDist(tempHeading+,targetCoord)){
+    if(cDist > linDist(tempHeading+targetCoord,targetCoord)){
         if(!mapInstance->isWall(cPos)){
             return ""
         }    
