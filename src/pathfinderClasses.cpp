@@ -148,3 +148,17 @@ char houndPathfinder::nextStep(){
 
     
 }
+
+
+void pathfinder::recomputeFrom(){
+    //this recomputes from the start point to the end, so it should redo the whole thing, meaning drop the stack and redo from starting point
+
+    //dumps the stack, unfortunatley cant be more efficient
+    while(!completePath.empty()){
+        completePath.pop();
+    }
+
+    LPApathfind();
+
+
+}

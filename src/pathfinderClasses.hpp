@@ -1,7 +1,8 @@
 #include "vec2.hpp"
 #include "internalMap.hpp"
 #include "logger.hpp"
-#include "util.h"
+#include "utils.hpp"
+#include <stack>
 
 
 class pathfinder {
@@ -30,6 +31,7 @@ class pathfinder {
 
     std::stack<Vec2>* getPath();
     internalMap* getMap();
+    void recomputeFrom();
 
 };
 
