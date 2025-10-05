@@ -141,4 +141,4 @@ struct searchNode {
 };
 
 
-lgr mainLogger("http://127.0.0.1:3005");
+//lgr mainLogger("http://127.0.0.1:3005");
