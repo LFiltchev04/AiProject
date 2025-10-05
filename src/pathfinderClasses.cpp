@@ -122,6 +122,7 @@ void pathfinder::constrctPath(Vec2 goalNode){
 
 
     Vec2 next = mapInstance->getPrior(/*goalNode*/).expandedNode->parrentCoords;
+    completePath.push(next);
     while(next != startCoord){
 
         completePath.push(next);
@@ -140,10 +141,16 @@ internalMap* pathfinder::getMap(){
     return mapInstance;
 }
 
+Vec2 pathfinder::getNext(){
+    Vec2 temp =  getPath()->top();
+    getPath()->pop();
+    return temp;
+}
 
 
-char houndPathfinder::nextStep(){
-    std::stack<Vec2>* completePath = getPath();
+char houndPathfinder::pathTranslator(){
+    Vec2 nextTile = getNext();
+
     
 
     

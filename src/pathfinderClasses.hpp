@@ -29,12 +29,13 @@ class pathfinder {
     void constrctPath(Vec2 goalNode);
 
     std::stack<Vec2>* getPath();
+    Vec2 getNext();
     internalMap* getMap();
 
 };
 
 class houndPathfinder: private pathfinder{
     public:
-    char nextStep();
+    char pathTranslator();
 };
 
