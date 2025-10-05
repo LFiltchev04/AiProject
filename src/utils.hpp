@@ -99,6 +99,10 @@ float linDist(Vec2 posOne, Vec2 posTwo){
     return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y)));
 }
 
+int manhattanDistance(Vec2 posOne, Vec2 posTwo){
+    return std::abs(posTwo.x-posOne.x)+std::abs(posTwo.y-posOne.y);
+}
+
 std::string logObjParser(logObj input){
 
 }
@@ -112,6 +116,29 @@ double angleBetween(Vec2 a, Vec2 b) {
     return angle * 180.0 / M_PI;            
 }
 
+
+
+
+struct searchNode {
+        Vec2 nodePosition;
+        Vec2 parrentCoords;
+        int priority;
+        int global;
+        //i need to call this instructor bedore anything else otherwise the origine node will stay broken, maybe as a part of some init method in the ai class I dont know. 
+        searchNode(int computedPriority){
+            nodePosition = {0,0};
+            parrentCoords = {0,0};
+        }
+        //this is supposed to iterate the whole thing, lets hope i was not retarded while writing it
+        searchNode(Vec2 pos, searchNode parrent,int comptedPriority){
+            nodePosition = pos;
+            parrentCoords.x = parrent.nodePosition.x;
+            parrentCoords.y = parrent.nodePosition.y;
+            global = parrent.global++;
+            priority = comptedPriority;
+        }
+        bool operator<(const searchNode &other) const { return priority > other.priority; }
+};
 
 
 lgr mainLogger("http://127.0.0.1:3005");

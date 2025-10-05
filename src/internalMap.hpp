@@ -7,15 +7,19 @@
 #include <unordered_map>
 #include "utils.hpp"
 
+// forward-declare searchNode so node can hold a pointer without depending on include order
+struct searchNode;
 
 struct node{
-
+    char type;
+    int visits;
+    searchNode* expandedNode;
 };
 
 class internalMap{
     char heading;
     Vec2 cAbsPos;
-    std::unordered_map<size_t, std::string> fastAccess;
+    std::unordered_map<size_t, node> fastAccess;
 
     Vec2 trueDir(char direction);
 
@@ -28,6 +32,8 @@ class internalMap{
     Vec2 getHeadingVector();
     bool isWall(Vec2 checkPos);
     Vec2 currentPos();
+    bool priorVisit(Vec2);
+    node getPrior();
 
 };
 

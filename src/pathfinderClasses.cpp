@@ -1,0 +1,150 @@
+#include "pathfinderClasses.hpp"
+
+//this is for a hound, fox will need some minor changes
+char pathfinder::greedyPathfind(){
+
+    double cDist = linDist(mapInstance->currentPos(),targetCoord);
+    
+    //if straight ahead is better, go there
+    
+
+    //if right is better, rotate, the next turn will sort movement out
+    Vec2 tempHeading = mapInstance->getHeadingVector(); 
+    Vec2 cPos = mapInstance->currentPos();
+    
+    if(!mapInstance->priorVisit(cPos)){
+        pastVisits++;
+    }
+
+
+    if(cDist > linDist(cPos+tempHeading,targetCoord)){
+        return 'F';
+    }
+
+    if(pastVisits == 15){
+        //enter unstuck mode, will be a different function, has to determine when to xero out the trigger variable
+        //return unstuck();
+    }
+    ninetyClockwise(tempHeading);
+    if(cDist > linDist(tempHeading+cPos,targetCoord)){
+        if(!mapInstance->isWall(cPos)){
+            return 'R';
+        }
+    }
+
+    ninetyClockwise(tempHeading);
+    if(cDist > linDist(tempHeading+cPos,targetCoord)){
+        if(!mapInstance->isWall(cPos)){
+            return 'R';
+        }
+    }
+
+    ninetyClockwise(tempHeading);
+    if(cDist > linDist(tempHeading+cPos,targetCoord)){
+        if(!mapInstance->isWall(cPos)){
+            return 'R';
+        }    
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+   //=============================
+  //                          \ || /
+ //                            \  / 
+//THE IMPORTANT STUFF IS HERE   \/
+                                 
+
+
+
+
+
+int pathfinder::h(Vec2 head){
+    manhattanDistance(mapInstance->currentPos()+head,targetCoord);
+}
+
+int pathfinder::getNodeScore(Vec2 nodePos, Vec2 head){
+    return h(head) + cNode.global + 1;
+}
+
+void pathfinder::LPApathfind(){
+    //THIS IS NOT YET DEFINED, YOU NEED TO DEFINE IT, IF IT BLOWS UP HERE YOU KNOW WHY
+    mapInstance->getPrior();
+
+    //i need to look the neighbours up and score the g(n)+h(n), then pick the lowest and move to that location
+    
+    Vec2 tempVec = mapInstance->getHeadingVector();
+    Vec2 cPos = mapInstance->currentPos();
+    searchNode parrent = bestGuess.top();
+    bestGuess.pop();
+
+    while(parrent.nodePosition != targetCoord){
+        //doing a ninety cockwise basically goes to next neighbour, if it is a wall its not inserted for expansion, which i think ought to act the same as ignoring it.
+        //it would require a 45 c-wise if it were 8-connected 
+        for(int x = 0; x<4; x++){
+
+            if(mapInstance->isWall(cPos+tempVec)){
+                ninetyClockwise(tempVec);
+                continue;
+            }
+
+            
+
+            bestGuess.emplace(searchNode(cPos+tempVec,parrent,getNodeScore(cPos,tempVec)));
+            ninetyClockwise(tempVec);
+        }
+
+        parrent = bestGuess.top();
+        bestGuess.pop();
+        
+    }
+    
+    constrctPath(parrent.nodePosition);
+
+}
+
+void pathfinder::constrctPath(Vec2 goalNode){
+    
+    //if i use recursion ill probably run out of memory
+
+    //some if function to toggle logging
+
+
+    Vec2 next = mapInstance->getPrior(/*goalNode*/).expandedNode->parrentCoords;
+    while(next != startCoord){
+
+        completePath.push(next);
+        next = mapInstance->getPrior(/*get*/).expandedNode->parrentCoords;
+    }
+
+    return;
+
+}
+
+std::stack<Vec2>* pathfinder::getPath(){
+    return &completePath;
+}
+
+internalMap* pathfinder::getMap(){
+    return mapInstance;
+}
+
+
+
+char houndPathfinder::nextStep(){
+    std::stack<Vec2>* completePath = getPath();
+    
+
+    
+}
