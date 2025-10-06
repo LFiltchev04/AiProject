@@ -22,7 +22,7 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
             
-            mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
+            //mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
             
         }
 
@@ -224,6 +224,41 @@ bool internalMap::priorVisit(Vec2 checkThis){
     }
 
     return true;
+}
+
+
+node internalMap::getPrior(Vec2 atPlace){
+    //i am not sure that this will not blow up if the element is not in the hashmap
+    fastAccess.at(hashCords(atPlace.x,atPlace.y));
+}
+
+
+bool internalMap::wasVisited(Vec2 analyzeThis){
+    std::vector<emptySeenNodes> &sightData = xOnlyAccess.at(analyzeThis.x);
+    
+    for(emptySeenNodes iter:sightData){
+        //check if above
+        if(iter.zeroOne>=analyzeThis.y){
+            return true;
+        }
+
+        //check if ahead
+        if(iter.oneZero>=analyzeThis.x){
+            return true;
+        }
+
+        //check if below
+        if(iter.zeroMinus<=analyzeThis.y){
+            return true;
+        }
+
+        //check if behind
+        if(iter.minusZero<=analyzeThis.x){
+
+        }
+    }
+
+
 }
 
 peerHound::peerHound(char heading, Vec2 relCoords){

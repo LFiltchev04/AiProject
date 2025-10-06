@@ -75,6 +75,7 @@ int pathfinder::h(Vec2 head){
 }
 
 int pathfinder::getNodeScore(Vec2 nodePos, Vec2 head){
+    //this is a one-step-ahead check of the f(n) 
     return h(head) + cNode.global + 1;
 }
 
@@ -101,7 +102,10 @@ void pathfinder::LPApathfind(){
 
             
 
-            bestGuess.emplace(searchNode(cPos+tempVec,parrent,getNodeScore(cPos,tempVec)));
+            //lets hoep this pushes it where its supposed to
+            searchNode current(cPos+tempVec,parrent,getNodeScore(cPos,tempVec));
+            bestGuess.push(current);
+            mapInstance->getPrior().pathfindComponent = current;
             ninetyClockwise(tempVec);
         }
 
@@ -121,12 +125,12 @@ void pathfinder::constrctPath(Vec2 goalNode){
     //some if function to toggle logging
 
 
-    Vec2 next = mapInstance->getPrior(/*goalNode*/).expandedNode->parrentCoords;
+    Vec2 next = mapInstance->getPrior(/*goalNode*/).pathfindComponent.parrentCoords;
     completePath.push(next);
     while(next != startCoord){
 
         completePath.push(next);
-        next = mapInstance->getPrior(/*get*/).expandedNode->parrentCoords;
+        next = mapInstance->getPrior(/*get*/).pathfindComponent.parrentCoords;
     }
 
     return;
@@ -143,15 +147,36 @@ internalMap* pathfinder::getMap(){
 
 Vec2 pathfinder::getNext(){
     Vec2 temp =  getPath()->top();
-    getPath()->pop();
     return temp;
 }
 
 
 char houndPathfinder::pathTranslator(){
     Vec2 nextTile = getNext();
+    Vec2 dirVec(0,1);
+    Vec2 cPos = getMap()->currentPos();
 
-    
+    if(cPos+dirVec==nextTile){
+        //i should only be popping when the forward move happens and keep rotating it otherwise
+        getPath()->pop();
+        return 'F';
+    }
+
+    ninetyClockwise(dirVec);
+    if(cPos+dirVec==nextTile){
+        return 'R';
+    }
+
+    ninetyClockwise(dirVec);
+    if(cPos+dirVec==nextTile){
+        return 'L';
+    }
+
+    ninetyClockwise(dirVec);
+    if(cPos+dirVec==nextTile){
+        return 'R';
+    }
+
 
     
 }
