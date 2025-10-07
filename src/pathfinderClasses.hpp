@@ -34,6 +34,7 @@ class pathfinder {
     internalMap* getMap();
     void recomputeFrom();
     char pathTranslator();
+    bool pathInvalid();
 
 };
 

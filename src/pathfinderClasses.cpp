@@ -68,7 +68,9 @@ char pathfinder::greedyPathfind(){
 
 
 
-
+void pathfinder::newTarget(Vec2 tgt){
+    targetCoord = tgt;
+}
 
 int pathfinder::h(Vec2 head){
     manhattanDistance(mapInstance->currentPos()+head,targetCoord);
