@@ -102,7 +102,7 @@ void internalMap::updateMap(Percepts nVizData){
 
 Vec2 internalMap::trueDir(char direction){
 
-    //thank god i have a swivel chair, would have been harder otherwise
+    
     if(heading == 'f'){
         
         if(direction == 'f'){
@@ -190,9 +190,7 @@ Vec2 internalMap::trueDir(char direction){
 
 void internalMap::parseCmds(std::vector<std::string> &commandList){
 
-
-    //is supposed to figure out what coordinate to feed the internal map, happens right before the end of the function
-    //assming that a singel command is alwas a single move maximm
+    //feeds the internal map with orientation corrected data, if bad data gets here everything downstream breaks
     for(std::string cmd : commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
@@ -229,47 +227,41 @@ bool internalMap::priorVisit(Vec2 checkThis){
 
 node internalMap::getPrior(Vec2 atPlace){
     //i am not sure that this will not blow up if the element is not in the hashmap
-    fastAccess.at(hashCords(atPlace.x,atPlace.y));
+    try{
+        fastAccess.at(hashCords(atPlace.x,atPlace.y));
+    }catch(std::exception err){
+        //return error in a way i can interpret
+        //return node();
+    }
+    
 }
 
 
-bool internalMap::wasVisited(Vec2 analyzeThis){
+bool internalMap::wasSeen(Vec2 analyzeThis){
     std::vector<emptySeenNodes> &sightData = xOnlyAccess.at(analyzeThis.x);
     
     for(emptySeenNodes iter:sightData){
+
         //check if above
-        if(iter.zeroOne>=analyzeThis.y){
+        if(iter.zeroOne>=analyzeThis.y and analyzeThis.y > iter.visitPoint.x){
             return true;
         }
 
         //check if ahead
-        if(iter.oneZero>=analyzeThis.x){
+        if(iter.oneZero>=analyzeThis.x and analyzeThis.x > iter.visitPoint.x){
             return true;
         }
 
         //check if below
-        if(iter.zeroMinus<=analyzeThis.y){
+        if(iter.zeroMinus<=analyzeThis.y and analyzeThis.y < iter.visitPoint.y){
             return true;
         }
 
         //check if behind
-        if(iter.minusZero<=analyzeThis.x){
-
+        if(iter.minusZero<=analyzeThis.x and analyzeThis.x < iter.visitPoint.x){
+            return true;
         }
     }
 
 
 }
-
-peerHound::peerHound(char heading, Vec2 relCoords){
-    
-    reorient(heading,relCoords);
-
-    //this has to be called at the very first move
-    Vec2 origin = {0,0};
-    absCoords = getAbsolute(relCoords,'f',origin);
-    linDist = std::sqrt((absCoords.x)*(absCoords.x)+(absCoords.y)*(absCoords.y));
-
-}
-
-
