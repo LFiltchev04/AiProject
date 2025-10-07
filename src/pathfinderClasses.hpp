@@ -33,6 +33,7 @@ class pathfinder {
     Vec2 getNext();
     internalMap* getMap();
     void recomputeFrom();
+    char pathTranslator();
 
 };
 

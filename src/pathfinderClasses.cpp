@@ -80,8 +80,6 @@ int pathfinder::getNodeScore(Vec2 nodePos, Vec2 head){
 }
 
 void pathfinder::LPApathfind(){
-    //THIS IS NOT YET DEFINED, YOU NEED TO DEFINE IT, IF IT BLOWS UP HERE YOU KNOW WHY
-    mapInstance->getPrior();
 
     //i need to look the neighbours up and score the g(n)+h(n), then pick the lowest and move to that location
     
@@ -105,7 +103,7 @@ void pathfinder::LPApathfind(){
             //lets hoep this pushes it where its supposed to
             searchNode current(cPos+tempVec,parrent,getNodeScore(cPos,tempVec));
             bestGuess.push(current);
-            mapInstance->getPrior().pathfindComponent = current;
+            mapInstance->getPrior(cPos+tempVec).pathfindComponent = current;
             ninetyClockwise(tempVec);
         }
 
@@ -125,12 +123,12 @@ void pathfinder::constrctPath(Vec2 goalNode){
     //some if function to toggle logging
 
 
-    Vec2 next = mapInstance->getPrior(/*goalNode*/).pathfindComponent.parrentCoords;
+    Vec2 next = mapInstance->getPrior(goalNode).pathfindComponent.parrentCoords;
     completePath.push(next);
     while(next != startCoord){
 
         completePath.push(next);
-        next = mapInstance->getPrior(/*get*/).pathfindComponent.parrentCoords;
+        next = mapInstance->getPrior(next).pathfindComponent.parrentCoords;
     }
 
     return;
@@ -151,7 +149,7 @@ Vec2 pathfinder::getNext(){
 }
 
 
-char houndPathfinder::pathTranslator(){
+char pathfinder::pathTranslator(){
     Vec2 nextTile = getNext();
     Vec2 dirVec(0,1);
     Vec2 cPos = getMap()->currentPos();

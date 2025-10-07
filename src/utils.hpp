@@ -4,6 +4,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 
 //this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
@@ -13,7 +15,7 @@ enum entity{
     fox,
     hound,
     teleporter,
-    exit,
+    ext,
     goal
 };
 
@@ -142,3 +144,7 @@ struct searchNode {
 
 
 //lgr mainLogger("http://127.0.0.1:3005");
+
+
+
+#endif

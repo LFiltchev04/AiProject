@@ -30,7 +30,7 @@ Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
 
         double distBarker = linDist(cAbsPos,*dir);
         
-        //(a + b > c) && (a + c > b) && (b + c > a)
+        //(distBarker + scent > c) && (a + c > b) && (b + c > a)
 
 
 
@@ -162,14 +162,17 @@ std::vector<std::string> HoundAI::Run(
 
     std::vector<std::string> arr = { "F", "L", "R" };
 
-    for (unsigned i = 0; i < agent_speed; i++) {
-        std::shuffle(arr.begin(), arr.end(), *rng);
-        cmds.push_back(arr[0]);
-    }
+    mapInstace.updateMap(percepts);
+
+    
+    Vec2 resultOfTrack;
+    //resultOfTrack = trackFox();
+    
+    //pFind.setGoal(resultOfTrack);
 
 
-
-
+    pFind.getNext();
+    pFind.pathTranslator();
     
 
 

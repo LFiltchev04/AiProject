@@ -42,8 +42,8 @@ class internalMap{
     Vec2 trueDir(char direction);
     bool wasSeen(Vec2);
     public:
-    internalMap(Percepts);
-    virtual void parseCmds(std::vector<std::string>&) = 0;
+    internalMap();
+    virtual void parseCmds(std::vector<std::string>&);
     
     //used to update the map
     void updateMap(Percepts);
@@ -55,18 +55,6 @@ class internalMap{
 
 
 
-};
-
-
-class foxMap : private internalMap{
-    public:
-    foxMap(Percepts p): internalMap(p){};
-
-    //called when a fox it uses a teleporter 
-    void wipeMap();
-
-    virtual void parseCmds(std::vector<std::string>);
-     
 };
 
 

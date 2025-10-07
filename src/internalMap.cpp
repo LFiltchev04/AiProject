@@ -3,11 +3,10 @@
 #include "utils.hpp"
 
 
-internalMap::internalMap(Percepts initData){
+internalMap::internalMap(){
 
 
-    //pushing the initial vizibility to the fast map, has to be redone
-    //fastAccess.emplace(hashCords(absPos.x, absPos.y),&inMap[0]);
+   
 }
 
 void internalMap::updateMap(Percepts nVizData){
