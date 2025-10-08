@@ -152,10 +152,13 @@ void pathfinder::LPApathfind(){
             mapInstance.fastAccess[nbKey].pathfindComponent = neighbour;
 
             ninetyClockwise(dir);
+        
         }
+        
     }
 
     // no path found -> leave completePath empty
+
 }
 
 void pathfinder::constrctPath(Vec2 goalNode){
@@ -177,6 +180,10 @@ void pathfinder::constrctPath(Vec2 goalNode){
         cur = parent;
     }
     // caller should handle empty stack / no-path case
+
+    //the first one has to be popped always
+    completePath.pop();
+    
 }
 
 std::stack<Vec2>* pathfinder::getPath(){
@@ -188,39 +195,56 @@ internalMap pathfinder::getMap(){
 }
 
 Vec2 pathfinder::getNext(){
-    Vec2 temp =  getPath()->top();
-    return temp;
+    if(completePath.empty()) return mapInstance.currentPos();
+    return completePath.top();
 }
 
-
 char pathfinder::pathTranslator(){
-    Vec2 nextTile = getNext();
-    
-    Vec2 dirVec(0,1);
-    Vec2 cPos = getMap().currentPos();
+    // defensive guards
+    if(completePath.empty()) return 'L';
 
-    if(cPos+dirVec==nextTile){
-        //i should only be popping when the forward move happens and keep rotating it otherwise
-        getPath()->pop();
+    // use the real mapInstance (not a copy) and real heading
+    Vec2 cPos = mapInstance.currentPos();
+    Vec2 heading = mapInstance.getHeadingVector();
+
+    // drop any already-reached tiles
+    while(!completePath.empty() && completePath.top().x == cPos.x && completePath.top().y == cPos.y){
+        completePath.pop();
+    }
+    if(completePath.empty()) return 'F';
+
+    Vec2 nextTile = completePath.top();
+
+    // forward
+    if(cPos + heading == nextTile){
+        completePath.pop();
         return 'F';
     }
 
-    ninetyClockwise(dirVec);
-    if(cPos+dirVec==nextTile){
+    // right
+    Vec2 right = heading;
+    ninetyClockwise(right);
+    if(cPos + right == nextTile){
         return 'R';
     }
 
-    ninetyClockwise(dirVec);
-    if(cPos+dirVec==nextTile){
+    // left (counter-clockwise = three clockwise)
+    Vec2 left = heading;
+    ninetyClockwise(left); ninetyClockwise(left); ninetyClockwise(left);
+    if(cPos + left == nextTile){
         return 'L';
     }
 
-    ninetyClockwise(dirVec);
-    if(cPos+dirVec==nextTile){
+    // back
+    Vec2 back = heading;
+    ninetyClockwise(back); ninetyClockwise(back);
+    if(cPos + back == nextTile){
+        // return single turn; next call will produce the second turn / movement
         return 'R';
     }
 
-
+    // fallback
+    return 'F';
 }
 
 

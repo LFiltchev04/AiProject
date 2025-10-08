@@ -269,3 +269,10 @@ bool internalMap::wasSeen(Vec2 analyzeThis){
 
 
 }
+
+
+void internalMap::updateHeading(char newD){
+    if(heading=='f'){
+        //heading = newD
+    }
+}

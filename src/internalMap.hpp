@@ -64,6 +64,7 @@ class internalMap{
     Vec2 currentPos();
     bool priorVisit(Vec2);
     node getPrior(Vec2);
+    void updateHeading(char);
 
 
 
