@@ -181,9 +181,7 @@ void pathfinder::constrctPath(Vec2 goalNode){
     }
     // caller should handle empty stack / no-path case
 
-    //the first one has to be popped always
-    completePath.pop();
-    
+        
 }
 
 std::stack<Vec2>* pathfinder::getPath(){
