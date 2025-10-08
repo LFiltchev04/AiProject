@@ -202,25 +202,26 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={-4,1};
+    Vec2 resultOfTrack={-5,3};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
+
+            std::cout<<pFind.getMap().currentPos().x << " <x|y> " << pFind.getMap().currentPos().y<<std::endl;
+
     if(pFind.getMap().currentPos()==resultOfTrack){
-        
         return cmds;
+    }
 
-    }else{
+
         if(pFind.getPath()->empty()){
-        
-        if(pFind.pathInvalid()){
-            pFind.recomputeFrom();
+            if(pFind.pathInvalid()){
+                pFind.recomputeFrom();
+            }else{
+                pFind.LPApathfind();
+            }
+            
         }
-        pFind.LPApathfind();
-
-
-    }
-    }
 
 
 
