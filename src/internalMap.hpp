@@ -14,6 +14,15 @@ struct node{
     char type;
     int visits;
     searchNode pathfindComponent;
+    node(char tpe){
+        type = tpe;
+        visits = 1;
+    }
+    node(){
+        type = 'Z';
+        visits = 1;
+        
+    }
 };
 
 //used to make fast lookups of visited/unvisited possible, needs to be given THE ENTIRE X/Y component, if a visibility boundary 20 ahead is at position (10,10) the oneZero should be 30
@@ -28,7 +37,7 @@ struct emptySeenNodes{
 };
 
 class internalMap{
-    char heading;
+    char heading='F';
     Vec2 cAbsPos;
     //this ugly thing is used to check whether the square has been seen at any point
     //the whole idea is to mark with relative coordinated where the maximum sight was, if a coordinate is whitin the range, it is considered explored
@@ -37,11 +46,14 @@ class internalMap{
     //i need to change the percept interpretation logic to ensure it works properly however
     std::unordered_map<int,std::vector<emptySeenNodes>> xOnlyAccess;
 
-    std::unordered_map<size_t, node> fastAccess;
 
     Vec2 trueDir(char direction);
     bool wasSeen(Vec2);
     public:
+
+        std::unordered_map<size_t, node> fastAccess;
+
+
     internalMap();
     virtual void parseCmds(std::vector<std::string>&);
     

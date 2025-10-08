@@ -15,22 +15,22 @@ void internalMap::updateMap(Percepts nVizData){
     //spin the percepts so they align with the internal absolute map
     
     //heading.x==0 and heading.y==1
-    if(heading == 'f'){
+    if(heading == 'F'){
         //aligns with internal map, dump as is into hash map
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
             
             //mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
             
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist, cAbsPos.y), nVizData.left[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist, cAbsPos.y), nVizData.left[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
         }
 
         return;
@@ -40,18 +40,18 @@ void internalMap::updateMap(Percepts nVizData){
     //rotated relative right
     //heading.x==1 and heading.y==0
 
-    if(heading == 'r'){
+    if(heading == 'R'){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.left[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.left[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.y-1-relDist,cAbsPos.y),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.y-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
         }
 
         return;
@@ -59,18 +59,18 @@ void internalMap::updateMap(Percepts nVizData){
 
     //rotated relative back
     //heading.x==0 and heading.y==-1
-    if(heading == 'b'){
+    if(heading == 'B'){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y-1-relDist),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y-1-relDist),node(nVizData.forward[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
         }
 
         
@@ -80,18 +80,18 @@ void internalMap::updateMap(Percepts nVizData){
 
     //rotated relative left
     //
-    if(heading == 'l'){
+    if(heading == 'L'){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
         }
         
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),nVizData.forward[relDist]);
+            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
         }
 
         return;
@@ -102,81 +102,81 @@ void internalMap::updateMap(Percepts nVizData){
 Vec2 internalMap::trueDir(char direction){
 
     
-    if(heading == 'f'){
+    if(heading == 'F'){
         
-        if(direction == 'f'){
+        if(direction == 'F'){
               return {0,1};
         }
 
-        if(direction == 'r'){
+        if(direction == 'R'){
               return {1,0};
         }
 
-        if(direction == 'b'){
+        if(direction == 'B'){
             return {0,-1};
         }
 
-        if(direction == 'l'){
+        if(direction == 'L'){
             return {-1,0};
         }
     }
     
 
-    if(heading == 'r'){
+    if(heading == 'R'){
         
-        if(direction == 'f'){
+        if(direction == 'F'){
             return {1,0};
         }
 
-        if(direction == 'r'){
+        if(direction == 'R'){
             return {0,-1};
         }
 
-        if(direction == 'b'){
+        if(direction == 'B'){
             return {-1,0};
         }
 
-        if(direction == 'l'){
+        if(direction == 'L'){
             return {0,1};
         }
     }
 
 
-    if(direction == 'b'){
+    if(direction == 'B'){
 
-        if(heading == 'f'){
+        if(heading == 'F'){
             return {0,-1};
         }
 
-        if(heading == 'r'){
+        if(heading == 'R'){
             return {-1,0};
         }
 
-        if(heading == 'b'){
+        if(heading == 'B'){
             return {0,1};
         }
 
-        if(heading == 'l'){
+        if(heading == 'L'){
             return {1,0};
         }
     }
 
 
-    if(direction == 'l'){
+    if(direction == 'L'){
 
-        if(heading == 'f'){
+        if(heading == 'F'){
             return {-1,0};
         }
 
-        if(heading == 'r'){
+        if(heading == 'R'){
             return {0,1};
         }
 
-        if(heading == 'b'){
+        if(heading == 'B'){
             return {1,0};
         }
 
-        if(heading == 'l'){
+        if(heading == 'L'){
             return {0,-1};
         }
     }
@@ -194,7 +194,7 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
 
-    fastAccess.emplace(cAbsPos);
+    fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y),node('O'));
 
 
 }
@@ -208,11 +208,11 @@ Vec2 internalMap::currentPos(){
 }
 
 bool internalMap::isWall(Vec2 checkPos){
-    if(fastAccess.at(hashCords(checkPos.x,checkPos.y)).type == 'W'){
-        return true;
-    }
+   size_t key = hashCords(checkPos.x, checkPos.y);
 
-    return false;
+    auto it = fastAccess.find(key);
+    if (it == fastAccess.end()) return false;        // not present
+    return it->second.type == 'W';
 };
 
 bool internalMap::priorVisit(Vec2 checkThis){
@@ -227,10 +227,15 @@ bool internalMap::priorVisit(Vec2 checkThis){
 node internalMap::getPrior(Vec2 atPlace){
     //i am not sure that this will not blow up if the element is not in the hashmap
     try{
-        fastAccess.at(hashCords(atPlace.x,atPlace.y));
+        if(fastAccess.find(hashCords(atPlace.x,atPlace.y))==fastAccess.end()){
+            return node();
+        } 
+        return fastAccess.find(hashCords(atPlace.x,atPlace.y))->second;
     }catch(std::exception err){
+
         //return error in a way i can interpret
-        //return node();
+        node ndn;
+        return ndn;
     }
     
 }
