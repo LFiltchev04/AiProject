@@ -218,10 +218,7 @@ Vec2 pathfinder::getNext(){
         Vec2 nextTile = completePath.top();
 
 
-        if(mapInstance.trueDir('F')+cPos==nextTile){
-            return 'F';
-        }
-
+        
         // forward
         if(cPos + heading == nextTile){
             mapInstance.iterateCpos(heading);
@@ -233,6 +230,13 @@ Vec2 pathfinder::getNext(){
         Vec2 right = heading;
         ninetyClockwise(right);
         if(cPos + right == nextTile){
+        
+        
+            if(mapInstance.trueDir('F')+cPos==nextTile){
+            return 'F';
+        }
+
+        
             //mapInstance.iterateCpos(cPos+right);
             return 'R';
         }
@@ -241,6 +245,12 @@ Vec2 pathfinder::getNext(){
         Vec2 left = heading;
         ninetyClockwise(left); ninetyClockwise(left); ninetyClockwise(left);
         if(cPos + left == nextTile){
+
+            if(mapInstance.trueDir('F')+cPos==nextTile){
+            return 'F';
+        }
+
+
             //mapInstance.iterateCpos(cPos+left);
             return 'L';
         }
@@ -249,6 +259,13 @@ Vec2 pathfinder::getNext(){
         Vec2 back = heading;
         ninetyClockwise(back); ninetyClockwise(back);
         if(cPos + back == nextTile){
+
+
+            if(mapInstance.trueDir('F')+cPos==nextTile){
+            return 'F';
+        }
+
+
             // return single turn; next call will produce the second turn / movement
             //mapInstance.iterateCpos(cPos+back);
             return 'R';
