@@ -143,46 +143,45 @@ Vec2 internalMap::trueDir(char direction){
     }
 
 
-    if(direction == 'B'){
+    if(heading == 'B'){
 
-        if(heading == 'F'){
+        if(direction == 'F'){
             return {0,-1};
         }
 
-        if(heading == 'R'){
+        if(direction == 'R'){
             return {-1,0};
         }
 
-        if(heading == 'B'){
+        if(direction == 'B'){
             return {0,1};
         }
 
-        if(heading == 'L'){
+        if(direction == 'L'){
             return {1,0};
         }
     }
 
 
-    if(direction == 'L'){
+    if(heading == 'L'){
 
-        if(heading == 'F'){
+        if(direction == 'F'){
             return {-1,0};
         }
 
-        if(heading == 'R'){
+        if(direction == 'R'){
             return {0,1};
         }
 
-        if(heading == 'B'){
+        if(direction == 'B'){
             return {1,0};
         }
 
-        if(heading == 'L'){
+        if(direction == 'L'){
             return {0,-1};
         }
     }
 
-    return {0,0};
 
 }
 
