@@ -202,7 +202,7 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={-4,2};
+    Vec2 resultOfTrack={0,2};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
@@ -227,13 +227,14 @@ std::vector<std::string> HoundAI::Run(
 
     
     std::string nxt="";
-    while(!pFind.getPath()->empty()){
-        std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
-        pFind.getPath()->pop();
-    }
+   // while(!pFind.getPath()->empty()){
+     //   std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
+     //   pFind.getPath()->pop();
+   // }
 
-    return cmds;
+    //return cmds;
     char nextStep = pFind.pathTranslator(); 
+    mapInstace.changeHeading(nextStep);
     pFind.getPath();
     if(nextStep != ' '){
         nxt += nextStep;

@@ -277,3 +277,75 @@ void internalMap::updateHeading(char newD){
         //heading = newD
     }
 }
+
+
+void internalMap::changeHeading(char in){
+    if(in==' '){
+        return;
+    }
+
+    if(heading == 'F'){
+        heading = in;
+        return;
+    }
+
+    if(heading=='R'){
+        if(in=='F'){
+            heading = 'R';
+        }
+
+        if(in=='R'){
+            heading = 'B';
+        }
+
+        if(in=='B'){
+            heading = 'L';
+        }
+
+        if(in=='L'){
+            heading = 'F';
+        }
+        return;
+    }
+
+
+    if(heading=='B'){
+        if(in=='F'){
+            heading = 'B';
+        }
+
+        if(in=='R'){
+            heading = 'L';
+        }
+
+        if(in=='B'){
+            heading = 'F';
+        }
+
+        if(in=='L'){
+            heading = 'R';
+        }
+        return;
+    }
+
+    if(heading=='L'){
+        if(in=='F'){
+            heading = 'L';
+        }
+
+        if(in=='R'){
+            heading = 'F';
+        }
+
+        if(in=='B'){
+            heading = 'R';
+        }
+
+        if(in=='L'){
+            heading = 'B';
+        }
+        return;
+    }
+
+    
+}

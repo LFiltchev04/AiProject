@@ -53,6 +53,7 @@ class internalMap{
 
         std::unordered_map<size_t, node> fastAccess;
 
+    void changeHeading(char);
 
     internalMap();
     virtual void parseCmds(std::vector<std::string>&);
