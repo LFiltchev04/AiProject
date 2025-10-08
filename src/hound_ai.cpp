@@ -202,7 +202,7 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={0,2};
+    Vec2 resultOfTrack={-4,0};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
@@ -224,29 +224,42 @@ std::vector<std::string> HoundAI::Run(
 
 
 
+    std::cout<<pFind.getMap().getHeading()<<std::endl;
+
+    pFind.getMap().changeHeading('R');
+
+    std::cout<<pFind.getMap().getHeading()<<std::endl;
+
+
+    return cmds;
 
     
     std::string nxt="";
    // while(!pFind.getPath()->empty()){
      //   std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
-     //   pFind.getPath()->pop();
+       // pFind.getPath()->pop();
    // }
 
     //return cmds;
     char nextStep = pFind.pathTranslator(); 
-    mapInstace.changeHeading(nextStep);
+    pFind.getMap().changeHeading(nextStep);
+    std::cout<<"heading:"<<pFind.getMap().trueDir(nextStep).x<<std::endl; 
     pFind.getPath();
     if(nextStep != ' '){
         nxt += nextStep;
-        std::cout<< nxt<<std::endl;
+        std::cout<< pFind.getMap().currentPos().x <<" "<<pFind.getMap().currentPos().y<<std::endl;
+        std::cout<< nextStep <<std::endl;
     }
     
 
 
 
     cmds.push_back(nxt);
+    
 
-
+    // cmds is the vector<string> you're returning
+    // update the planner's map (same instance) with the issued commands:
+    //pFind.getMap().parseCmds(cmds);
     return cmds;
 }
 

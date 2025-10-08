@@ -190,7 +190,7 @@ std::stack<Vec2>* pathfinder::getPath(){
     return &completePath;
 }
 
-internalMap pathfinder::getMap(){
+internalMap& pathfinder::getMap(){
     return mapInstance;
 }
 
@@ -199,78 +199,66 @@ Vec2 pathfinder::getNext(){
     return completePath.top();
 }
 
-char pathfinder::pathTranslator(){
-    
-   // if(completePath.empty()){
-    //    return ' ';
-  //  }
+    char pathfinder::pathTranslator(){
+        
+        
+        // defensive guards
+        if(completePath.empty()) return ' ';
 
-   /// Vec2 cAbsPos = mapInstance.currentPos();
-    //Vec2 head = {0,1};
+        // use the real mapInstance (not a copy) and real heading
+        Vec2 cPos = mapInstance.currentPos();
+        Vec2 heading = mapInstance.getHeadingVector();
 
+        // drop any already-reached tiles
+        while(!completePath.empty() && completePath.top().x == cPos.x && completePath.top().y == cPos.y){
+            completePath.pop();
+        }
+        if(completePath.empty()) return ' ';
 
-
-
-
-
-
-
-
-
-
+        Vec2 nextTile = completePath.top();
 
 
-    
-    
-    
-    // defensive guards
-    if(completePath.empty()) return ' ';
+        if(mapInstance.trueDir('F')+cPos==nextTile){
+            return 'F';
+        }
 
-    // use the real mapInstance (not a copy) and real heading
-    Vec2 cPos = mapInstance.currentPos();
-    Vec2 heading = mapInstance.getHeadingVector();
+        // forward
+        if(cPos + heading == nextTile){
+            mapInstance.iterateCpos(heading);
+            completePath.pop();
+            return 'F';
+        }
 
-    // drop any already-reached tiles
-    while(!completePath.empty() && completePath.top().x == cPos.x && completePath.top().y == cPos.y){
-        completePath.pop();
-    }
-    if(completePath.empty()) return 'F';
+        // right
+        Vec2 right = heading;
+        ninetyClockwise(right);
+        if(cPos + right == nextTile){
+            //mapInstance.iterateCpos(cPos+right);
+            return 'R';
+        }
 
-    Vec2 nextTile = completePath.top();
+        // left (counter-clockwise = three clockwise)
+        Vec2 left = heading;
+        ninetyClockwise(left); ninetyClockwise(left); ninetyClockwise(left);
+        if(cPos + left == nextTile){
+            //mapInstance.iterateCpos(cPos+left);
+            return 'L';
+        }
 
-    // forward
-    if(cPos + heading == nextTile){
-        completePath.pop();
-        return 'F';
-    }
+        // back
+        Vec2 back = heading;
+        ninetyClockwise(back); ninetyClockwise(back);
+        if(cPos + back == nextTile){
+            // return single turn; next call will produce the second turn / movement
+            //mapInstance.iterateCpos(cPos+back);
+            return 'R';
+        }
 
-    // right
-    Vec2 right = heading;
-    ninetyClockwise(right);
-    if(cPos + right == nextTile){
-        return 'R';
-    }
-
-    // left (counter-clockwise = three clockwise)
-    Vec2 left = heading;
-    ninetyClockwise(left); ninetyClockwise(left); ninetyClockwise(left);
-    if(cPos + left == nextTile){
-        return 'L';
-    }
-
-    // back
-    Vec2 back = heading;
-    ninetyClockwise(back); ninetyClockwise(back);
-    if(cPos + back == nextTile){
-        // return single turn; next call will produce the second turn / movement
-        return 'R';
-    }
-
-    // fallback
-    return 'F';
+        // fallback
+        return ' ';
 
 
-    }
+        }
 
 
 void pathfinder::recomputeFrom(){

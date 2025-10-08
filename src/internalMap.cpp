@@ -5,7 +5,8 @@
 
 internalMap::internalMap(){
 
-
+heading = 'F';
+cAbsPos = {0,0};
    
 }
 
@@ -273,9 +274,9 @@ bool internalMap::wasSeen(Vec2 analyzeThis){
 
 
 void internalMap::updateHeading(char newD){
-    if(heading=='f'){
-        //heading = newD
-    }
+    //if(heading=='f'){
+      //  heading = newD
+   // }
 }
 
 
@@ -285,7 +286,9 @@ void internalMap::changeHeading(char in){
     }
 
     if(heading == 'F'){
-        heading = in;
+        this->heading = in;
+
+    std::cout<<"heading set to1:"<<this->heading<<std::endl;
         return;
     }
 
@@ -305,6 +308,8 @@ void internalMap::changeHeading(char in){
         if(in=='L'){
             heading = 'F';
         }
+
+    std::cout<<"heading set to2:"<<this->heading<<std::endl;
         return;
     }
 
@@ -325,6 +330,8 @@ void internalMap::changeHeading(char in){
         if(in=='L'){
             heading = 'R';
         }
+
+    std::cout<<"heading set to3:"<<this->heading<<std::endl;
         return;
     }
 
@@ -344,8 +351,24 @@ void internalMap::changeHeading(char in){
         if(in=='L'){
             heading = 'B';
         }
+
+    std::cout<<"heading set to4:"<<this->heading<<std::endl;
         return;
     }
 
     
+}
+
+
+void internalMap::iterateCpos(Vec2 newPos){
+    cAbsPos=cAbsPos+newPos;
+}
+
+
+void internalMap::changeCpos(Vec2 newPos){
+    cAbsPos = newPos;
+}
+
+char internalMap::getHeading(){
+    return heading;
 }

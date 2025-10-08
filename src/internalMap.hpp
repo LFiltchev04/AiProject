@@ -37,7 +37,7 @@ struct emptySeenNodes{
 };
 
 class internalMap{
-    char heading='F';
+    char heading;
     Vec2 cAbsPos;
     //this ugly thing is used to check whether the square has been seen at any point
     //the whole idea is to mark with relative coordinated where the maximum sight was, if a coordinate is whitin the range, it is considered explored
@@ -47,9 +47,9 @@ class internalMap{
     std::unordered_map<int,std::vector<emptySeenNodes>> xOnlyAccess;
 
 
-    Vec2 trueDir(char direction);
     bool wasSeen(Vec2);
     public:
+    Vec2 trueDir(char direction);
 
         std::unordered_map<size_t, node> fastAccess;
 
@@ -61,11 +61,14 @@ class internalMap{
     //used to update the map
     void updateMap(Percepts);
     Vec2 getHeadingVector();
+    char getHeading();
     bool isWall(Vec2 checkPos);
     Vec2 currentPos();
     bool priorVisit(Vec2);
     node getPrior(Vec2);
     void updateHeading(char);
+    void iterateCpos(Vec2);
+    void changeCpos(Vec2);
 
 
 

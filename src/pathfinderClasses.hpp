@@ -31,7 +31,7 @@ class pathfinder {
 
     std::stack<Vec2>* getPath();
     Vec2 getNext();
-    internalMap getMap();
+    internalMap& getMap();
     void recomputeFrom();
     char pathTranslator();
     bool pathInvalid();
