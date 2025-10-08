@@ -200,8 +200,45 @@ Vec2 pathfinder::getNext(){
 }
 
 char pathfinder::pathTranslator(){
+    
+    if(completePath.empty()){
+        return ' ';
+    }
+
+    Vec2 cAbsPos = mapInstance.currentPos();
+    Vec2 head = {0,1};
+    
+    
+    for(int x = 0; x<4;x++){
+        if(cAbsPos+head==)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
     // defensive guards
-    if(completePath.empty()) return 'L';
+    if(completePath.empty()) return ' ';
 
     // use the real mapInstance (not a copy) and real heading
     Vec2 cPos = mapInstance.currentPos();
@@ -245,7 +282,9 @@ char pathfinder::pathTranslator(){
 
     // fallback
     return 'F';
-}
+*/
+
+    }
 
 
 void pathfinder::recomputeFrom(){

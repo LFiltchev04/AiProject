@@ -194,6 +194,7 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
 
+    //so there is a node to pathfind trough
     fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y),node('O'));
 
 

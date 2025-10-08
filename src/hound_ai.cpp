@@ -194,20 +194,24 @@ std::vector<std::string> HoundAI::Run(
         comms->bark[0] = 9;
     }
 
-    std::vector<std::string> cmds;
+    std::vector<std::string> cmds={};
 
-    std::vector<std::string> arr = { "F", "L", "R" };
+    std::vector<std::string> arr = {};
 
     pFind.updateMap(percepts);
 
    
     
-    Vec2 resultOfTrack={3,2};
+    Vec2 resultOfTrack={-4,2};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
-    
-    if(pFind.getPath()->empty()){
+    if(pFind.getMap().currentPos()==resultOfTrack){
+        
+        return cmds;
+
+    }else{
+        if(pFind.getPath()->empty()){
         
         if(pFind.pathInvalid()){
             pFind.recomputeFrom();
@@ -216,18 +220,30 @@ std::vector<std::string> HoundAI::Run(
 
 
     }
-    
+    }
 
-    for(int x = 0; x<3; x++){
-        std::string nxt = "";
-        nxt += pFind.pathTranslator();
-        cmds.push_back(nxt);
+
+
+
+    
+    std::string nxt="";
+    while(!pFind.getPath()->empty()){
+        std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
+        pFind.getPath()->pop();
+    }
+
+    return cmds;
+    char nextStep = pFind.pathTranslator(); 
+    pFind.getPath();
+    if(nextStep != ' '){
+        nxt += nextStep;
+        std::cout<< nxt<<std::endl;
     }
     
 
 
 
-
+    cmds.push_back(nxt);
 
 
     return cmds;
