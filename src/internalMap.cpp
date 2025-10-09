@@ -428,3 +428,8 @@ void internalMap::checkChange(Vec2 pos, char type){
         }
     
 }
+
+
+internalMap::~internalMap(){
+    
+}

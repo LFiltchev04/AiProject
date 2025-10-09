@@ -16,9 +16,12 @@ class pathfinder {
     //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
     std::stack<Vec2> completePath;
-    std::vector<searchNode*> forCleanup;
+
+    //it should be pointers but it causes problems i dont want to bother with
 
     public:
+        std::vector<Vec2> forCleanup;
+
     //should take a reference to the instantiated map, will be done later for convenience
     pathfinder(){};
 
@@ -39,8 +42,9 @@ class pathfinder {
     char pathTranslator();
     bool pathInvalid();
     void updateMap(Percepts p);
+    void recordNode(Vec2);
     
-
+    ~pathfinder(){};
 };
 
 class houndPathfinder: private pathfinder{

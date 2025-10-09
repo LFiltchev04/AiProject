@@ -94,6 +94,7 @@ class internalMap{
     //used to determine if a planned path is no longer optimal/possible, checks if a node is inconsistent with a prior observation/plan path
     void checkChange(Vec2 pos, char seenType);
 
+    ~internalMap();
 };
 
 

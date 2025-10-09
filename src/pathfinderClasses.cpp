@@ -98,7 +98,8 @@ void pathfinder::LPApathfind(){
     startCoord = mapInstance.currentPos();
 
     // seed start node
-    searchNode startNode(forCleanup);
+    searchNode startNode;
+    //recordNode(startNode.nodePosition);
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
     startNode.global = 0;
@@ -147,11 +148,12 @@ void pathfinder::LPApathfind(){
             bestG[nbKey] = tentativeG;
             int f = tentativeG + h(nb);
 
-            searchNode neighbour(nb, parrent, f,forCleanup);
+            searchNode neighbour(nb, parrent, f);
+            
             // ensure neighbour.global is correct (constructor sets parrent.global+1)
             neighbour.global = tentativeG;
             neighbour.priority = f;
-
+            //recordNode(neighbour.nodePosition);
             bestGuess.push(neighbour);
 
             // write into the real map entry (getPrior returns by value — use fastAccess directly)
@@ -289,10 +291,7 @@ void pathfinder::recomputeFrom(){
     //this recomputes from the start point to the end, so it should redo the whole thing, meaning drop the stack and redo from starting point
 
     //dumps the stack, unfortunatley cant be more efficient
-    while(!completePath.empty()){
-        completePath.pop();
-    }
-
+    dumpSearch();
     LPApathfind();
 
 
@@ -303,13 +302,18 @@ bool pathfinder::pathInvalid(){
 }
 
 void pathfinder::dumpSearch(){
-    for(searchNode* iter:forCleanup){
-        std::cout<<"searched Nodes:"<<iter->nodePosition.x<<"<-x|y->"<<iter->nodePosition.y<<std::endl;
+    for(Vec2 iter:forCleanup){
+        // get a reference to the stored node (modify map entry, not copy)
+        auto &itr = mapInstance.fastAccess.at(hashCords(iter.x,iter.y));
         searchNode defaultNode;
-        *iter = defaultNode;
+        itr.pathfindComponent = defaultNode;
     }
 
     while(!completePath.empty()){
         completePath.pop();
     }
+}
+
+void pathfinder::recordNode(Vec2 pos){
+    forCleanup.push_back(pos);
 }
