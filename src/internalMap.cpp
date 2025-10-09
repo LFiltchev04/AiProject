@@ -58,7 +58,8 @@ void internalMap::updateMap(Percepts nVizData){
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.y-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
         }
 
         return;
@@ -70,14 +71,17 @@ void internalMap::updateMap(Percepts nVizData){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y-1-relDist),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y-1-relDist<<std::endl;
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
         }
 
         
@@ -91,14 +95,17 @@ void internalMap::updateMap(Percepts nVizData){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
         }
         
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
         }
 
         return;
