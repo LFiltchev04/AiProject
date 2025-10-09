@@ -84,12 +84,8 @@ void internalMap::updateMap(Percepts nVizData){
     }
 
     //rotated relative left
-<<<<<<< HEAD
-    if(heading == 'l'){
-=======
     //
     if(heading == 'L'){
->>>>>>> 0319fa21cafd65ef6a875584ef3b185564f30494
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
@@ -202,14 +198,8 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
 
-<<<<<<< HEAD
-    
-
-    fastAccess.emplace(cAbsPos);
-=======
     //so there is a node to pathfind trough
     fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y),node('O'));
->>>>>>> 0319fa21cafd65ef6a875584ef3b185564f30494
 
 
 }
