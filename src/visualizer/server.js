@@ -12,24 +12,26 @@ app.use(express.json());
 
 
 const logByID = new Map();
-var streamLogID; 
+
 
 
 async function fastWrites(logElem){
     
-    var idx = 0;
+    logElem.seqID++;
 
     if(streamArray.length == 7){
         streamArray.push(logElem);
         streamArray.shift();
     }
 
-    streamArray.push(logElem)
+    var tempArrPtr = logByID.get(logElem.seqID);
+    tempArrPtr.push(logElem);
 
 }
 
-function fastFetch(){
-
+async function fastFetch(aiID,seqIdx){
+    tempArrRef = logByID.get(aiID);
+    return tempArrRef.slice(seqIdx,tempArrRef.length-1);
 }
 
 

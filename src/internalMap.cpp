@@ -40,7 +40,6 @@ void internalMap::updateMap(Percepts nVizData){
 
     //rotated relative right
     //heading.x==1 and heading.y==0
-
     if(heading == 'r'){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
@@ -80,7 +79,6 @@ void internalMap::updateMap(Percepts nVizData){
     }
 
     //rotated relative left
-    //
     if(heading == 'l'){
         
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
@@ -194,6 +192,8 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
     for(std::string cmd : commandList){
         cAbsPos + trueDir(cmd.at(0));
     }
+
+    
 
     fastAccess.emplace(cAbsPos);
 
