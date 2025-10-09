@@ -16,7 +16,6 @@ std::vector<std::string> AI::Run(
     Percepts & percepts,
     AgentComm * comms
 ) {
-        std::cout<<id<<"this is the AI id"<<std::endl;
 
     return std::vector<std::string>();
 }

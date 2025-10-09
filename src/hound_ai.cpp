@@ -215,11 +215,12 @@ std::vector<std::string> HoundAI::Run(
 
     std::vector<std::string> arr = {};
 
+    /*
     pFind.updateMap(percepts);
 
    
     
-    Vec2 resultOfTrack={-9,0};
+    Vec2 resultOfTrack={-8,0};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
@@ -280,9 +281,15 @@ std::vector<std::string> HoundAI::Run(
 
     // cmds is the vector<string> you're returning
     // update the planner's map (same instance) with the issued commands:
+
+
     //pFind.getMap().parseCmds(cmds);
+*/
     return cmds;
-}
+
+
+
+    }
 
 
 

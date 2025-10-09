@@ -19,27 +19,27 @@ void internalMap::updateMap(Percepts nVizData){
 
     // heading == Forward (0, +1)
     if(heading == 'F'){
-        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
-            char ch = pick(nVizData.forward[relDist]);
+            char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
-            char ch = pick(nVizData.left[relDist]);
+            char ch = pick(nVizData.left.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
-            char ch = pick(nVizData.right[relDist]);
+            char ch = pick(nVizData.right.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -51,27 +51,27 @@ void internalMap::updateMap(Percepts nVizData){
 
     // heading == Right (+1, 0)
     if(heading == 'R'){
-        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
-            char ch = pick(nVizData.forward[relDist]);
+            char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
-            char ch = pick(nVizData.left[relDist]);
+            char ch = pick(nVizData.left.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
-            char ch = pick(nVizData.right[relDist]);
+            char ch = pick(nVizData.right.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -83,27 +83,27 @@ void internalMap::updateMap(Percepts nVizData){
 
     // heading == Back (0, -1)
     if(heading == 'B'){
-        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
-            char ch = pick(nVizData.forward[relDist]);
+            char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
-            char ch = pick(nVizData.left[relDist]);
+            char ch = pick(nVizData.left.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
-            char ch = pick(nVizData.right[relDist]);
+            char ch = pick(nVizData.right.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -115,27 +115,27 @@ void internalMap::updateMap(Percepts nVizData){
 
     // heading == Left (-1, 0)
     if(heading == 'L'){
-        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
-            char ch = pick(nVizData.forward[relDist]);
+            char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
-            char ch = pick(nVizData.left[relDist]);
+            char ch = pick(nVizData.left.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+        for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
-            char ch = pick(nVizData.right[relDist]);
+            char ch = pick(nVizData.right.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -431,5 +431,5 @@ void internalMap::checkChange(Vec2 pos, char type){
 
 
 internalMap::~internalMap(){
-    
+
 }
