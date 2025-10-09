@@ -84,7 +84,7 @@ std::vector<std::string> FoxAI::Run(
     std::vector<std::string> cmds;
 
 
-
+    /*
     if (percepts.current[0] == goal) cmds.push_back("U");
     else if (percepts.current[0] == exit) cmds.push_back("U");
     else if (std::find(teleporters.begin(), teleporters.end(), percepts.current[0]) != teleporters.end()) {
@@ -95,7 +95,7 @@ std::vector<std::string> FoxAI::Run(
 	std::shuffle(arr.begin(), arr.end(), *rng);
         cmds.push_back(arr[0]);
     }
-    
+    */
     
     return cmds;
 }

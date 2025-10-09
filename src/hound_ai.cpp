@@ -221,7 +221,7 @@ std::vector<std::string> HoundAI::Run(
    
     
     Vec2 resultOfTrack={-9,1};
-    //resultOfTrack = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
+    resultOfTrack = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
     std::cout<< resultOfTrack.x<<" "<<resultOfTrack.y<<" fox track "<<id<<std::endl;

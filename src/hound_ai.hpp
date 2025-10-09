@@ -7,6 +7,7 @@
 class HoundAI : public AI {
 private:
 pathfinder pFind;
+char mode;
 public:
     HoundAI(
         unsigned id,
@@ -18,6 +19,8 @@ public:
         AgentComm * comms
     );
 
-    //attempts to fix a fox`s position using scent data and comms from other hounds, hounds bark their nearest fox, if any of the hounds corrected absolute positions solve a pythagorean theorem the location is known. 
+    //attempts to fix a fox`s position using scent data and comms from other hounds, hounds bark their nearest fox, this is used to attemp a location calculation
     Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos, double scent);
+    char discoveryMode();
+    
 };

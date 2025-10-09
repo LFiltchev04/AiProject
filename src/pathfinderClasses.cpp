@@ -97,7 +97,7 @@ void pathfinder::LPApathfind(){
     } 
 
     startCoord = mapInstance.currentPos();
-
+    
     // seed start node
     searchNode startNode;
     recordNode(startNode.nodePosition);
@@ -134,7 +134,7 @@ void pathfinder::LPApathfind(){
             Vec2 nb = parrent.nodePosition + dir;
             size_t nbKey = hashCords(nb.x, nb.y);
 
-            if(mapInstance.isWall(nb) || closed.count(nbKey)){
+            if(mapInstance.isWall(nb) /*|| closed.count(nbKey)*/){
                 ninetyClockwise(dir);
                 continue;
             }
