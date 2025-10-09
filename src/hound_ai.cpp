@@ -24,12 +24,13 @@ HoundAI::HoundAI(
 //the absolute position has to be passed from the map class, the rotations are handled there 
 Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
 
-    if (commData == nullptr) return cAbsPos;
+    if (commData == nullptr){
+        return cAbsPos;
+    } 
 
     auto brks = commData->bark.begin();     
     auto dir = commData->direction.begin();
 
-    // iterate over reported bark distances and reporter positions
     while(brks != commData->bark.end() && dir != commData->direction.end()){
 
         Vec2 bPos = *dir;                 // reporter absolute position
@@ -40,14 +41,30 @@ Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
         double d = linDist(cAbsPos, bPos);
 
         // skip degenerate / impossible cases
-        if (d <= 1e-12) { ++brks; ++dir; continue; }           // same center or invalid
-        if (d > r1 + r2 + 1e-9) { ++brks; ++dir; continue; }   // circles too far apart
-        if (d < std::fabs(r1 - r2) - 1e-9) { ++brks; ++dir; continue; } // one inside the other
+        if (d <= 1e-12){
+            // same center or invalid
+            ++brks; ++dir; 
+            continue; 
+        }           
+        if (d > r1 + r2 + 1e-9){
+            // circles too far apart
+            ++brks; 
+            ++dir;
+            continue; 
+        }   
+        if (d < std::fabs(r1 - r2) - 1e-9){
+            // one inside the other
+            ++brks;
+            ++dir;
+            continue; 
+        } 
 
         // compute circle intersection (standard geometry)
         double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
         double h2 = r1*r1 - a*a;
-        if (h2 < 0) h2 = 0;
+        if(h2 < 0){
+            h2 = 0;
+        } 
         double h = std::sqrt(h2);
 
         // unit vector from this hound to the barker

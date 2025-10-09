@@ -21,19 +21,21 @@ void internalMap::updateMap(Percepts nVizData){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
-            
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
             //mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
             
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x-1-relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x+1+relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->" <<cAbsPos.y<<std::endl;
         }
-
+        
         return;
     }
 
@@ -45,10 +47,14 @@ void internalMap::updateMap(Percepts nVizData){
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->" <<cAbsPos.y<<std::endl;
+
         }
 
         for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.left[relDist][0]));
+            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
+
         }
 
         for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
@@ -271,12 +277,6 @@ bool internalMap::wasSeen(Vec2 analyzeThis){
 
 }
 
-
-void internalMap::updateHeading(char newD){
-    //if(heading=='f'){
-      //  heading = newD
-   // }
-}
 
 
 void internalMap::changeHeading(char in){
