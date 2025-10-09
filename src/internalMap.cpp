@@ -40,12 +40,8 @@ void internalMap::updateMap(Percepts nVizData){
 
     //rotated relative right
     //heading.x==1 and heading.y==0
-<<<<<<< HEAD
-    if(heading == 'r'){
-=======
 
     if(heading == 'R'){
->>>>>>> 0319fa21cafd65ef6a875584ef3b185564f30494
 
         for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
             fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
