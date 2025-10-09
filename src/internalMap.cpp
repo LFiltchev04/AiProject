@@ -12,106 +12,140 @@ cAbsPos = {0,0};
 
 void internalMap::updateMap(Percepts nVizData){
 
-    
-    //spin the percepts so they align with the internal absolute map
-    
-    //heading.x==0 and heading.y==1
+    // Helper lambda to get char safely
+    auto pick = [](const std::string &s)->char{
+        return s.empty() ? ' ' : s[0];
+    };
+
+    // heading == Forward (0, +1)
     if(heading == 'F'){
-        //aligns with internal map, dump as is into hash map
-
-        for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
-            //mainLogger.push({cAbsPos.x,cAbsPos.y+1+relDist},nVizData.forward[relDist]);
-            
+        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+            Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
+            char ch = pick(nVizData.forward[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+            Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
+            char ch = pick(nVizData.left[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist, cAbsPos.y), node(nVizData.left[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->" <<cAbsPos.y<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+            Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
+            char ch = pick(nVizData.right[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
-        
+
         return;
     }
 
-
-    //rotated relative right
-    //heading.x==1 and heading.y==0
-
+    // heading == Right (+1, 0)
     if(heading == 'R'){
-
-        for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->" <<cAbsPos.y<<std::endl;
-
+        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+            Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
+            char ch = pick(nVizData.forward[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.left[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
-
+        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+            Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
+            char ch = pick(nVizData.left[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+            Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
+            char ch = pick(nVizData.right[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         return;
     }
 
-    //rotated relative back
-    //heading.x==0 and heading.y==-1
+    // heading == Back (0, -1)
     if(heading == 'B'){
-        
-        for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y-1-relDist),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y-1-relDist<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+            Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
+            char ch = pick(nVizData.forward[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+            Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
+            char ch = pick(nVizData.left[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x+1+relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x+1+relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+            Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
+            char ch = pick(nVizData.right[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        
-        
         return;
     }
 
-    //rotated relative left
-    //
+    // heading == Left (-1, 0)
     if(heading == 'L'){
-        
-        for(int relDist = 0; relDist<nVizData.forward.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x-1-relDist,cAbsPos.y),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x-1-relDist << "<-x|y->"<<cAbsPos.y<<std::endl;
-        }
-        
-        for(int relDist = 0; relDist<nVizData.left.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.forward.size(); ++relDist){
+            Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
+            char ch = pick(nVizData.forward[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
-        for(int relDist = 0; relDist<nVizData.right.size(); relDist++){
-            fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y+1+relDist),node(nVizData.forward[relDist][0]));
-            std::cout<<"saw a:"<<nVizData.forward[relDist]<<" at: "<< cAbsPos.x << "<-x|y->"<<cAbsPos.y+1+relDist<<std::endl;
+        for(int relDist = 0; relDist < (int)nVizData.left.size(); ++relDist){
+            Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
+            char ch = pick(nVizData.left[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+        }
+
+        for(int relDist = 0; relDist < (int)nVizData.right.size(); ++relDist){
+            Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
+            char ch = pick(nVizData.right[relDist]);
+            size_t key = hashCords(pos.x, pos.y);
+            fastAccess[key] = node(ch);
+            checkChange(pos, ch);
+            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         return;
     }
-
 }
+
 
 Vec2 internalMap::trueDir(char direction){
 
@@ -377,4 +411,20 @@ void internalMap::changeCpos(Vec2 newPos){
 
 char internalMap::getHeading(){
     return heading;
+}
+
+
+void internalMap::checkChange(Vec2 pos, char type){
+    
+        auto hashmapIter = fastAccess.find(hashCords(pos.x,pos.y));
+        if(hashmapIter==fastAccess.end()){
+            return;
+        }
+
+        if(hashmapIter->second.type == type){
+            return;
+        }else{
+            consistent=false;
+        }
+    
 }

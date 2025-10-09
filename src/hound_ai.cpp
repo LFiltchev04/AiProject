@@ -219,7 +219,7 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={-5,3};
+    Vec2 resultOfTrack={-9,0};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 

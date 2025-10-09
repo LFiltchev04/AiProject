@@ -120,20 +120,30 @@ double inline angleBetween(Vec2 a, Vec2 b) {
 
 
 
-struct searchNode {
+struct searchNode{
         Vec2 nodePosition;
         Vec2 parrentCoords;
         int priority;
         int global;
-        //i need to call this instructor bedore anything else otherwise the origine node will stay broken, maybe as a part of some init method in the ai class I dont know. 
         searchNode(){
             nodePosition = {0,0};
             parrentCoords = {0,0};
             priority = INT_MAX;
             global = 0;
         }
+        //i need to call this instructor bedore anything else otherwise the origine node will stay broken, maybe as a part of some init method in the ai class I dont know. 
+        searchNode(std::vector<searchNode*>&instVec){
+            nodePosition = {0,0};
+            parrentCoords = {0,0};
+            priority = INT_MAX;
+            global = 0;
+            instVec.push_back(this);
+
+        }
         //this is supposed to iterate the whole thing, lets hope i was not retarded while writing it
-        searchNode(Vec2 pos, const searchNode &parrent,int comptedPriority){
+        searchNode(Vec2 pos, const searchNode &parrent,int comptedPriority,std::vector<searchNode*>&instVec){
+        
+            instVec.push_back(this);
             nodePosition = pos;
             parrentCoords.x = parrent.nodePosition.x;
             parrentCoords.y = parrent.nodePosition.y;
@@ -141,7 +151,9 @@ struct searchNode {
             global = parrent.global + 1;
             priority = comptedPriority;
         }
-        bool operator<(const searchNode &other) const { return priority > other.priority; }
+        bool operator<(const searchNode &other) const{ 
+            return priority > other.priority; 
+        }
 };
 
 

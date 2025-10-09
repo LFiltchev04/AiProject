@@ -16,6 +16,7 @@ class pathfinder {
     //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
     std::stack<Vec2> completePath;
+    std::vector<searchNode*> forCleanup;
 
     public:
     //should take a reference to the instantiated map, will be done later for convenience
@@ -32,10 +33,13 @@ class pathfinder {
     std::stack<Vec2>* getPath();
     Vec2 getNext();
     internalMap& getMap();
+    void dumpSearch();
     void recomputeFrom();
+
     char pathTranslator();
     bool pathInvalid();
     void updateMap(Percepts p);
+    
 
 };
 

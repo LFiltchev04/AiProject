@@ -88,13 +88,17 @@ int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
 void pathfinder::LPApathfind(){
 
     // clear data
-    while(!bestGuess.empty()) bestGuess.pop();
-    while(!completePath.empty()) completePath.pop();
+    while(!bestGuess.empty()){
+        bestGuess.pop();
+    } 
+    while(!completePath.empty()){
+        completePath.pop();
+    } 
 
     startCoord = mapInstance.currentPos();
 
     // seed start node
-    searchNode startNode;
+    searchNode startNode(forCleanup);
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
     startNode.global = 0;
@@ -111,7 +115,9 @@ void pathfinder::LPApathfind(){
         bestGuess.pop();
 
         size_t pKey = hashCords(parrent.nodePosition.x, parrent.nodePosition.y);
-        if(closed.count(pKey)) continue;
+        if(closed.count(pKey)){
+            continue;
+        } 
         closed.insert(pKey);
 
         // goal test
@@ -141,7 +147,7 @@ void pathfinder::LPApathfind(){
             bestG[nbKey] = tentativeG;
             int f = tentativeG + h(nb);
 
-            searchNode neighbour(nb, parrent, f);
+            searchNode neighbour(nb, parrent, f,forCleanup);
             // ensure neighbour.global is correct (constructor sets parrent.global+1)
             neighbour.global = tentativeG;
             neighbour.priority = f;
@@ -293,5 +299,17 @@ void pathfinder::recomputeFrom(){
 }
 
 bool pathfinder::pathInvalid(){
-    return false;
+    return mapInstance.consistent;
+}
+
+void pathfinder::dumpSearch(){
+    for(searchNode* iter:forCleanup){
+        std::cout<<"searched Nodes:"<<iter->nodePosition.x<<"<-x|y->"<<iter->nodePosition.y<<std::endl;
+        searchNode defaultNode;
+        *iter = defaultNode;
+    }
+
+    while(!completePath.empty()){
+        completePath.pop();
+    }
 }

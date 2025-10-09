@@ -47,8 +47,11 @@ class internalMap{
     std::unordered_map<int,std::vector<emptySeenNodes>> xOnlyAccess;
 
 
+
     bool wasSeen(Vec2);
+
     public:
+    bool consistent = true;
     Vec2 trueDir(char direction);
 
         std::unordered_map<size_t, node> fastAccess;
@@ -58,19 +61,38 @@ class internalMap{
     internalMap();
     virtual void parseCmds(std::vector<std::string>&);
     
-    //used to update the map
+    //used to update the map every turn
     void updateMap(Percepts);
+
+    //returns the relative direction the AI is pointed towards
     Vec2 getHeadingVector();
+    
+    //mostly for internal use
     char getHeading();
+    
+    //determines whether a certain node is traversible
     bool isWall(Vec2 checkPos);
+    
+    //returns the current position in internal-space
     Vec2 currentPos();
+    
+    //determines if the node has been seen or visited
     bool priorVisit(Vec2);
+    
+    //returns a ndoe object if the coordinated have been seen or visited
     node getPrior(Vec2);
+    
+    //mostly for internal use, has to be called every time an instruction is passed
     void updateHeading(char);
+    
+    //changes the internal maps tracker of the AIs location, for use with instructions
     void iterateCpos(Vec2);
+    
+    //changes the internal maps tracker of the AIs location
     void changeCpos(Vec2);
 
-
+    //used to determine if a planned path is no longer optimal/possible, checks if a node is inconsistent with a prior observation/plan path
+    void checkChange(Vec2 pos, char seenType);
 
 };
 
