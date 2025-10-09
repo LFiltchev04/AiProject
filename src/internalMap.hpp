@@ -52,14 +52,17 @@ class internalMap{
 
     public:
     bool consistent;
+    //turns a relative space character into absolute space vector
     Vec2 trueDir(char direction);
 
         std::unordered_map<size_t, node> fastAccess;
 
+        //called for every command to maintain heading
     void changeHeading(char);
 
     internalMap();
-    virtual void parseCmds(std::vector<std::string>&);
+
+    void iterateState(std::string);
     
     //used to update the map every turn
     void updateMap(Percepts);
@@ -82,8 +85,6 @@ class internalMap{
     //returns a ndoe object if the coordinated have been seen or visited
     node getPrior(Vec2);
     
-    //mostly for internal use, has to be called every time an instruction is passed
-    void updateHeading(char);
     
     //changes the internal maps tracker of the AIs location, for use with instructions
     void iterateCpos(Vec2);
@@ -94,6 +95,7 @@ class internalMap{
     //used to determine if a planned path is no longer optimal/possible, checks if a node is inconsistent with a prior observation/plan path
     void checkChange(Vec2 pos, char seenType);
 
+    Vec2 relativeHead(char);
     ~internalMap();
 };
 

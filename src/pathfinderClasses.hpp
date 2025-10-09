@@ -13,6 +13,9 @@ class pathfinder {
     internalMap mapInstance;
     searchNode cNode;
 
+    int turn = 0;
+
+
     //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
     std::stack<Vec2> completePath;

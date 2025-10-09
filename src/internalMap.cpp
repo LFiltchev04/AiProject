@@ -243,26 +243,16 @@ Vec2 internalMap::trueDir(char direction){
 }
 
 
-
-void internalMap::parseCmds(std::vector<std::string> &commandList){
-
-    //feeds the internal map with orientation corrected data, if bad data gets here everything downstream breaks
-    for(std::string cmd : commandList){
-        cAbsPos + trueDir(cmd.at(0));
-        if(cmd.empty()) continue;
-        char ch = cmd.at(0);
-        // turns change heading, forward moves along current forward vector
-        if(ch == 'F'){
-            iterateCpos(trueDir('F'));
-        } else if(ch == 'R' || ch == 'L' || ch == 'B'){
-            changeHeading(ch);
+void internalMap::iterateState(std::string cmdIn){
+    if(!isWall(trueDir(cmdIn[0]))){
+        
+        if(cmdIn=="F"){
+            iterateCpos(trueDir(cmdIn[0]));
         }
+        
+        changeHeading(cmdIn[0]);
+        
     }
-
-    //so there is a node to pathfind trough
-    fastAccess.emplace(hashCords(cAbsPos.x,cAbsPos.y),node('O'));
-
-
 }
 
 Vec2 internalMap::getHeadingVector(){
@@ -447,6 +437,73 @@ void internalMap::checkChange(Vec2 pos, char type){
         }
     
 }
+
+
+Vec2 internalMap::relativeHead(char in){
+    if(heading == 'F'){
+        if(in=='F'){
+            return {0,1};
+        }
+        if(in=='R'){
+            return {1,0};
+        }
+        if(in=='B'){
+            return {0,-1};
+        }
+        if(in=='L'){
+            return {-1,0};
+        }
+    }
+
+    if(heading == 'R'){
+        if(in=='F'){
+            return {1,0};
+        }
+        if(in=='R'){
+            return {0,-1};
+        }
+        if(in=='B'){
+            return {-1,0};
+        }
+        if(in=='L'){
+            return {0,1};
+        }
+    }
+
+    if(heading == 'B'){
+        if(in=='F'){
+            return {0,-1};
+        }
+        if(in=='R'){
+            return {-1,0};
+        }
+        if(in=='B'){
+            return {0,1};
+        }
+        if(in=='L'){
+            return {1,0};
+        }
+    }
+
+    if(heading == 'L'){
+        if(in=='F'){
+            return {-1,0};
+        }
+        if(in=='R'){
+            return {0,1};
+        }
+        if(in=='B'){
+            return {1,0};
+        }
+        if(in=='L'){
+            return {0,-1};
+        }
+    }
+
+    return {0,0};
+}
+
+
 
 
 internalMap::~internalMap(){

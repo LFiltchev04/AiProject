@@ -1,4 +1,5 @@
 #include "pathfinderClasses.hpp"
+#include "utils.hpp"
 #include <unordered_set>
 //this is for a hound, fox will need some minor changes
 char pathfinder::greedyPathfind(){
@@ -207,87 +208,59 @@ Vec2 pathfinder::getNext(){
 }
 
     char pathfinder::pathTranslator(){
-        if(completePath.top()==mapInstance.currentPos()){
-            completePath.pop();
-        }
         
-        // defensive guards
+        
         if(completePath.empty()) return ' ';
 
-        // use the real mapInstance (not a copy) and real heading
         Vec2 cPos = mapInstance.currentPos();
-        Vec2 heading = mapInstance.getHeadingVector();
-
-        // drop any already-reached tiles
-        while(!completePath.empty() && completePath.top().x == cPos.x && completePath.top().y == cPos.y){
-            completePath.pop();
-        }
-        if(completePath.empty()) return ' ';
-
         Vec2 nextTile = completePath.top();
 
+        if(nextTile==cPos){
+            completePath.pop();
+            nextTile = completePath.top();
+        }
+
+
+        ////////////////////////////
+
+
+        std::cout<<std::endl;
+
+        std::cout<<"F "<<mapInstance.relativeHead('F').x<<" tst "<<mapInstance.relativeHead('F').y<<std::endl;
+        std::cout<<"R "<<mapInstance.relativeHead('R').x<<" tst "<<mapInstance.relativeHead('R').y<<std::endl;
+        std::cout<<"B "<<mapInstance.relativeHead('B').x<<" tst "<<mapInstance.relativeHead('B').y<<std::endl;
+        std::cout<<"L "<<mapInstance.relativeHead('L').x<<" tst "<<mapInstance.relativeHead('L').y<<std::endl;
 
         
-        // forward
-        if(cPos + heading == nextTile){
-            mapInstance.iterateCpos(heading);
-            completePath.pop();
+        std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN:"<<turn<<std::endl;
+        std::cout<<(mapInstance.relativeHead('F')+cPos).x<<" f-ward "<<(mapInstance.relativeHead('F')+cPos).y<<" THE DIR"<<std::endl;
+        std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
+        turn++;
+
+
+        if(mapInstance.relativeHead('F')+cPos==nextTile){
             return 'F';
         }
 
-        // right
-        Vec2 right = heading;
-        ninetyClockwise(right);
-        if(cPos + right == nextTile){
-        
-        
-            if(mapInstance.trueDir('F')+cPos==nextTile){
-                //mapInstance.iterateCpos(right);
-                return 'F';
-            }
-
-        
-            //mapInstance.iterateCpos(cPos+right);
+        if(mapInstance.relativeHead('R')+cPos==nextTile){
             return 'R';
         }
 
-        // left (counter-clockwise = three clockwise)
-        Vec2 left = heading;
-        ninetyClockwise(left); ninetyClockwise(left); ninetyClockwise(left);
-        if(cPos + left == nextTile){
-
-            if(mapInstance.trueDir('F')+cPos==nextTile){
-                //mapInstance.iterateCpos(left);
-                return 'F';
-            }
-
-
-            //mapInstance.iterateCpos(cPos+left);
+        if(mapInstance.relativeHead('L')+cPos==nextTile){
             return 'L';
         }
 
-        // back
-        Vec2 back = heading;
-        ninetyClockwise(back); ninetyClockwise(back);
-        if(cPos + back == nextTile){
+        if(mapInstance.relativeHead('B')+cPos==nextTile){
 
+            return 'L';
 
-            if(mapInstance.trueDir('F')+cPos==nextTile){
-                //mapInstance.iterateCpos(back);
-                return 'F';
-            }
-
-
-            // return single turn; next call will produce the second turn / movement
-            //mapInstance.iterateCpos(cPos+back);
-            return 'R';
+            
         }
 
-        // fallback
+        std::cout<<"THE INTERRPRETER DEFAULTED"<<std::endl;
         return ' ';
-
-
-        }
+    
+    }
 
 
 void pathfinder::recomputeFrom(){

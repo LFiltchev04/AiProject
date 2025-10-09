@@ -6,7 +6,6 @@
 
 class HoundAI : public AI {
 private:
-internalMap mapInstace;
 pathfinder pFind;
 public:
     HoundAI(

@@ -220,7 +220,7 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={-7,-2};
+    Vec2 resultOfTrack={-4,-2};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
@@ -233,19 +233,21 @@ std::vector<std::string> HoundAI::Run(
 
 
         if(pFind.getPath()->empty()){
-            if(pFind.pathInvalid()){
-                pFind.recomputeFrom();
-            }else{
-                pFind.LPApathfind();
-            }
+            std::cout<<"INITIAL PFIND";
+            pFind.LPApathfind();
+
         }
 
-    std::stack<Vec2> tst = *pFind.getPath();
-    std::cout<<"projected path:"<<std::endl;
-    while(!tst.empty()){
-        std::cout<<tst.top().x<<":"<<tst.top().y<<std::endl;
-        tst.pop();
-    }
+        if(pFind.pathInvalid()){
+            pFind.recomputeFrom();
+        }
+
+    //std::stack<Vec2> tst = *pFind.getPath();
+    //std::cout<<"projected path:"<<std::endl;
+    //while(!tst.empty()){
+    //    std::cout<<tst.top().x<<":"<<tst.top().y<<std::endl;
+    //    tst.pop();
+    //}
 
     //if(pFind.getMap().isWall(pFind.followingCoord())){
     //    std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
@@ -270,16 +272,22 @@ std::vector<std::string> HoundAI::Run(
    //std::cout<<pFind.getMap().trueDir('F').x<<" | "<<pFind.getMap().trueDir('F').y<<std::endl;
 
     //return cmds;
+
     char nextStep = pFind.pathTranslator(); 
+    std::cout<<"        ISSUED COMMAND: "<< nextStep<<std::endl;
     if(nextStep != ' '){
         nxt += nextStep;
+        
+        pFind.getMap().iterateState(nxt);
         cmds.push_back(nxt);
-        // apply the issued command(s) to the internal map so position/heading are updated
-        pFind.getMap().parseCmds(cmds);
-        std::cout<<"heading now (forward vector x):"<<pFind.getMap().trueDir('F').x<<std::endl;
+        
+
+
+        std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
     }
     
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
+    
     return cmds;
 
 
