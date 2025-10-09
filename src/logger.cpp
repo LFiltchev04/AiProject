@@ -109,7 +109,7 @@ logObj lgr::buildLogObj(std::string saw, Vec2 pos){
 
     //i am not so sure about that one to be honest
     if(saw == "e"){
-        type == exit;
+        type == ext;
     }
 
     //this too? 

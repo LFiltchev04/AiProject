@@ -1,6 +1,9 @@
-#include "greedyPathfind.hpp"
+//#include "greedyPathfind.hpp"
 
 //this is for a hound, fox will need some minor changes
+
+
+/*
 char pathfinder::heuristic(){
 
     double cDist = linDist(mapInstance->currentPos(),targetCoord);
@@ -38,3 +41,4 @@ char pathfinder::heuristic(){
 }
 
 
+*/

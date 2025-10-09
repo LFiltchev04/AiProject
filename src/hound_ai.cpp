@@ -1,5 +1,9 @@
 #include "hound_ai.hpp"
 #include "utils.hpp"
+#include <cmath>
+#include "utils.hpp"
+#include <iostream>
+#include <string>
 
 
 /***************************************************************
@@ -20,28 +24,60 @@ HoundAI::HoundAI(
 //the absolute position has to be passed from the map class, the rotations are handled there 
 Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
 
+    if (commData == nullptr) return cAbsPos;
+
     auto brks = commData->bark.begin();     
     auto dir = commData->direction.begin();
 
-    //i am assuming that they will always be of equal length and that the two things align, so rel location vector 9 is the same as the distance vector
-    while(brks != commData->bark.end() and dir != commData->direction.end()){
+    // iterate over reported bark distances and reporter positions
+    while(brks != commData->bark.end() && dir != commData->direction.end()){
 
-        //as of right now the unsigned does not embed anything besides the distance.
+        Vec2 bPos = *dir;                 // reporter absolute position
+        double r1 = scent;                // radius from this hound (scent)
+        double r2 = static_cast<double>(*brks); // radius from the barker
 
-        double distBarker = linDist(cAbsPos,*dir);
-        
-        //(a + b > c) && (a + c > b) && (b + c > a)
+        // distance between the two circle centers
+        double d = linDist(cAbsPos, bPos);
 
+        // skip degenerate / impossible cases
+        if (d <= 1e-12) { ++brks; ++dir; continue; }           // same center or invalid
+        if (d > r1 + r2 + 1e-9) { ++brks; ++dir; continue; }   // circles too far apart
+        if (d < std::fabs(r1 - r2) - 1e-9) { ++brks; ++dir; continue; } // one inside the other
 
+        // compute circle intersection (standard geometry)
+        double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
+        double h2 = r1*r1 - a*a;
+        if (h2 < 0) h2 = 0;
+        double h = std::sqrt(h2);
 
-        
-        
+        // unit vector from this hound to the barker
+        double ux = (bPos.x - cAbsPos.x) / d;
+        double uy = (bPos.y - cAbsPos.y) / d;
 
-        brks++;
-        dir++;
+        // point P2 which is the point along the line between centers at distance a from this hound
+        Vec2 P2;
+        P2.x = cAbsPos.x + ux * a;
+        P2.y = cAbsPos.y + uy * a;
 
+        // perpendicular offset to get the two intersection points
+        Vec2 off;
+        off.x = -uy * h;
+        off.y =  ux * h;
+
+        Vec2 inter1, inter2;
+        inter1.x = P2.x + off.x;
+        inter1.y = P2.y + off.y;
+        inter2.x = P2.x - off.x;
+        inter2.y = P2.y - off.y;
+
+        // choose one intersection to return — pick the one closer to the barker reporter
+        double d1 = linDist(inter1, bPos);
+        double d2 = linDist(inter2, bPos);
+        return (std::fabs(d1 - r2) < std::fabs(d2 - r2)) ? inter1 : inter2;
     }
 
+    // no valid intersection found, return current position as fallback
+    return cAbsPos;
 }
 
 
@@ -158,26 +194,76 @@ std::vector<std::string> HoundAI::Run(
         comms->bark[0] = 9;
     }
 
-    std::vector<std::string> cmds;
+    std::vector<std::string> cmds={};
 
-    std::vector<std::string> arr = { "F", "L", "R" };
+    std::vector<std::string> arr = {};
 
-    for (unsigned i = 0; i < agent_speed; i++) {
-        std::shuffle(arr.begin(), arr.end(), *rng);
-        cmds.push_back(arr[0]);
+    pFind.updateMap(percepts);
+
+   
+    
+    Vec2 resultOfTrack={-5,3};
+    //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
+    pFind.newTarget(resultOfTrack);
+
+
+            std::cout<<pFind.getMap().currentPos().x << " <x|y> " << pFind.getMap().currentPos().y<<std::endl;
+
+    if(pFind.getMap().currentPos()==resultOfTrack){
+        return cmds;
     }
 
 
+        if(pFind.getPath()->empty()){
+            if(pFind.pathInvalid()){
+                pFind.recomputeFrom();
+            }else{
+                pFind.LPApathfind();
+            }
+            
+        }
 
 
+
+    //std::cout<<pFind.getMap().getHeading()<<std::endl;
+
+    //pFind.getMap().changeHeading('R');
+
+    //std::cout<<pFind.getMap().getHeading()<<std::endl;
+
+
+    //return cmds;
+
+    
+    std::string nxt="";
+   // while(!pFind.getPath()->empty()){
+     //   std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
+       // pFind.getPath()->pop();
+   // }
+
+
+   //std::cout<<pFind.getMap().trueDir('F').x<<" | "<<pFind.getMap().trueDir('F').y<<std::endl;
+
+    //return cmds;
+    char nextStep = pFind.pathTranslator(); 
+    pFind.getMap().changeHeading(nextStep);
+    std::cout<<"heading:"<<pFind.getMap().trueDir(nextStep).x<<std::endl; 
+    pFind.getPath();
+    if(nextStep != ' '){
+        nxt += nextStep;
+        std::cout<< pFind.getMap().currentPos().x <<" "<<pFind.getMap().currentPos().y<<std::endl;
+        std::cout<< nextStep <<std::endl;
+    }
     
 
 
 
+    cmds.push_back(nxt);
+    
 
-
-
-
+    // cmds is the vector<string> you're returning
+    // update the planner's map (same instance) with the issued commands:
+    //pFind.getMap().parseCmds(cmds);
     return cmds;
 }
 

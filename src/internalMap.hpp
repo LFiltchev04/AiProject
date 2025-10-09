@@ -14,6 +14,15 @@ struct node{
     char type;
     int visits;
     searchNode pathfindComponent;
+    node(char tpe){
+        type = tpe;
+        visits = 1;
+    }
+    node(){
+        type = 'Z';
+        visits = 1;
+        
+    }
 };
 
 //used to make fast lookups of visited/unvisited possible, needs to be given THE ENTIRE X/Y component, if a visibility boundary 20 ahead is at position (10,10) the oneZero should be 30
@@ -37,36 +46,32 @@ class internalMap{
     //i need to change the percept interpretation logic to ensure it works properly however
     std::unordered_map<int,std::vector<emptySeenNodes>> xOnlyAccess;
 
-    std::unordered_map<size_t, node> fastAccess;
 
-    Vec2 trueDir(char direction);
     bool wasSeen(Vec2);
     public:
-    internalMap(Percepts);
-    virtual void parseCmds(std::vector<std::string>&) = 0;
+    Vec2 trueDir(char direction);
+
+        std::unordered_map<size_t, node> fastAccess;
+
+    void changeHeading(char);
+
+    internalMap();
+    virtual void parseCmds(std::vector<std::string>&);
     
     //used to update the map
     void updateMap(Percepts);
     Vec2 getHeadingVector();
+    char getHeading();
     bool isWall(Vec2 checkPos);
     Vec2 currentPos();
     bool priorVisit(Vec2);
     node getPrior(Vec2);
+    void updateHeading(char);
+    void iterateCpos(Vec2);
+    void changeCpos(Vec2);
 
 
 
-};
-
-
-class foxMap : private internalMap{
-    public:
-    foxMap(Percepts p): internalMap(p){};
-
-    //called when a fox it uses a teleporter 
-    void wipeMap();
-
-    virtual void parseCmds(std::vector<std::string>);
-     
 };
 
 
