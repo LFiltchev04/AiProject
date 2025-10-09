@@ -220,9 +220,11 @@ std::vector<std::string> HoundAI::Run(
 
    
     
-    Vec2 resultOfTrack={-4,-2};
-    //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
+    Vec2 resultOfTrack={-9,1};
+    //resultOfTrack = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
+
+    std::cout<< resultOfTrack.x<<" "<<resultOfTrack.y<<" fox track "<<id<<std::endl;
 
 
             std::cout<<"cPos: "<<pFind.getMap().currentPos().x << " <x|y> " << pFind.getMap().currentPos().y<<std::endl;
@@ -233,7 +235,7 @@ std::vector<std::string> HoundAI::Run(
 
 
         if(pFind.getPath()->empty()){
-            std::cout<<"INITIAL PFIND";
+            //std::cout<<"INITIAL PFIND";
             pFind.LPApathfind();
 
         }
@@ -242,17 +244,17 @@ std::vector<std::string> HoundAI::Run(
             pFind.recomputeFrom();
         }
 
-    //std::stack<Vec2> tst = *pFind.getPath();
+    std::stack<Vec2> tst = *pFind.getPath();
     //std::cout<<"projected path:"<<std::endl;
     //while(!tst.empty()){
     //    std::cout<<tst.top().x<<":"<<tst.top().y<<std::endl;
     //    tst.pop();
     //}
 
-    //if(pFind.getMap().isWall(pFind.followingCoord())){
-    //    std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
-    //    pFind.recomputeFrom();
-    //}
+    if(pFind.getMap().isWall(pFind.followingCoord())){
+        //std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
+        pFind.recomputeFrom();
+    }
 
 
     //std::cout<<pFind.getMap().getHeading()<<std::endl;
@@ -273,8 +275,9 @@ std::vector<std::string> HoundAI::Run(
 
     //return cmds;
 
-    char nextStep = pFind.pathTranslator(); 
-    std::cout<<"        ISSUED COMMAND: "<< nextStep<<std::endl;
+    //for(int x = 0; x<3;x++){
+        char nextStep = pFind.pathTranslator(); 
+    //std::cout<<"        ISSUED COMMAND: "<< nextStep<<std::endl;
     if(nextStep != ' '){
         nxt += nextStep;
         
@@ -283,7 +286,9 @@ std::vector<std::string> HoundAI::Run(
         
 
 
-        std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
+        //std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
+    //}
+    
     }
     
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;

@@ -208,59 +208,57 @@ Vec2 pathfinder::getNext(){
 }
 
     char pathfinder::pathTranslator(){
-        
-        
-        if(completePath.empty()) return ' ';
+    if(completePath.empty()) return ' ';
 
-        Vec2 cPos = mapInstance.currentPos();
-        Vec2 nextTile = completePath.top();
+    Vec2 cPos = mapInstance.currentPos();
 
-        if(nextTile==cPos){
-            completePath.pop();
-            nextTile = completePath.top();
-        }
-
-
-        ////////////////////////////
-
-
-        std::cout<<std::endl;
-
-        std::cout<<"F "<<mapInstance.relativeHead('F').x<<" tst "<<mapInstance.relativeHead('F').y<<std::endl;
-        std::cout<<"R "<<mapInstance.relativeHead('R').x<<" tst "<<mapInstance.relativeHead('R').y<<std::endl;
-        std::cout<<"B "<<mapInstance.relativeHead('B').x<<" tst "<<mapInstance.relativeHead('B').y<<std::endl;
-        std::cout<<"L "<<mapInstance.relativeHead('L').x<<" tst "<<mapInstance.relativeHead('L').y<<std::endl;
-
-        
-        std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN:"<<turn<<std::endl;
-        std::cout<<(mapInstance.relativeHead('F')+cPos).x<<" f-ward "<<(mapInstance.relativeHead('F')+cPos).y<<" THE DIR"<<std::endl;
-        std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
-        turn++;
-
-
-        if(mapInstance.relativeHead('F')+cPos==nextTile){
-            return 'F';
-        }
-
-        if(mapInstance.relativeHead('R')+cPos==nextTile){
-            return 'R';
-        }
-
-        if(mapInstance.relativeHead('L')+cPos==nextTile){
-            return 'L';
-        }
-
-        if(mapInstance.relativeHead('B')+cPos==nextTile){
-
-            return 'L';
-
-            
-        }
-
-        std::cout<<"THE INTERRPRETER DEFAULTED"<<std::endl;
-        return ' ';
-    
+    // drop any path nodes equal to current position (safe-check empty after popping)
+    while(!completePath.empty() && completePath.top() == cPos){
+        completePath.pop();
     }
+    if(completePath.empty()) return ' ';
+
+    Vec2 nextTile = completePath.top();
+
+    // convenience: compute absolute positions of the four relative moves
+    Vec2 fpos = mapInstance.relativeHead('F') + cPos;
+    Vec2 rpos = mapInstance.relativeHead('R') + cPos;
+    Vec2 lpos = mapInstance.relativeHead('L') + cPos;
+    Vec2 bpos = mapInstance.relativeHead('B') + cPos;
+
+    std::cout<<std::endl;
+    std::cout<<"F "<<fpos.x<<" tst "<<fpos.y<<std::endl;
+    std::cout<<"R "<<rpos.x<<" tst "<<rpos.y<<std::endl;
+    std::cout<<"B "<<bpos.x<<" tst "<<bpos.y<<std::endl;
+    std::cout<<"L "<<lpos.x<<" tst "<<lpos.y<<std::endl;
+
+    std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN:"<<turn<<std::endl;
+    std::cout<<fpos.x<<" f-ward "<<fpos.y<<" THE DIR"<<std::endl;
+    std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
+    turn++;
+
+    // Direct adjacency checks -> return the single-step command required.
+    if(fpos == nextTile){
+        std::cout<<"triggered fpos"<<mapInstance.getHeading()<<std::endl;
+        return 'F';
+    }
+    if(rpos == nextTile){
+        std::cout<<"triggered rpos: "<<mapInstance.getHeading()<<std::endl;
+        return 'R';
+    }
+    if(lpos == nextTile){
+        std::cout<<"triggered lpos"<<mapInstance.getHeading()<<std::endl;
+        return 'L';
+    }
+    if(bpos == nextTile){
+        std::cout<<"triggered bpos"<<mapInstance.getHeading()<<std::endl;
+        return 'B';
+    }
+
+    std::cout<<"THE INTERPRETER DEFAULTED (stale or non-adjacent node)"<<std::endl;
+    // conservative: return ' ' so caller can trigger recompute / fallback behavior
+    return ' ';
+}
 
 
 void pathfinder::recomputeFrom(){
