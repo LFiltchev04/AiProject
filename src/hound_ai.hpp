@@ -1,13 +1,13 @@
 #pragma once
 
 #include"ai.hpp"
-//#include "internalMap.hpp"
-//#include "pathfinderClasses.hpp"
+#include "internalMap.hpp"
+#include "pathfinderClasses.hpp"
 
 class HoundAI : public AI {
 private:
-//internalMap mapInstace;
-//pathfinder pFind;
+internalMap mapInstace;
+pathfinder pFind;
 public:
     HoundAI(
         unsigned id,

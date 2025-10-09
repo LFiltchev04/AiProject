@@ -215,17 +215,17 @@ std::vector<std::string> HoundAI::Run(
 
     std::vector<std::string> arr = {};
 
-    /*
+    
     pFind.updateMap(percepts);
 
    
     
-    Vec2 resultOfTrack={-8,0};
+    Vec2 resultOfTrack={-7,-2};
     //resultOfTrack = trackFox(comms,mapInstace.currentPos(),percepts.scent);
     pFind.newTarget(resultOfTrack);
 
 
-            std::cout<<pFind.getMap().currentPos().x << " <x|y> " << pFind.getMap().currentPos().y<<std::endl;
+            std::cout<<"cPos: "<<pFind.getMap().currentPos().x << " <x|y> " << pFind.getMap().currentPos().y<<std::endl;
 
     if(pFind.getMap().currentPos()==resultOfTrack){
         return cmds;
@@ -238,9 +238,19 @@ std::vector<std::string> HoundAI::Run(
             }else{
                 pFind.LPApathfind();
             }
-            
         }
 
+    std::stack<Vec2> tst = *pFind.getPath();
+    std::cout<<"projected path:"<<std::endl;
+    while(!tst.empty()){
+        std::cout<<tst.top().x<<":"<<tst.top().y<<std::endl;
+        tst.pop();
+    }
+
+    //if(pFind.getMap().isWall(pFind.followingCoord())){
+    //    std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
+    //    pFind.recomputeFrom();
+    //}
 
 
     //std::cout<<pFind.getMap().getHeading()<<std::endl;
@@ -254,37 +264,22 @@ std::vector<std::string> HoundAI::Run(
 
     
     std::string nxt="";
-   // while(!pFind.getPath()->empty()){
-     //   std::cout<<pFind.getPath()->top().x<<" "<<pFind.getPath()->top().y<<std::endl;
-       // pFind.getPath()->pop();
-   // }
+   
 
 
    //std::cout<<pFind.getMap().trueDir('F').x<<" | "<<pFind.getMap().trueDir('F').y<<std::endl;
 
     //return cmds;
     char nextStep = pFind.pathTranslator(); 
-    pFind.getMap().changeHeading(nextStep);
-    std::cout<<"heading:"<<pFind.getMap().trueDir(nextStep).x<<std::endl; 
-    pFind.getPath();
     if(nextStep != ' '){
         nxt += nextStep;
-        std::cout<< pFind.getMap().currentPos().x <<" "<<pFind.getMap().currentPos().y<<std::endl;
-        std::cout<< nextStep <<std::endl;
+        cmds.push_back(nxt);
+        // apply the issued command(s) to the internal map so position/heading are updated
+        pFind.getMap().parseCmds(cmds);
+        std::cout<<"heading now (forward vector x):"<<pFind.getMap().trueDir('F').x<<std::endl;
     }
     
-
-
-
-    cmds.push_back(nxt);
-    
-
-    // cmds is the vector<string> you're returning
-    // update the planner's map (same instance) with the issued commands:
-
-
-    //pFind.getMap().parseCmds(cmds);
-*/
+    std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
     return cmds;
 
 

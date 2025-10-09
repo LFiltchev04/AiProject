@@ -7,7 +7,7 @@ internalMap::internalMap(){
 
 heading = 'F';
 cAbsPos = {0,0};
-   
+consistent = true;
 }
 
 void internalMap::updateMap(Percepts nVizData){
@@ -16,6 +16,13 @@ void internalMap::updateMap(Percepts nVizData){
     auto pick = [](const std::string &s)->char{
         return s.empty() ? ' ' : s[0];
     };
+
+
+    for(int x = 0; x<nVizData.current.size();x++){
+        fastAccess[hashCords(cAbsPos.x,cAbsPos.y)]=node(nVizData.current[x][0]);
+        checkChange({cAbsPos.x,cAbsPos.y},nVizData.current[x][0]);
+    }
+
 
     // heading == Forward (0, +1)
     if(heading == 'F'){
@@ -149,7 +156,10 @@ void internalMap::updateMap(Percepts nVizData){
 
 Vec2 internalMap::trueDir(char direction){
 
-    
+    if(direction==' '){
+        //return {0,0};
+    }
+
     if(heading == 'F'){
         
         if(direction == 'F'){
@@ -229,7 +239,7 @@ Vec2 internalMap::trueDir(char direction){
         }
     }
 
-
+    //return {0,0};
 }
 
 
@@ -239,6 +249,14 @@ void internalMap::parseCmds(std::vector<std::string> &commandList){
     //feeds the internal map with orientation corrected data, if bad data gets here everything downstream breaks
     for(std::string cmd : commandList){
         cAbsPos + trueDir(cmd.at(0));
+        if(cmd.empty()) continue;
+        char ch = cmd.at(0);
+        // turns change heading, forward moves along current forward vector
+        if(ch == 'F'){
+            iterateCpos(trueDir('F'));
+        } else if(ch == 'R' || ch == 'L' || ch == 'B'){
+            changeHeading(ch);
+        }
     }
 
     //so there is a node to pathfind trough
@@ -260,7 +278,7 @@ bool internalMap::isWall(Vec2 checkPos){
 
     auto it = fastAccess.find(key);
     if (it == fastAccess.end()) return false;        // not present
-    return it->second.type == 'W';
+    return it->second.type == 'w';
 };
 
 bool internalMap::priorVisit(Vec2 checkThis){
@@ -315,7 +333,7 @@ bool internalMap::wasSeen(Vec2 analyzeThis){
         }
     }
 
-
+    return false;
 }
 
 
@@ -424,6 +442,7 @@ void internalMap::checkChange(Vec2 pos, char type){
         if(hashmapIter->second.type == type){
             return;
         }else{
+            std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT"<<std::endl<<std::endl<<std::endl;
             consistent=false;
         }
     

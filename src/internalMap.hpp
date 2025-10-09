@@ -19,7 +19,7 @@ struct node{
         visits = 1;
     }
     node(){
-        type = 'Z';
+        type = 'o';
         visits = 1;
         
     }
@@ -51,7 +51,7 @@ class internalMap{
     bool wasSeen(Vec2);
 
     public:
-    bool consistent = true;
+    bool consistent;
     Vec2 trueDir(char direction);
 
         std::unordered_map<size_t, node> fastAccess;

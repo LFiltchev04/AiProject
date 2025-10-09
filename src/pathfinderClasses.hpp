@@ -43,6 +43,8 @@ class pathfinder {
     bool pathInvalid();
     void updateMap(Percepts p);
     void recordNode(Vec2);
+
+    Vec2 followingCoord();
     
     ~pathfinder(){};
 };

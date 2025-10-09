@@ -86,7 +86,7 @@ int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
 
 // Replace LPApathfind with a correct A*/LPA-style expansion
 void pathfinder::LPApathfind(){
-
+    std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
     // clear data
     while(!bestGuess.empty()){
         bestGuess.pop();
@@ -99,7 +99,7 @@ void pathfinder::LPApathfind(){
 
     // seed start node
     searchNode startNode;
-    //recordNode(startNode.nodePosition);
+    recordNode(startNode.nodePosition);
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
     startNode.global = 0;
@@ -153,7 +153,7 @@ void pathfinder::LPApathfind(){
             // ensure neighbour.global is correct (constructor sets parrent.global+1)
             neighbour.global = tentativeG;
             neighbour.priority = f;
-            //recordNode(neighbour.nodePosition);
+            recordNode(neighbour.nodePosition);
             bestGuess.push(neighbour);
 
             // write into the real map entry (getPrior returns by value — use fastAccess directly)
@@ -170,6 +170,7 @@ void pathfinder::LPApathfind(){
 }
 
 void pathfinder::constrctPath(Vec2 goalNode){
+
     while(!completePath.empty()) completePath.pop();
 
     Vec2 cur = goalNode;
@@ -206,7 +207,9 @@ Vec2 pathfinder::getNext(){
 }
 
     char pathfinder::pathTranslator(){
-        
+        if(completePath.top()==mapInstance.currentPos()){
+            completePath.pop();
+        }
         
         // defensive guards
         if(completePath.empty()) return ' ';
@@ -239,7 +242,7 @@ Vec2 pathfinder::getNext(){
         
         
             if(mapInstance.trueDir('F')+cPos==nextTile){
-                mapInstance.iterateCpos(right);
+                //mapInstance.iterateCpos(right);
                 return 'F';
             }
 
@@ -254,7 +257,7 @@ Vec2 pathfinder::getNext(){
         if(cPos + left == nextTile){
 
             if(mapInstance.trueDir('F')+cPos==nextTile){
-                mapInstance.iterateCpos(left);
+                //mapInstance.iterateCpos(left);
                 return 'F';
             }
 
@@ -270,7 +273,7 @@ Vec2 pathfinder::getNext(){
 
 
             if(mapInstance.trueDir('F')+cPos==nextTile){
-                mapInstance.iterateCpos(back);
+                //mapInstance.iterateCpos(back);
                 return 'F';
             }
 
@@ -298,16 +301,19 @@ void pathfinder::recomputeFrom(){
 }
 
 bool pathfinder::pathInvalid(){
-    return mapInstance.consistent;
+    return !mapInstance.consistent;
 }
 
 void pathfinder::dumpSearch(){
+    
     for(Vec2 iter:forCleanup){
+        std::cout<<"IT WILL DUMP COORDINATE: "<< "("<<iter.x<<","<<iter.y<<")"<<std::endl;
         // get a reference to the stored node (modify map entry, not copy)
         auto &itr = mapInstance.fastAccess.at(hashCords(iter.x,iter.y));
         searchNode defaultNode;
         itr.pathfindComponent = defaultNode;
     }
+    forCleanup.clear();
 
     while(!completePath.empty()){
         completePath.pop();
@@ -316,4 +322,8 @@ void pathfinder::dumpSearch(){
 
 void pathfinder::recordNode(Vec2 pos){
     forCleanup.push_back(pos);
+}
+
+Vec2 pathfinder::followingCoord(){
+    return completePath.top();
 }
