@@ -46,10 +46,11 @@ class internalMap{
     std::unordered_map<int,std::vector<std::pair<int,int>>> yOnlyAccess;
 
 
-    bool wasSeen(Vec2);
     void writeToSparse(Vec2 pos, emptySeenNodes);
     
     public:
+    bool wasSeen(Vec2);
+
     bool consistent;
     //turns a relative space character into absolute space vector
     Vec2 trueDir(char direction);

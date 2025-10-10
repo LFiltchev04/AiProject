@@ -18,6 +18,7 @@ class pathfinder {
 
     //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
+    //should have been a vector
     std::stack<Vec2> completePath;
 
     //it should be pointers but it causes problems i dont want to bother with
@@ -35,6 +36,7 @@ class pathfinder {
     int getNodeScore(Vec2,int);
     int h(Vec2 head);
     void constrctPath(Vec2 goalNode);
+    Vec2 predictPath(std::stack<Vec2>);
 
     std::stack<Vec2>* getPath();
     Vec2 getNext();
@@ -47,6 +49,7 @@ class pathfinder {
     void updateMap(Percepts p);
     void recordNode(Vec2);
 
+    bool multiturnSafe(std::stack<Vec2>cmdCopy);
     Vec2 followingCoord();
     
     ~pathfinder(){};

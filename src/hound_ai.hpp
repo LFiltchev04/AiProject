@@ -34,6 +34,7 @@ public:
     //allows multiple moves per turn in areas that are seen
     std::vector<std::string> traverseMode();
 
-
+    void setMode();
+    
     
 };

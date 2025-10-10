@@ -203,12 +203,16 @@ internalMap& pathfinder::getMap(){
 }
 
 Vec2 pathfinder::getNext(){
-    if(completePath.empty()) return mapInstance.currentPos();
+    if(completePath.empty()){
+        return mapInstance.currentPos();
+    } 
     return completePath.top();
 }
 
-    char pathfinder::pathTranslator(){
-    if(completePath.empty()) return ' ';
+char pathfinder::pathTranslator(){
+    if(completePath.empty()){
+        return ' ';
+    } 
 
     Vec2 cPos = mapInstance.currentPos();
 
@@ -216,7 +220,9 @@ Vec2 pathfinder::getNext(){
     while(!completePath.empty() && completePath.top() == cPos){
         completePath.pop();
     }
-    if(completePath.empty()) return ' ';
+    if(completePath.empty()){
+        return ' ';
+    } 
 
     Vec2 nextTile = completePath.top();
 
@@ -232,31 +238,31 @@ Vec2 pathfinder::getNext(){
     std::cout<<"B "<<bpos.x<<" tst "<<bpos.y<<std::endl;
     std::cout<<"L "<<lpos.x<<" tst "<<lpos.y<<std::endl;
 
-    std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN:"<<turn<<std::endl;
+    std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN COUNT:"<<turn<<std::endl;
     std::cout<<fpos.x<<" f-ward "<<fpos.y<<" THE DIR"<<std::endl;
     std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
     turn++;
 
-    // Direct adjacency checks -> return the single-step command required.
     if(fpos == nextTile){
-        std::cout<<"triggered fpos"<<mapInstance.getHeading()<<std::endl;
+        std::cout<<"going forward"<<mapInstance.getHeading()<<std::endl;
         return 'F';
     }
     if(rpos == nextTile){
-        std::cout<<"triggered rpos: "<<mapInstance.getHeading()<<std::endl;
+        std::cout<<"going right: "<<mapInstance.getHeading()<<std::endl;
         return 'R';
     }
     if(lpos == nextTile){
-        std::cout<<"triggered lpos"<<mapInstance.getHeading()<<std::endl;
+        std::cout<<"going left"<<mapInstance.getHeading()<<std::endl;
         return 'L';
     }
     if(bpos == nextTile){
-        std::cout<<"triggered bpos"<<mapInstance.getHeading()<<std::endl;
+        std::cout<<"should head back?"<<mapInstance.getHeading()<<std::endl;
         return 'B';
     }
 
-    std::cout<<"THE INTERPRETER DEFAULTED (stale or non-adjacent node)"<<std::endl;
-    // conservative: return ' ' so caller can trigger recompute / fallback behavior
+    std::cout<<"THE INTERPRETER DEFAULTED"<<std::endl;
+    
+    //i need to add a handler to make sure theese dont trip something up downstream
     return ' ';
 }
 
@@ -297,4 +303,21 @@ void pathfinder::recordNode(Vec2 pos){
 
 Vec2 pathfinder::followingCoord(){
     return completePath.top();
+}
+
+//not the best solution, but not too bad
+bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
+    for(int x=0;x<3;x++){
+        if(mapInstance.wasSeen(stkCpy.top())){
+            stkCpy.pop();
+        }else{
+            break;
+        }
+    }
+
+    return true;
+}
+
+Vec2 pathfinder::predictPath(std::stack<Vec2>){
+    
 }
