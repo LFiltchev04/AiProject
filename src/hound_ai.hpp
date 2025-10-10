@@ -3,11 +3,12 @@
 #include"ai.hpp"
 #include "internalMap.hpp"
 #include "pathfinderClasses.hpp"
+#include "utils.hpp"
 
 class HoundAI : public AI {
 private:
 pathfinder pFind;
-char mode;
+mode state;
 //tracks the qunatity of wall hits and switches the random heading to another one after a couple of wall hits
 int wallBumps;
 Vec2 tgt;
@@ -35,6 +36,7 @@ public:
     std::vector<std::string> traverseMode();
 
     void setMode();
+    std::string runModel();
     
     
 };

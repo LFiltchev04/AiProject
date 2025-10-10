@@ -152,6 +152,22 @@ struct searchNode{
 };
 
 
+
+
+
+
+
+
+
+
+enum mode{
+    DISCOVERY,
+    MULTITURN,
+    TRACK,
+    PANIC
+};
+
+
 //lgr mainLogger("http://127.0.0.1:3005");
 
 

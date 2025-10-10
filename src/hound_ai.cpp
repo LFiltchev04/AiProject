@@ -217,60 +217,45 @@ std::vector<std::string> HoundAI::Run(
     
     pFind.updateMap(percepts);
 
-    std::string ts=""; 
-    
-    pFind.newTarget({-4,-3});
-    pFind.LPApathfind();
-
-
-    char t = pFind.pathTranslator();
-    std::cout<<"command issued--->"<<t<<std::endl;
-    ts+=t;
-    pFind.getMap().iterateState(ts);
-
-    cmds.push_back(ts);
+    std::string nextS = discoveryMode(1);
+    cmds.push_back(nextS);
     return cmds;
     }
 
 
 
-std::string HoundAI::discoveryMode(int limit){
-    //should return only one command per turn to avoid it blowing up the relative coordinates if it unwittingly hits a wall
-    std::string nxt = "";
-
-
-    if(pFind.getMap().currentPos()==tgt){
-        std::cout<<"Ive ran"<<std::endl;
-
+std::string HoundAI::runModel(){
+    if(pFind.getMap().currentPos()==pFind.getTgt()){
         return " ";
     }
 
-    if(pFind.getPath()->empty()){
-    //std::cout<<"INITIAL PFIND";
-        pFind.LPApathfind();
-    }
+        if(pFind.getPath()->empty()){
+            //std::cout<<"INITIAL PFIND";
+            pFind.LPApathfind();
+        }        
 
-    if(pFind.pathInvalid()){
-        pFind.recomputeFrom();
-    } 
-
-    if(pFind.getPath()->empty()){
-        // no path to inspect — force recompute (or call LPApathfind)
-        pFind.recomputeFrom();
-    } else {
-        Vec2 nextTile = pFind.getPath()->top();
-        if(pFind.getMap().isWall(nextTile)){
+        if(pFind.pathInvalid()){
             pFind.recomputeFrom();
         }
-    }
 
-    char nextStep = pFind.pathTranslator();
-    nxt+=nextStep;
-    pFind.getMap().iterateState(nxt);
+
+        if(pFind.getMap().isWall(pFind.followingCoord())){
+            //std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
+            pFind.recomputeFrom();
+        }
     
-    std::cout<<"t-->"<<nxt<<std::endl;
+    
+        std::string nxt="";
+        char nextStep = pFind.pathTranslator(); 
+    
+        if(nextStep != ' '){
+            nxt += nextStep;
+        
+            pFind.getMap().iterateState(nxt);
+            return nxt;
 
-    return nxt;
+        //std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
+    }    
 }
 
 
@@ -281,9 +266,9 @@ std::vector<std::string> HoundAI::traverseMode(){
 
 void HoundAI::setMode(){
     if(pFind.multiturnSafe(*pFind.getPath())){
-        mode = 'D';
+        state = MULTITURN;
     }else{
-        mode = 'T';
+        state = DISCOVERY;
     }
 }
 

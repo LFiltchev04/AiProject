@@ -302,6 +302,10 @@ void pathfinder::recordNode(Vec2 pos){
 }
 
 Vec2 pathfinder::followingCoord(){
+    if(completePath.empty()){
+        // safe fallback — no next coord available
+        return mapInstance.currentPos();
+    }
     return completePath.top();
 }
 
@@ -318,6 +322,6 @@ bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
     return true;
 }
 
-Vec2 pathfinder::predictPath(std::stack<Vec2>){
-    
-}
+
+
+
