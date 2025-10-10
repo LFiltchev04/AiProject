@@ -215,7 +215,7 @@ std::vector<std::string> HoundAI::Run(
 
     std::vector<std::string> arr = {};
 
-    
+    /*
     pFind.updateMap(percepts);
 
    
@@ -292,12 +292,118 @@ std::vector<std::string> HoundAI::Run(
     }
     
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
+    */
+
+
+
+/*
+
+    std::string nxt = "";
+
+    if(pFind.getMap().currentPos()==tgt){
     
+    }
+
+    if(pFind.getPath()->empty()){
+    //std::cout<<"INITIAL PFIND";
+        pFind.LPApathfind();
+    }
+
+    if(pFind.pathInvalid()){
+        pFind.recomputeFrom();
+    } 
+
+    pFind.getPath()->top();
+    if(pFind.getMap().isWall(pFind.getPath()->top())){
+        pFind.recomputeFrom();
+    }
+
+
+    //should have used dequeue to beign with for iterators, but i guess it must all happen the hard way
+    std::stack<Vec2> analysisCopy = *pFind.getPath();
+    for(int x=0;x<3;x++){
+        if(pFind.getMap().isWall(analysisCopy.top())){
+            
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    char nextStep = pFind.pathTranslator();
+    nxt+=nextStep;
+    pFind.getMap().iterateState(nxt);
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+
+
     return cmds;
 
 
 
     }
 
+/*
+
+std::string HoundAI::discoveryMode(int limit){
+    //should return only one command per turn to avoid it blowing up the relative coordinates if it unwittingly hits a wall
+    std::string nxt = "";
+
+    if(pFind.getMap().currentPos()==tgt){
+        return "b";
+    }
+
+    if(pFind.getPath()->empty()){
+    //std::cout<<"INITIAL PFIND";
+        pFind.LPApathfind();
+    }
+
+    if(pFind.pathInvalid()){
+        pFind.recomputeFrom();
+    } 
+
+    pFind.getPath()->top();
+    if(pFind.getMap().isWall(pFind.getPath()->top())){
+        pFind.recomputeFrom();
+    }
+
+    char nextStep = pFind.pathTranslator();
+    nxt+=nextStep;
+    pFind.getMap().iterateState(nxt);
+    
+
+    return nxt;
+}
 
 
+std::vector<std::string> HoundAI::traverseMode(){
+    
+}*/

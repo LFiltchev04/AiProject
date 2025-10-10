@@ -39,17 +39,16 @@ struct emptySeenNodes{
 class internalMap{
     char heading;
     Vec2 cAbsPos;
-    //this ugly thing is used to check whether the square has been seen at any point
-    //the whole idea is to mark with relative coordinated where the maximum sight was, if a coordinate is whitin the range, it is considered explored
-    //if its not inside of the 4-way range, its not seen and thus completely unknown
-    //its done to prevent every single percept from being stored in memory.
-    //i need to change the percept interpretation logic to ensure it works properly however
-    std::unordered_map<int,std::vector<emptySeenNodes>> xOnlyAccess;
-
+    
+    //theese are needed for the sparse memory mapping scheme, basically you push the maximal extent of vision at every point recorded at a given X or Y coordinate to their own hashmap
+    //when you later want to find out whether a certain one is empty you need to call an appropriate function
+    std::unordered_map<int,std::vector<std::pair<int,int>>> xOnlyAccess;
+    std::unordered_map<int,std::vector<std::pair<int,int>>> yOnlyAccess;
 
 
     bool wasSeen(Vec2);
-
+    void writeToSparse(Vec2 pos, emptySeenNodes);
+    
     public:
     bool consistent;
     //turns a relative space character into absolute space vector

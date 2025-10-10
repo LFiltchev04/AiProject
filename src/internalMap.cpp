@@ -10,6 +10,8 @@ cAbsPos = {0,0};
 consistent = true;
 }
 
+
+//theese overly long functions can probably be made with a loop but the cases are so little i dont want to bother 
 void internalMap::updateMap(Percepts nVizData){
 
     // Helper lambda to get char safely
@@ -24,11 +26,21 @@ void internalMap::updateMap(Percepts nVizData){
     }
 
 
+    emptySeenNodes crrMax;
     // heading == Forward (0, +1)
     if(heading == 'F'){
         for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
             char ch = pick(nVizData.forward.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+            
+            if(ch=='w'){
+                crrMax.zeroOne = nVizData.forward.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -38,6 +50,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
             char ch = pick(nVizData.left.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.oneZero = nVizData.left.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -47,11 +68,18 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
             char ch = pick(nVizData.right.at(relDist));
+            
+            if(ch=='w'){
+                crrMax.zeroOne = nVizData.right.size()-1;
+            }
+            
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
+
+        writeToSparse(cAbsPos,crrMax);
 
         return;
     }
@@ -61,6 +89,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
             char ch = pick(nVizData.forward.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.oneZero = nVizData.forward.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -70,6 +107,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
             char ch = pick(nVizData.left.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.zeroOne = nVizData.left.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -79,11 +125,22 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
             char ch = pick(nVizData.right.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.minusZero = nVizData.right.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
+
+        writeToSparse(cAbsPos,crrMax);
 
         return;
     }
@@ -93,6 +150,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.forward.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
             char ch = pick(nVizData.forward.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.zeroMinus = nVizData.forward.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -102,6 +168,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
             char ch = pick(nVizData.left.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.oneZero = nVizData.right.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -111,11 +186,22 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
             char ch = pick(nVizData.right.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.minusZero = nVizData.right.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
+
+        writeToSparse(cAbsPos,crrMax);
 
         return;
     }
@@ -126,6 +212,15 @@ void internalMap::updateMap(Percepts nVizData){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
             char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.minusZero = nVizData.forward.size()-1;
+            }
+
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
@@ -134,6 +229,15 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y - 1 - relDist };
             char ch = pick(nVizData.left.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.zeroMinus = cAbsPos.y-nVizData.left.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -143,14 +247,45 @@ void internalMap::updateMap(Percepts nVizData){
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
             Vec2 pos { cAbsPos.x, cAbsPos.y + 1 + relDist };
             char ch = pick(nVizData.right.at(relDist));
+
+            if(ch == 'o'){
+                continue;
+            }
+
+            if(ch=='w'){
+                crrMax.zeroOne = cAbsPos.y+nVizData.right.size()-1;
+            }
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
-
+        
+        writeToSparse(cAbsPos,crrMax);
+        
         return;
     }
+}
+
+void internalMap::writeToSparse(Vec2 pos, emptySeenNodes sight){
+    auto iterX = xOnlyAccess.find(pos.x);
+    auto iterY = yOnlyAccess.find(pos.y);
+    
+    std::pair<int,int> tempX{sight.zeroOne,sight.zeroMinus};
+    if(iterX == xOnlyAccess.end()){        
+        xOnlyAccess.emplace(pos.x,std::vector<std::pair<int,int>>{tempX});
+    }else{
+        iterX->second.push_back(tempX);
+    }
+
+    std::pair<int,int> tempY{sight.oneZero,sight.minusZero};
+    if(iterY == yOnlyAccess.end()){
+        yOnlyAccess.emplace(pos.y,std::vector<std::pair<int,int>>{tempY});
+    }else{
+        iterY->second.push_back(tempY);
+    }
+
 }
 
 
@@ -305,32 +440,27 @@ node internalMap::getPrior(Vec2 atPlace){
 
 
 bool internalMap::wasSeen(Vec2 analyzeThis){
-    std::vector<emptySeenNodes> &sightData = xOnlyAccess.at(analyzeThis.x);
     
-    for(emptySeenNodes iter:sightData){
+    
+    auto xIter = xOnlyAccess.find(analyzeThis.x);
+    auto yIter = yOnlyAccess.find(analyzeThis.y);
+    
+    if(xIter==xOnlyAccess.end() and yIter==yOnlyAccess.end()){
+        return false;
+    }
 
-        //check if above
-        if(iter.zeroOne>=analyzeThis.y and analyzeThis.y > iter.visitPoint.x){
-            return true;
-        }
-
-        //check if ahead
-        if(iter.oneZero>=analyzeThis.x and analyzeThis.x > iter.visitPoint.x){
-            return true;
-        }
-
-        //check if below
-        if(iter.zeroMinus<=analyzeThis.y and analyzeThis.y < iter.visitPoint.y){
-            return true;
-        }
-
-        //check if behind
-        if(iter.minusZero<=analyzeThis.x and analyzeThis.x < iter.visitPoint.x){
+    for(std::pair<int,int> var:xIter->second){
+        if(analyzeThis.x>=var.first and analyzeThis.x<=var.second){
             return true;
         }
     }
 
-    return false;
+    for(std::pair<int,int> var:yIter->second){
+        if(analyzeThis.y>=var.first and analyzeThis.y<=var.second){
+            return true;
+        }
+    }
+
 }
 
 
