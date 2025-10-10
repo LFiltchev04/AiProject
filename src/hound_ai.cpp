@@ -215,7 +215,7 @@ std::vector<std::string> HoundAI::Run(
 
     std::vector<std::string> arr = {};
 
-    /*
+    
     pFind.updateMap(percepts);
 
    
@@ -292,7 +292,7 @@ std::vector<std::string> HoundAI::Run(
     }
     
     std::cout<<std::endl<<std::endl<<std::endl<<std::endl<<std::endl;
-    */
+    
 
 
 
