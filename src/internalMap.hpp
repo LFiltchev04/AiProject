@@ -81,7 +81,7 @@ class internalMap{
     //determines if the node has been seen or visited
     bool priorVisit(Vec2);
     
-    //returns a ndoe object if the coordinated have been seen or visited
+    //returns a ndoe object if the coordinateds have been seen or visited
     node getPrior(Vec2);
     
     

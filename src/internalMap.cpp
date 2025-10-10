@@ -12,6 +12,7 @@ consistent = true;
 
 
 //theese overly long functions can probably be made with a loop but the cases are so little i dont want to bother 
+//i am pretty sure i need to change the underlying functions to make sure 
 void internalMap::updateMap(Percepts nVizData){
 
     // Helper lambda to get char safely
@@ -36,7 +37,7 @@ void internalMap::updateMap(Percepts nVizData){
             if(ch == 'o'){
                 continue;
             }
-            
+
             if(ch=='w'){
                 crrMax.zeroOne = nVizData.forward.size()-1;
             }
@@ -212,6 +213,8 @@ void internalMap::updateMap(Percepts nVizData){
             Vec2 pos { cAbsPos.x - 1 - relDist, cAbsPos.y };
             char ch = pick(nVizData.forward.at(relDist));
             size_t key = hashCords(pos.x, pos.y);
+            checkChange(pos, ch);
+
 
             if(ch == 'o'){
                 continue;
@@ -222,7 +225,6 @@ void internalMap::updateMap(Percepts nVizData){
             }
 
             fastAccess[key] = node(ch);
-            checkChange(pos, ch);
             std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
@@ -409,16 +411,23 @@ bool internalMap::isWall(Vec2 checkPos){
    size_t key = hashCords(checkPos.x, checkPos.y);
 
     auto it = fastAccess.find(key);
-    if (it == fastAccess.end()) return false;        // not present
+    if (it == fastAccess.end()){
+        return false;
+    }         
     return it->second.type == 'w';
 };
 
 bool internalMap::priorVisit(Vec2 checkThis){
+
+    if(wasSeen(checkThis)){
+        return true;
+    }
+    
     if(fastAccess.find(hashCords(checkThis.x,checkThis.y)) == fastAccess.end()){
         return false;
     }
 
-    return true;
+    return false;
 }
 
 
@@ -426,12 +435,16 @@ node internalMap::getPrior(Vec2 atPlace){
     //i am not sure that this will not blow up if the element is not in the hashmap
     try{
         if(fastAccess.find(hashCords(atPlace.x,atPlace.y))==fastAccess.end()){
+            
+            if(wasSeen(atPlace)){
+                return node('o');
+            }
             return node();
         } 
         return fastAccess.find(hashCords(atPlace.x,atPlace.y))->second;
     }catch(std::exception err){
 
-        //return error in a way i can interpret
+        //return error in a way i can interpret it as such
         node ndn;
         return ndn;
     }
@@ -563,6 +576,7 @@ void internalMap::checkChange(Vec2 pos, char type){
     
         auto hashmapIter = fastAccess.find(hashCords(pos.x,pos.y));
         if(hashmapIter==fastAccess.end()){
+            std::cout<<"CHECK FOUND NO MATCH AT "<<pos.to_string()<<std::endl;
             return;
         }
 
@@ -571,6 +585,7 @@ void internalMap::checkChange(Vec2 pos, char type){
         }else{
             std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT"<<std::endl<<std::endl<<std::endl;
             consistent=false;
+            return;
         }
     
 }
