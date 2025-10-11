@@ -98,6 +98,9 @@ void pathfinder::LPApathfind(){
 
     startCoord = mapInstance.currentPos();
     
+    // ensure map consistency flag is reset before recomputing the path
+    mapInstance.consistent = true;
+    
     // Early termination checks
     if(startCoord == targetCoord){
         // Already at target
@@ -320,9 +323,11 @@ bool pathfinder::pathInvalid(){
 void pathfinder::dumpSearch(){
     
     for(Vec2 iter:forCleanup){
-        std::cout<<"IT WILL DUMP COORDINATE: "<< "("<<iter.x<<","<<iter.y<<")"<<std::endl;
         // get a reference to the stored node (modify map entry, not copy)
         auto &itr = mapInstance.fastAccess.at(hashCords(iter.x,iter.y));
+
+        //std::cout<<"IT WILL DUMP COORDINATE: "<< "("<<itr.pathfindComponent.priority<<","<<itr.pathfindComponent.priority<<")"<<std::endl;
+
         searchNode defaultNode;
         itr.pathfindComponent = defaultNode;
     }

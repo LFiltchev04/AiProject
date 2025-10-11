@@ -8,8 +8,20 @@
 #include<iostream>
 #include"percepts.hpp"
 #include"comm.hpp"
+#include "pathfinderClasses.hpp"
+#include "randomizedHeading.hpp"
+#include "utils.hpp"
+
 
 class AI {
+    
+    
+    mode state;
+    Vec2 tgt;
+
+    int wallBumps = 0;
+    semirandomHeading semiRand;
+
 protected:
     // Necessary, do not delete.
     unsigned id;
@@ -26,6 +38,24 @@ public:
         Percepts & percepts,
         AgentComm * comms
     );
+    //i pretty much just went whatever with the class hirearchy, all the code for pathfinding and map update/iteration is accessible solely trought this object, its extremely ugly
+    //the pathfinder and the map object are quite coupled and as a result the function calls to get to anything are long and very ugly.
+    pathfinder pFind;
+
+     std::string discoveryMode();
+
+    //allows multiple moves per turn in areas that are seen
+    std::vector<std::string> traverseMode();
+
+    void setMode();
+
+    Vec2 randomHead();
+    std::vector<std::string> multiturn();
+    std::string discovery();
+    
+    std::string runModel();
+
+
 };
 
 

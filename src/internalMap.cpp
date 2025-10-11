@@ -575,14 +575,13 @@ void internalMap::checkChange(Vec2 pos, char type){
     
         auto hashmapIter = fastAccess.find(hashCords(pos.x,pos.y));
         if(hashmapIter==fastAccess.end()){
-            std::cout<<"CHECK FOUND NO MATCH AT "<<pos.to_string()<<std::endl;
             return;
         }
 
-        if(hashmapIter->second.type == type){
+        if(getPrior(pos).type == type){ 
             return;
         }else{
-            std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT"<<std::endl<<std::endl<<std::endl;
+            std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT WITH CONSTRUCTED PATH"<<std::endl<<std::endl<<std::endl;
             consistent=false;
             return;
         }

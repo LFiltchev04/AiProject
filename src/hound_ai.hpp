@@ -1,20 +1,20 @@
 #pragma once
 
 #include"ai.hpp"
-#include "internalMap.hpp"
-#include "pathfinderClasses.hpp"
-#include "utils.hpp"
-#include "randomizedHeading.hpp"
+//#include "internalMap.hpp"
+//#include "pathfinderClasses.hpp"
+//#include "utils.hpp"
+//#include "randomizedHeading.hpp"
 
 class HoundAI : public AI {
 private:
-pathfinder pFind;
-mode state;
-Vec2 tgt;
+//pathfinder pFind;
+//mode state;
+//Vec2 tgt;
 
-int wallBumps = 0;
+//int wallBumps = 0;
 
-semirandomHeading semiRand;
+//semirandomHeading semiRand;
 
 public:
     HoundAI(
@@ -35,18 +35,18 @@ public:
 
     
     //one move per turn to avoid unexpectedly hitting walls and having the cPos becoming inconsistent
-    std::string discoveryMode();
+    //std::string discoveryMode();
 
     //allows multiple moves per turn in areas that are seen
-    std::vector<std::string> traverseMode();
+    //std::vector<std::string> traverseMode();
 
-    void setMode();
+    //void setMode();
 
-    Vec2 randomHead();
-    std::vector<std::string> multiturn();
-    std::string discovery();
+    //Vec2 randomHead();
+    //std::vector<std::string> multiturn();
+    //std::string discovery();
     
-    std::string runModel();
+    //std::string runModel();
     
     
 };
