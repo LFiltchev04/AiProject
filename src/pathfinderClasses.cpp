@@ -98,6 +98,18 @@ void pathfinder::LPApathfind(){
 
     startCoord = mapInstance.currentPos();
     
+    // Early termination checks
+    if(startCoord == targetCoord){
+        // Already at target
+        return;
+    }
+    
+    if(mapInstance.isWall(targetCoord)){
+        // Target is a wall, no path possible
+        std::cerr<<"LPApathfind: target is a wall, no path possible\n";                                                                                                                                                                                                                                                                                                                                                                                                       
+        return;
+    }
+    
     // seed start node
     searchNode startNode;
     startNode.nodePosition = startCoord;
@@ -109,16 +121,25 @@ void pathfinder::LPApathfind(){
     recordNode(startNode.nodePosition);
 
     // fast lookup for best g found per cell
-    std::unordered_map<size_t,int> bestG;
+    std::unordered_map<size_t,int> bestG;                                                                                                                                                           
     bestG[hashCords(startCoord.x, startCoord.y)] = 0;
     std::unordered_set<size_t> closed;
 
     // safety guard to avoid pathological infinite loops
     int iterationGuard = 0;
     const int ITERATION_LIMIT = 10000;
+    int nodesExplored = 0;
+    
     while(!bestGuess.empty()){
         if(++iterationGuard > ITERATION_LIMIT){
             std::cerr << "LPApathfind: iteration limit reached, aborting search\n";
+            break;
+        }
+        
+        // Additional check: if we've explored many nodes but queue is still large, 
+        // the target might be unreachable
+        if(nodesExplored > 1000 && bestGuess.size() > 500){
+            std::cerr << "LPApathfind: explored too many nodes without progress, target likely unreachable\n";
             break;
         }
         searchNode parrent = bestGuess.top();
@@ -129,12 +150,15 @@ void pathfinder::LPApathfind(){
             continue;
         } 
         closed.insert(pKey);
+        nodesExplored++;
 
         // goal test
         if(parrent.nodePosition.x == targetCoord.x && parrent.nodePosition.y == targetCoord.y){
             constrctPath(parrent.nodePosition);
             return;
         }
+
+
 
         // expand 4-neighbours around parrent.nodePosition
         Vec2 dir = {0,1};
@@ -176,6 +200,7 @@ void pathfinder::LPApathfind(){
     }
 
     // no path found -> leave completePath empty
+    //std::cerr << "LPApathfind: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")\n";
 
 }
 
@@ -224,6 +249,7 @@ char pathfinder::pathTranslator(){
     } 
 
     Vec2 cPos = mapInstance.currentPos();
+    std::cout<<std::endl<<std::endl<<std::endl<< cPos.to_string()<<"THIS IS THE UPCOMING MOVE< VERY IMPORTANT"<<std::endl<<std::endl<<std::endl;
 
     // drop any path nodes equal to current position (safe-check empty after popping)
     while(!completePath.empty() && completePath.top() == cPos){
@@ -331,6 +357,6 @@ bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
     return true;
 }
 
-
-
-
+Vec2 pathfinder::getTgt(){
+    return targetCoord;
+}

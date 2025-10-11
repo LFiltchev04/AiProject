@@ -41,7 +41,7 @@ class pathfinder {
     std::stack<Vec2>* getPath();
     Vec2 getNext();
     internalMap& getMap();
-    Vec2 getTgt();
+    Vec2 getTgt();                                                                                                                                  
 
     void dumpSearch();
     void recomputeFrom();

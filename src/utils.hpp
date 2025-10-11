@@ -151,20 +151,24 @@ struct searchNode{
         }
 };
 
-
-
-
-
-
-
-
-
-
 enum mode{
     DISCOVERY,
     MULTITURN,
     TRACK,
     PANIC
+};
+
+struct doubleVec{
+    double x;
+    double y;
+
+    doubleVec(){
+        x=0.0;
+        y=0.0;
+    }
+    std::string to_string(){
+        return "[" + x + "," + y + "]";
+    }
 };
 
 

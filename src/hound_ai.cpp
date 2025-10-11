@@ -216,10 +216,38 @@ std::vector<std::string> HoundAI::Run(
 
     
     pFind.updateMap(percepts);
+    Vec2 targ = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
+    pFind.newTarget(targ);
+        // call discoveryMode (implemented below) to decide a safe single-step command
+        std::string nextS = discoveryMode();
+        cmds.push_back(nextS);
 
-    std::string nextS = discoveryMode(1);
-    cmds.push_back(nextS);
+
+
+    std::cout<<pFind.getTgt().to_string()<<"WHERE I AM GOING"<<std::endl;
     return cmds;
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+    
+    std::string HoundAI::discoveryMode(){
+        std::string cmd = runModel();
+
+        if(cmd=="F"){
+            
+        }
+        return 
     }
 
 
@@ -248,14 +276,12 @@ std::string HoundAI::runModel(){
         std::string nxt="";
         char nextStep = pFind.pathTranslator(); 
     
-        if(nextStep != ' '){
             nxt += nextStep;
         
             pFind.getMap().iterateState(nxt);
             return nxt;
 
         //std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
-    }    
 }
 
 

@@ -9,6 +9,9 @@ class HoundAI : public AI {
 private:
 pathfinder pFind;
 mode state;
+
+//averages the last 6 random moves
+doubleVec averageHeading;
 //tracks the qunatity of wall hits and switches the random heading to another one after a couple of wall hits
 int wallBumps;
 Vec2 tgt;
@@ -30,12 +33,14 @@ public:
     Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos, double scent);
     
     //one move per turn to avoid unexpectedly hitting walls and having the cPos becoming inconsistent
-    std::string discoveryMode(int limit);
+    std::string discoveryMode();
 
     //allows multiple moves per turn in areas that are seen
     std::vector<std::string> traverseMode();
 
     void setMode();
+
+    Vec2 randomHead();
     std::vector<std::string> multiturn();
     std::string discovery();
     
