@@ -36,9 +36,15 @@ struct emptySeenNodes{
     Vec2 visitPoint;
 };
 
+struct priorityTarget{
+    Vec2 pos;
+    char type;
+};
+
 class internalMap{
     char heading;
     Vec2 cAbsPos;
+    std::vector<priorityTarget> priorityTargets;
     
     //theese are needed for the sparse memory mapping scheme, basically you push the maximal extent of vision at every point recorded at a given X or Y coordinate to their own hashmap
     //when you later want to find out whether a certain one is empty you need to call an appropriate function
@@ -47,7 +53,8 @@ class internalMap{
 
 
     void writeToSparse(Vec2 pos, emptySeenNodes);
-    
+    void addPriority(Vec2 pos, std::string type);
+
     public:
     bool wasSeen(Vec2);
 
@@ -84,7 +91,6 @@ class internalMap{
     
     //returns a ndoe object if the coordinateds have been seen or visited
     node getPrior(Vec2);
-    
     
     //changes the internal maps tracker of the AIs location, for use with instructions
     void iterateCpos(Vec2);

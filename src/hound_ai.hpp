@@ -36,6 +36,9 @@ public:
     std::vector<std::string> traverseMode();
 
     void setMode();
+    std::vector<std::string> multiturn();
+    std::string discovery();
+    
     std::string runModel();
     
     

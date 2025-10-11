@@ -100,19 +100,27 @@ void pathfinder::LPApathfind(){
     
     // seed start node
     searchNode startNode;
-    recordNode(startNode.nodePosition);
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
     startNode.global = 0;
     startNode.priority = h(startCoord);
     bestGuess.push(startNode);
+    // record the actual start coordinate (avoid recording an uninitialized Vec2)
+    recordNode(startNode.nodePosition);
 
     // fast lookup for best g found per cell
     std::unordered_map<size_t,int> bestG;
     bestG[hashCords(startCoord.x, startCoord.y)] = 0;
     std::unordered_set<size_t> closed;
 
+    // safety guard to avoid pathological infinite loops
+    int iterationGuard = 0;
+    const int ITERATION_LIMIT = 10000;
     while(!bestGuess.empty()){
+        if(++iterationGuard > ITERATION_LIMIT){
+            std::cerr << "LPApathfind: iteration limit reached, aborting search\n";
+            break;
+        }
         searchNode parrent = bestGuess.top();
         bestGuess.pop();
 
@@ -134,10 +142,11 @@ void pathfinder::LPApathfind(){
             Vec2 nb = parrent.nodePosition + dir;
             size_t nbKey = hashCords(nb.x, nb.y);
 
-            if(mapInstance.isWall(nb) /*|| closed.count(nbKey)*/){
-                ninetyClockwise(dir);
-                continue;
-            }
+            // skip walls and already-closed nodes
+            if(mapInstance.isWall(nb) || closed.count(nbKey)){
+                 ninetyClockwise(dir);
+                 continue;
+             }
 
             int tentativeG = parrent.global + 1;
             auto it = bestG.find(nbKey);

@@ -656,6 +656,18 @@ Vec2 internalMap::relativeHead(char in){
 }
 
 
+void internalMap::addPriority(Vec2 pos, std::string type){
+    if(type == "w"){
+        return;
+    }
+    
+    priorityTarget temp;
+    temp.pos = pos;
+    temp.type = type[0];
+}
+
+
+
 
 
 internalMap::~internalMap(){
