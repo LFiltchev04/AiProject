@@ -4,19 +4,17 @@
 #include "internalMap.hpp"
 #include "pathfinderClasses.hpp"
 #include "utils.hpp"
+#include "randomizedHeading.hpp"
 
 class HoundAI : public AI {
 private:
 pathfinder pFind;
 mode state;
-
-//averages the last 6 random moves
-doubleVec averageHeading;
-//tracks the qunatity of wall hits and switches the random heading to another one after a couple of wall hits
-int wallBumps;
 Vec2 tgt;
-//somewhat smartly tries to redirect from a wall 
-Vec2 semirandomHeading();
+
+int wallBumps = 0;
+
+semirandomHeading semiRand;
 
 public:
     HoundAI(
@@ -31,6 +29,10 @@ public:
 
     //attempts to fix a fox`s position using scent data and comms from other hounds, hounds bark their nearest fox, this is used to attemp a location calculation
     Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos, double scent);
+    
+
+    //theese ought to be removed and put in the base class so i can use them for the foxes
+
     
     //one move per turn to avoid unexpectedly hitting walls and having the cPos becoming inconsistent
     std::string discoveryMode();

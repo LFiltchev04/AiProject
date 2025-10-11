@@ -294,7 +294,7 @@ void internalMap::writeToSparse(Vec2 pos, emptySeenNodes sight){
 Vec2 internalMap::trueDir(char direction){
 
     if(direction==' '){
-        //return {0,0};
+        return {0,0};
     }
 
     if(heading == 'F'){
@@ -376,7 +376,6 @@ Vec2 internalMap::trueDir(char direction){
         }
     }
 
-    //return {0,0};
 }
 
 

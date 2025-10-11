@@ -3,6 +3,9 @@
 #include <sstream>
 #include "json.hpp"
 #include <climits>
+#include <iomanip>    // added for std::setprecision
+#include <random>
+
 using json = nlohmann::json;
 
 #ifndef UTILS_HPP
@@ -110,7 +113,7 @@ std::string inline logObjParser(logObj input){
 }
 
 
-//gets the degrees difference between two Vec2 vectors
+//gets the degrees difference between two Vec2 vectrs
 double inline angleBetween(Vec2 a, Vec2 b) {
     double dot = a.x*b.x + a.y*b.y;
     double cross = a.x*b.y - a.y*b.x;  
@@ -127,7 +130,6 @@ struct searchNode{
         int priority;
         int global;
         
-        //i need to call this instructor bedore anything else otherwise the origine node will stay broken, maybe as a part of some init method in the ai class I dont know. 
         searchNode(){
             nodePosition = {0,0};
             parrentCoords = {0,0};
@@ -166,10 +168,14 @@ struct doubleVec{
         x=0.0;
         y=0.0;
     }
-    std::string to_string(){
-        return "[" + x + "," + y + "]";
+    std::string to_string() const {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(3); // adjust precision as desired
+        oss << "[" << x << "," << y << "]";
+        return oss.str();
     }
 };
+
 
 
 //lgr mainLogger("http://127.0.0.1:3005");

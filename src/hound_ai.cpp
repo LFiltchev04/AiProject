@@ -216,7 +216,9 @@ std::vector<std::string> HoundAI::Run(
 
     
     pFind.updateMap(percepts);
-    Vec2 targ = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
+    //Vec2 targ = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
+    
+    Vec2 targ = {100,100};
     pFind.newTarget(targ);
         // call discoveryMode (implemented below) to decide a safe single-step command
         std::string nextS = discoveryMode();
@@ -224,7 +226,6 @@ std::vector<std::string> HoundAI::Run(
 
 
 
-    std::cout<<pFind.getTgt().to_string()<<"WHERE I AM GOING"<<std::endl;
     return cmds;
 
 
@@ -242,14 +243,12 @@ std::vector<std::string> HoundAI::Run(
 
     
     std::string HoundAI::discoveryMode(){
+        semiRand.iterate(wallBumps,pFind.getMap().currentPos(),pFind.getMap().trueDir(pFind.getMap().getHeading()));
+        pFind.newTarget(semiRand.getNext());    
         std::string cmd = runModel();
 
-        if(cmd=="F"){
-            
-        }
-        return 
+        return cmd;
     }
-
 
 
 std::string HoundAI::runModel(){
@@ -269,7 +268,15 @@ std::string HoundAI::runModel(){
 
         if(pFind.getMap().isWall(pFind.followingCoord())){
             //std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
+            
+            //the idea of tracking wall bumps is to change direction when in pathfinding mode, the speed is limited as it is
+            //there is no need to make moving one block in maybe a good direction take one turn to figure out its wrong, one to rotate and another to move
+            wallBumps+=2;    
             pFind.recomputeFrom();
+        }else{
+            if(wallBumps>0){
+                wallBumps -= 1;
+            }
         }
     
     

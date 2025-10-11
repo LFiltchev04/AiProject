@@ -85,7 +85,7 @@ int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
     return tentativeG + h(/*head will be provided as node position by caller*/ nodePos); // placeholder not used here
 }
 
-// Replace LPApathfind with a correct A*/LPA-style expansion
+// this is not actually LPA, its bog standard A*, but it kind of looks like it at a higher level
 void pathfinder::LPApathfind(){
     std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
     // clear data
@@ -136,9 +136,10 @@ void pathfinder::LPApathfind(){
             break;
         }
         
-        // Additional check: if we've explored many nodes but queue is still large, 
-        // the target might be unreachable
-        if(nodesExplored > 1000 && bestGuess.size() > 500){
+        //this needs to be here otherwise the search space will explode, there is inherintly no limit to the search space as its just throwing guesses at hashmaps, so there has to be an arbitrary upper limit
+        //on how far away you can reasonably search, also meaning you map size is bounded, when i set the coordinates to (100,100) it does not give up, i am hoping that the maximum map size is thereabout that
+        //if its larger it would need to be given more allowance for searching.
+        if(nodesExplored > 10000 && bestGuess.size() > 900){
             std::cerr << "LPApathfind: explored too many nodes without progress, target likely unreachable\n";
             break;
         }
@@ -152,8 +153,8 @@ void pathfinder::LPApathfind(){
         closed.insert(pKey);
         nodesExplored++;
 
-        // goal test
-        if(parrent.nodePosition.x == targetCoord.x && parrent.nodePosition.y == targetCoord.y){
+        // checks it its goal
+        if(parrent.nodePosition == targetCoord){
             constrctPath(parrent.nodePosition);
             return;
         }
