@@ -1,4 +1,10 @@
-#include"hound_ai.hpp"
+#include "hound_ai.hpp"
+#include "utils.hpp"
+#include <cmath>
+#include "utils.hpp"
+#include <iostream>
+#include <string>
+
 
 /***************************************************************
 HOUND AI CLASS DEFINITION
@@ -12,6 +18,128 @@ HoundAI::HoundAI(
     : AI(id, agent_speed, rng)
 {
 }
+
+
+
+//the absolute position has to be passed from the map class, the rotations are handled there 
+Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
+
+    if (commData == nullptr){
+        return cAbsPos;
+    } 
+
+    auto brks = commData->bark.begin();     
+    auto dir = commData->direction.begin();
+
+    while(brks != commData->bark.end() && dir != commData->direction.end()){
+
+        Vec2 bPos = *dir;                 // reporter absolute position
+        double r1 = scent;                // radius from this hound (scent)
+        double r2 = static_cast<double>(*brks); // radius from the barker
+
+        // distance between the two circle centers
+        double d = linDist(cAbsPos, bPos);
+
+        // skip degenerate / impossible cases
+        if (d <= 1e-12){
+            // same center or invalid
+            ++brks; ++dir; 
+            continue; 
+        }           
+        if (d > r1 + r2 + 1e-9){
+            // circles too far apart
+            ++brks; 
+            ++dir;
+            continue; 
+        }   
+        if (d < std::fabs(r1 - r2) - 1e-9){
+            // one inside the other
+            ++brks;
+            ++dir;
+            continue; 
+        } 
+
+        // compute circle intersection (standard geometry)
+        double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
+        double h2 = r1*r1 - a*a;
+        if(h2 < 0){
+            h2 = 0;
+        } 
+        double h = std::sqrt(h2);
+
+        // unit vector from this hound to the barker
+        double ux = (bPos.x - cAbsPos.x) / d;
+        double uy = (bPos.y - cAbsPos.y) / d;
+
+        // point P2 which is the point along the line between centers at distance a from this hound
+        Vec2 P2;
+        P2.x = cAbsPos.x + ux * a;
+        P2.y = cAbsPos.y + uy * a;
+
+        // perpendicular offset to get the two intersection points
+        Vec2 off;
+        off.x = -uy * h;
+        off.y =  ux * h;
+
+        Vec2 inter1, inter2;
+        inter1.x = P2.x + off.x;
+        inter1.y = P2.y + off.y;
+        inter2.x = P2.x - off.x;
+        inter2.y = P2.y - off.y;
+
+        // choose one intersection to return — pick the one closer to the barker reporter
+        double d1 = linDist(inter1, bPos);
+        double d2 = linDist(inter2, bPos);
+        return (std::fabs(d1 - r2) < std::fabs(d2 - r2)) ? inter1 : inter2;
+    }
+
+    // no valid intersection found, return current position as fallback
+    return cAbsPos;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 std::vector<std::string> HoundAI::Run(
     Percepts& percepts,
@@ -83,13 +211,98 @@ std::vector<std::string> HoundAI::Run(
         comms->bark[0] = 9;
     }
 
-    std::vector<std::string> cmds;
+    std::vector<std::string> cmds={};
+    std::vector<std::string> arr = {};
 
-    std::vector<std::string> arr = { "F", "L", "R" };
+    
+    pFind.updateMap(percepts);
+    //Vec2 targ = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
+    
+    Vec2 targ = {100,100};
+    pFind.newTarget(targ);
+        // call discoveryMode (implemented below) to decide a safe single-step command
+        std::string nextS = discoveryMode();
+        cmds.push_back(nextS);
 
-    for (unsigned i = 0; i < agent_speed; i++) {
-        std::shuffle(arr.begin(), arr.end(), *rng);
-        cmds.push_back(arr[0]);
-    }
+
+
     return cmds;
+
+
+
+
+
+
+
+
+
+//bullshit commit
+
+    }
+
+
+    
+    std::string HoundAI::discoveryMode(){
+        semiRand.iterate(wallBumps,pFind.getMap().currentPos(),pFind.getMap().trueDir(pFind.getMap().getHeading()));
+        pFind.newTarget(semiRand.getNext());    
+        std::string cmd = runModel();
+
+        return cmd;
+    }
+
+
+std::string HoundAI::runModel(){
+    if(pFind.getMap().currentPos()==pFind.getTgt()){
+        return " ";
+    }
+
+        if(pFind.getPath()->empty()){
+            //std::cout<<"INITIAL PFIND";
+            pFind.LPApathfind();
+        }        
+
+        if(pFind.pathInvalid()){
+            pFind.recomputeFrom();
+        }
+
+
+        if(pFind.getMap().isWall(pFind.followingCoord())){
+            //std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
+            
+            //the idea of tracking wall bumps is to change direction when in pathfinding mode, the speed is limited as it is
+            //there is no need to make moving one block in maybe a good direction take one turn to figure out its wrong, one to rotate and another to move
+            wallBumps+=2;    
+            pFind.recomputeFrom();
+        }else{
+            if(wallBumps>0){
+                wallBumps -= 1;
+            }
+        }
+    
+    
+        std::string nxt="";
+        char nextStep = pFind.pathTranslator(); 
+    
+            nxt += nextStep;
+        
+            pFind.getMap().iterateState(nxt);
+            return nxt;
+
+        //std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
 }
+
+
+std::vector<std::string> HoundAI::traverseMode(){
+    
+}
+
+
+void HoundAI::setMode(){
+    if(pFind.multiturnSafe(*pFind.getPath())){
+        state = MULTITURN;
+    }else{
+        state = DISCOVERY;
+    }
+}
+
+

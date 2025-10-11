@@ -24,7 +24,6 @@
 #include"world.hpp"
 #include"agent.hpp"
 #include"percepts.hpp"
-#include"logger.hpp"
 
 /* The main sim loop. */
 void loop(
@@ -72,10 +71,6 @@ inline unsigned screen_width = 1000;
 inline unsigned screen_height = 850;
 
 int main(int argc, char **argv) {
-
-    //NEW: initializes the logging object and starts the worker thread
-
-
 
     /**************************************************************
     VARS
@@ -391,6 +386,11 @@ void loop(
                     unsigned s = 0;
                     while (s < foxes[i].GetSpeed() && s < cmds.size()) {
                         std::string cmd = cmds[s];
+                        location = foxes[i].GetLoc();
+                        forward = foxes[i].GetHeading();
+                        left = Vec2(forward.y, -forward.x);
+                        right = Vec2(-forward.y, forward.x);
+                        back = Vec2(-forward.x, -forward.y);
 
                         // Move forward
                         if (cmd == "F") {
@@ -531,8 +531,12 @@ void loop(
                     std::vector<std::string> cmds = hounds[i].RunAI(percepts, &comms);
                     unsigned s = 0;
                     while (s < hounds[i].GetSpeed() && s < cmds.size()) {
-
                         std::string cmd = cmds[s];
+                        location = hounds[i].GetLoc();
+                        forward = hounds[i].GetHeading();
+                        left = Vec2(forward.y, -forward.x);
+                        right = Vec2(-forward.y, forward.x);
+                        back = Vec2(-forward.x, -forward.y);
                         if (cmd == "F") {
                             location = location + forward;
                             if (world.CanMoveIntoCell(location)) {
