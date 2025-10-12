@@ -8,15 +8,27 @@
 
 class HoundAI : public AI {
 private:
-//pathfinder pFind;
-//mode state;
-//Vec2 tgt;
-
-//int wallBumps = 0;
-
-//semirandomHeading semiRand;
+    // retain chosen target for a few turns to avoid indecision
+    Vec2 currentTarget;
+    int targetHoldRemaining = 0;
+    const int holdDuration = 8; // adjust to keep a target for N turns
 
 public:
+    // min-heap of (priority, position) where lower priority is better
+    // Use a comparator that only compares the integer priority so Vec2 doesn't
+    // need an ordering operator.
+    struct FoxTrackCompare {
+        bool operator()(const std::pair<int, Vec2>& a, const std::pair<int, Vec2>& b) const {
+            return a.first > b.first; // smaller first == higher priority
+        }
+    };
+
+    std::priority_queue<
+        std::pair<int, Vec2>,
+        std::vector<std::pair<int, Vec2>>,
+        FoxTrackCompare
+    > foxTracks;
+
     HoundAI(
         unsigned id,
         unsigned agent_speed,

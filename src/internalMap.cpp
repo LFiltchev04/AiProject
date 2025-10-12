@@ -45,7 +45,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
@@ -63,7 +63,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
@@ -77,7 +77,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+           // std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         writeToSparse(cAbsPos,crrMax);
@@ -102,7 +102,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
@@ -138,7 +138,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         writeToSparse(cAbsPos,crrMax);
@@ -163,7 +163,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
@@ -181,7 +181,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+           //  std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
@@ -199,7 +199,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         writeToSparse(cAbsPos,crrMax);
@@ -225,7 +225,7 @@ void internalMap::updateMap(Percepts nVizData){
             }
 
             fastAccess[key] = node(ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.left.size(); ++relDist){
@@ -243,7 +243,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
@@ -261,7 +261,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
         
         writeToSparse(cAbsPos,crrMax);
@@ -485,7 +485,7 @@ void internalMap::changeHeading(char in){
     if(heading == 'F'){
         this->heading = in;
 
-    std::cout<<"heading set to1:"<<this->heading<<std::endl;
+    //std::cout<<"heading set to1:"<<this->heading<<std::endl;
         return;
     }
 
@@ -506,7 +506,7 @@ void internalMap::changeHeading(char in){
             heading = 'F';
         }
 
-    std::cout<<"heading set to2:"<<this->heading<<std::endl;
+   // std::cout<<"heading set to2:"<<this->heading<<std::endl;
         return;
     }
 
@@ -549,7 +549,7 @@ void internalMap::changeHeading(char in){
             heading = 'B';
         }
 
-    std::cout<<"heading set to4:"<<this->heading<<std::endl;
+    //std::cout<<"heading set to4:"<<this->heading<<std::endl;
         return;
     }
 
@@ -581,7 +581,7 @@ void internalMap::checkChange(Vec2 pos, char type){
         if(getPrior(pos).type == type){ 
             return;
         }else{
-            std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT WITH CONSTRUCTED PATH"<<std::endl<<std::endl<<std::endl;
+            //std::cout<<std::endl<<std::endl<<std::endl<<"MAP NOT CONSISTENT WITH CONSTRUCTED PATH"<<std::endl<<std::endl<<std::endl;
             consistent=false;
             return;
         }

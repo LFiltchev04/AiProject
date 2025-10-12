@@ -10,27 +10,29 @@ semirandomHeading::semirandomHeading(){
 
     std::uniform_int_distribution<int> tmp(-5,5);
     randInt = tmp;
-    Vec2 temp = getFullRandom({0,0});
+    // initialize as a relative offset
+    Vec2 temp = getFullRandom();
     randomHead = temp;
 }
 
-Vec2 semirandomHeading::getFullRandom(Vec2 cPos){
+Vec2 semirandomHeading::getFullRandom(){
     int tempX = randInt(randGen);
     int tempY = randInt(randGen);
 
     Vec2 temp;
     if(tempX>=0){
-        temp.x = static_cast<int>(70.0+30.0*(tempX/5.0));
+        temp.x = static_cast<int>(30.0+30.0*(tempX/5.0));
     }else{
-        temp.x = static_cast<int>(-70.0+30.0*(tempX/5.0));
+        temp.x = static_cast<int>(-30.0+30.0*(tempX/5.0));
     }
 
     if(tempY<0){
-        temp.y = static_cast<int>(70.0+30.0*(tempY/5.0));
+        temp.y = static_cast<int>(30.0+30.0*(tempY/5.0));
     }else{
-        temp.y = static_cast<int>(-70.0+30.0*(tempY/5.0));
+        temp.y = static_cast<int>(-30.0+30.0*(tempY/5.0));
     }
 
+    // store as a relative offset
     randomHead = temp;
 
     return temp;
@@ -39,7 +41,7 @@ Vec2 semirandomHeading::getFullRandom(Vec2 cPos){
 
 
 
-Vec2 semirandomHeading::fortyFiveCcWise(Vec2 cPos){
+Vec2 semirandomHeading::fortyFiveCcWise(){
     const double c = std::sqrt(2.0) / 2.0;
     const double s = c;
 
@@ -49,10 +51,10 @@ Vec2 semirandomHeading::fortyFiveCcWise(Vec2 cPos){
     randomHead.x = static_cast<int>(std::round(nx));
     randomHead.y = static_cast<int>(std::round(ny));
 
-    return cPos + randomHead;
+    return randomHead;
 }
 
-Vec2 semirandomHeading::fortyFiveCwise(Vec2 cPos){
+Vec2 semirandomHeading::fortyFiveCwise(){
     const double c = std::sqrt(2.0) / 2.0;
     const double s = -c;
 
@@ -62,54 +64,105 @@ Vec2 semirandomHeading::fortyFiveCwise(Vec2 cPos){
     randomHead.x = static_cast<int>(std::round(nx));
     randomHead.y = static_cast<int>(std::round(ny));
 
-    return cPos + randomHead;
+    // return offset (not absolute)
+    return randomHead;
 }
 
 
-void semirandomHeading::iterate(int wallBumps, Vec2 cPos, Vec2 absDir){
-    if(wallBumps>6){
-        std::cout<<"wall bump recovery activated";
-        //i dont knwo how much to trust the vector, its its been in a series of short term solisions, liek for example if its in a pipe, it will likely go completely wrong
-        //i am thinking I should add some multiplier for heading vectors that have been recorded sooner, depends on the map quite a lot, so i dont think i can come up with a perfect scheme for it if i tried
+void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
+    // Always refresh or adjust the relative offset so discovery produces new targets
 
-        //its getting wallbumps in first quadrant, so the wall is likely to the right, thus go clockwise
-        if(averageHeading.x>0.0 and averageHeading.y>0.0){
-            fortyFiveCcWise(cPos);
+    std::cout<<"Prior "<<prior.to_string()<<std::endl;
+    std::cout<<"PriorPrior "<<priorPrior.to_string()<<std::endl;
+
+    if(prior==cPos and priorPrior==prior){
+        //std::cout<<"Prior "<<prior.to_string()<<std::endl;
+    //std::cout<<"PriorPrior "<<priorPrior.to_string()<<std::endl;
+
+        randomHead = getFullRandom();
+        priorPrior=prior;
+        prior=cPos;
+    }
+    priorPrior=prior;
+    prior=cPos;
+    return;
+
+        /*
+        // use rotated offsets based on averageHeading quadrants
+        if(averageHeading.x>=0.0 && averageHeading.y>=0.0){
+            fortyFiveCcWise();
+            //fortyFiveCcWise();
             return;
         }
 
-        //second quadrant
-        if(averageHeading.x<0 and averageHeading.y > 0){
-            fortyFiveCwise(cPos);
+        if(averageHeading.x<0.0 && averageHeading.y > 0.0){
+            fortyFiveCwise();
+            //randomHead = cPos+fortyFiveCwise();
             return;
         }
 
-        //third quadrant
-        if(averageHeading.x<0 and averageHeading.y < 0){
-            fortyFiveCcWise(cPos);
+        if(averageHeading.x<0.0 && averageHeading.y < 0.0){
+            fortyFiveCcWise();
+            randomHead = cPos+fortyFiveCcWise();
             return;
         }
 
-        //fourth
-        if(averageHeading.x>0 and averageHeading.y<0){
-            fortyFiveCwise(cPos);
+        if(averageHeading.x>=0.0 && averageHeading.y<=0.0){
+            fortyFiveCwise();
+            //randomHead = cPos+fortyFiveCwise();
             return;
         }
 
-        if(averageHeading.x==0 and averageHeading.y==0){
-            randomHead = cPos+getFullRandom(cPos);
-            std::cout<<"average direction zeroed out, full random applied"<<std::endl;
-        }else{
-            randomHead = cPos+getFullRandom(cPos);
-            std::cout<< "average was a unit vector, full random applied"<<std::endl;
-        }
+        // Refresh with a fresh relative random offset (do NOT add cPos here)
+        randomHead = getFullRandom();
+        std::cout<<"full random applied during wall bump recovery"<<std::endl;
+        return;
+
+    // even when not in wall-bump recovery, generate a new candidate occasionally
+    // (so the randomizer actually changes targets between discovery calls)
+
+    // update the deque of recent headings (store the absolute direction vector)
+    pastSeven.push_back(absDir);
+    while(pastSeven.size() > 7) pastSeven.pop_front();
+
+    // compute average of the stored vectors
+    double sumx = 0.0, sumy = 0.0;
+    for(const Vec2 &v : pastSeven){
+        sumx += static_cast<double>(v.x);
+        sumy += static_cast<double>(v.y);
+    }
+    if(!pastSeven.empty()){*/
+       // averageHeading.x = sumx / static_cast<double>(pastSeven.size());
+      //  averageHeading.y = sumy / static_cast<double>(pastSeven.size());
+    //} else {
+        //averageHeading.x = 0.0;
+      //  averageHeading.y = 0.0;
+    //}
+
+    //std::cout<<averageHeading.x<<std::endl;
+    //std::cout<<averageHeading.y<<std::endl;
+    // avoid zeroing the offset; if you want a neutral target, produce a small random offset
+    //return;
+
 
 
     }
 
+
+Vec2 semirandomHeading::getNext(Vec2 cAbsPos){
+    // always return the relative offset
+
+    increment = cAbsPos;
+    increment.x=randomHead.x/10;
+    increment.y=randomHead.y/10;
+
+    if(increment==cAbsPos){
+        increment.x += randomHead.x/10;
+        increment.y += randomHead.y/10;
+    }
+
+    std::cout<<"AI is at:"<<cAbsPos.to_string()<<std::endl;
+    std::cout<<"Heading towards: "<<increment.to_string()<<std::endl;
+    return increment;
 }
 
-
-Vec2 semirandomHeading::getNext(){
-    return randomHead;
-}

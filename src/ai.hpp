@@ -20,7 +20,6 @@ class AI {
     Vec2 tgt;
 
     int wallBumps = 0;
-    semirandomHeading semiRand;
 
 protected:
     // Necessary, do not delete.
@@ -28,6 +27,8 @@ protected:
     unsigned agent_speed;
     std::mt19937_64* rng;
 public:
+    semirandomHeading semiRand;
+
     AI();
     AI(
         unsigned id, 

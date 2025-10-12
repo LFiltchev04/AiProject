@@ -26,9 +26,18 @@ std::vector<std::string> AI::Run(
 
     
     std::string AI::discoveryMode(){
-        semiRand.iterate(wallBumps,pFind.getMap().currentPos(),pFind.getMap().trueDir(pFind.getMap().getHeading()));
-        pFind.newTarget(semiRand.getNext());    
-        std::string cmd = runModel();
+    std::cout<<wallBumps<<"W bmp"<<std::endl;
+    Vec2 curPos = pFind.getMap().currentPos();
+    Vec2 absDir = pFind.getMap().trueDir(pFind.getMap().getHeading());
+    
+    semiRand.iterate(curPos, absDir);
+
+    
+    Vec2 offset = semiRand.getNext(curPos);
+    
+    
+    pFind.newTarget(curPos+offset);
+    std::string cmd = runModel();
 
         return cmd;
     }
@@ -48,21 +57,16 @@ std::string AI::runModel(){
             pFind.recomputeFrom();
         }
 
+        std::stack<Vec2> printPathDebug = *pFind.getPath();
 
-        if(pFind.getMap().isWall(pFind.followingCoord())){
-            std::cout<< pFind.followingCoord().x<< ","<<pFind.followingCoord().y<<" IS A WALL"<<std::endl;
-            
-            //the idea of tracking wall bumps is to change direction when in pathfinding mode, the speed is limited as it is
-            //there is no need to make moving one block in maybe a good direction take one turn to figure out its wrong, one to rotate and another to move
-            wallBumps+=2;    
-            pFind.recomputeFrom();
-        }else{
-            if(wallBumps>0){
-                wallBumps -= 1;
-            }
+        //std::cout<<"the path is :"<<printPathDebug.size()<<std::endl;
+
+        while(!printPathDebug.empty()){
+            std::cout<<printPathDebug.top().to_string()<<" -> ";
+            printPathDebug.pop();
         }
-    
-    
+        
+
         std::string nxt="";
         char nextStep = pFind.pathTranslator(); 
     

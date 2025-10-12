@@ -7,6 +7,7 @@ private:
     std::string goal;
     std::string exit;
     std::vector<std::string> teleporters;
+    int pointCount = 0;
 public:
     FoxAI(
         unsigned id,

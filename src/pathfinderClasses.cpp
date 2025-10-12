@@ -72,6 +72,12 @@ void pathfinder::updateMap(Percepts p){
 }
 
 void pathfinder::newTarget(Vec2 tgt){
+    if(tgt!=targetCoord){
+        while(!completePath.empty()){
+            completePath.pop();
+        }
+        
+    }
     targetCoord = tgt;
 }
 
@@ -87,7 +93,7 @@ int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
 
 // this is not actually LPA, its bog standard A*, but it kind of looks like it at a higher level
 void pathfinder::LPApathfind(){
-    std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
+  //  std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
     // clear data
     while(!bestGuess.empty()){
         bestGuess.pop();
@@ -109,7 +115,7 @@ void pathfinder::LPApathfind(){
     
     if(mapInstance.isWall(targetCoord)){
         // Target is a wall, no path possible
-        std::cerr<<"LPApathfind: target is a wall, no path possible\n";                                                                                                                                                                                                                                                                                                                                                                                                       
+        //std::cerr<<"LPApathfind: target is a wall, no path possible\n";                                                                                                                                                                                                                                                                                                                                                                                                       
         return;
     }
     
@@ -204,13 +210,23 @@ void pathfinder::LPApathfind(){
     }
 
     // no path found -> leave completePath empty
-    //std::cerr << "LPApathfind: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")\n";
+    std::cerr << "LPApathfind: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")\n";
 
 }
 
+
 void pathfinder::constrctPath(Vec2 goalNode){
 
-    while(!completePath.empty()) completePath.pop();
+
+    if(goalNode.x == 999 and goalNode.y == 999){
+        completePath.push(goalNode);
+        return;
+    }
+
+    while(!completePath.empty()){
+        completePath.pop();
+    }
+     
 
     Vec2 cur = goalNode;
     int safety = 0;
@@ -252,8 +268,13 @@ char pathfinder::pathTranslator(){
         return ' ';
     } 
 
+    if(completePath.top()==Vec2{999,999}){
+        std::cout<<"no route to path, returning nothing"<<std::endl;
+        return ' ';
+    }
+
     Vec2 cPos = mapInstance.currentPos();
-    std::cout<<std::endl<<std::endl<<std::endl<< cPos.to_string()<<"THIS IS THE UPCOMING MOVE< VERY IMPORTANT"<<std::endl<<std::endl<<std::endl;
+   // std::cout<<std::endl<<std::endl<<std::endl<< cPos.to_string()<<"THIS IS THE UPCOMING MOVE< VERY IMPORTANT"<<std::endl<<std::endl<<std::endl;
 
     // drop any path nodes equal to current position (safe-check empty after popping)
     while(!completePath.empty() && completePath.top() == cPos){
@@ -271,35 +292,35 @@ char pathfinder::pathTranslator(){
     Vec2 lpos = mapInstance.relativeHead('L') + cPos;
     Vec2 bpos = mapInstance.relativeHead('B') + cPos;
 
-    std::cout<<std::endl;
-    std::cout<<"F "<<fpos.x<<" tst "<<fpos.y<<std::endl;
-    std::cout<<"R "<<rpos.x<<" tst "<<rpos.y<<std::endl;
-    std::cout<<"B "<<bpos.x<<" tst "<<bpos.y<<std::endl;
-    std::cout<<"L "<<lpos.x<<" tst "<<lpos.y<<std::endl;
+    //std::cout<<std::endl;
+    //std::cout<<"F "<<fpos.x<<" tst "<<fpos.y<<std::endl;
+    //std::cout<<"R "<<rpos.x<<" tst "<<rpos.y<<std::endl;
+    //std::cout<<"B "<<bpos.x<<" tst "<<bpos.y<<std::endl;
+    //std::cout<<"L "<<lpos.x<<" tst "<<lpos.y<<std::endl;
 
     std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN COUNT:"<<turn<<std::endl;
-    std::cout<<fpos.x<<" f-ward "<<fpos.y<<" THE DIR"<<std::endl;
-    std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
+    //std::cout<<fpos.x<<" f-ward "<<fpos.y<<" THE DIR"<<std::endl;
+    //std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
     turn++;
 
     if(fpos == nextTile){
-        std::cout<<"going forward"<<mapInstance.getHeading()<<std::endl;
+      //  std::cout<<"going forward"<<mapInstance.getHeading()<<std::endl;
         return 'F';
     }
     if(rpos == nextTile){
-        std::cout<<"going right: "<<mapInstance.getHeading()<<std::endl;
+      //  std::cout<<"going right: "<<mapInstance.getHeading()<<std::endl;
         return 'R';
     }
     if(lpos == nextTile){
-        std::cout<<"going left"<<mapInstance.getHeading()<<std::endl;
+      //  std::cout<<"going left"<<mapInstance.getHeading()<<std::endl;
         return 'L';
     }
     if(bpos == nextTile){
-        std::cout<<"should head back?"<<mapInstance.getHeading()<<std::endl;
+      ///  std::cout<<"should head back?"<<mapInstance.getHeading()<<std::endl;
         return 'B';
     }
 
-    std::cout<<"THE INTERPRETER DEFAULTED"<<std::endl;
+   // std::cout<<"THE INTERPRETER DEFAULTED"<<std::endl;
     
     //i need to add a handler to make sure theese dont trip something up downstream
     return ' ';
