@@ -96,9 +96,9 @@ std::vector<std::string> FoxAI::Run(
         cmds.push_back(arr[0]);
     }
     */
-    //pFind.updateMap(percepts);
-    //std::string nextS = discoveryMode();
-    //cmds.push_back(nextS);
+    pFind.updateMap(percepts);
+    std::string nextS = discoveryMode();
+    cmds.push_back(nextS);
 
 
     return cmds;
