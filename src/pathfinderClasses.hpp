@@ -16,6 +16,9 @@ class pathfinder {
     int turn = 0;
     bool noPath = false;
 
+    
+    char state;
+
 
     //used for deriving the optimal path, barebones A*, may need to be changed to an LPA* later, which i am sure will require an overhaul precisely so as to make my current efforts worthless
     std::priority_queue<searchNode> bestGuess;
@@ -33,7 +36,7 @@ class pathfinder {
     char greedyPathfind();
     void newTarget(Vec2 newTgt);
 
-    void LPApathfind();
+    void aStar();
     int getNodeScore(Vec2,int);
     int h(Vec2 head);
     void constrctPath(Vec2 goalNode);
@@ -52,8 +55,11 @@ class pathfinder {
     void updateMap(Percepts p);
     void recordNode(Vec2);
 
-    bool multiturnSafe(std::stack<Vec2>cmdCopy);
+    bool multiturnSafe(std::stack<Vec2>cmdCopy,int);
     Vec2 followingCoord();
+
+    void setState(char in){state = in;};
+    char getState(){return state;};
     
     ~pathfinder(){};
 };

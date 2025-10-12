@@ -88,7 +88,6 @@ void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
     return;
 
         /*
-        // use rotated offsets based on averageHeading quadrants
         if(averageHeading.x>=0.0 && averageHeading.y>=0.0){
             fortyFiveCcWise();
             //fortyFiveCcWise();
@@ -113,19 +112,15 @@ void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
             return;
         }
 
-        // Refresh with a fresh relative random offset (do NOT add cPos here)
         randomHead = getFullRandom();
         std::cout<<"full random applied during wall bump recovery"<<std::endl;
         return;
 
-    // even when not in wall-bump recovery, generate a new candidate occasionally
     // (so the randomizer actually changes targets between discovery calls)
 
-    // update the deque of recent headings (store the absolute direction vector)
     pastSeven.push_back(absDir);
     while(pastSeven.size() > 7) pastSeven.pop_front();
 
-    // compute average of the stored vectors
     double sumx = 0.0, sumy = 0.0;
     for(const Vec2 &v : pastSeven){
         sumx += static_cast<double>(v.x);
@@ -141,7 +136,6 @@ void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
 
     //std::cout<<averageHeading.x<<std::endl;
     //std::cout<<averageHeading.y<<std::endl;
-    // avoid zeroing the offset; if you want a neutral target, produce a small random offset
     //return;
 
 

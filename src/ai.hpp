@@ -16,11 +16,11 @@
 class AI {
     
     
-    mode state;
     Vec2 tgt;
 
+    //this is dead but the dead elements to whhich it refers are not removed so it stays
     int wallBumps = 0;
-
+    char state;
 protected:
     // Necessary, do not delete.
     unsigned id;
@@ -28,7 +28,7 @@ protected:
     std::mt19937_64* rng;
 public:
     semirandomHeading semiRand;
-
+    
     AI();
     AI(
         unsigned id, 
@@ -48,12 +48,14 @@ public:
     //allows multiple moves per turn in areas that are seen
     std::vector<std::string> traverseMode();
 
-    void setMode();
+    
 
     Vec2 randomHead();
-    std::vector<std::string> multiturn();
+
+    void setMode(char,int);
+    std::vector<std::string> traverseMode(int);
     std::string discovery();
-    
+
     std::string runModel();
 
 

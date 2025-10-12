@@ -25,15 +25,29 @@ std::vector<std::string> AI::Run(
 
 
 std::vector<std::string> AI::traverseMode(int allowedMoves){
+    std::vector<std::string> cmds={};
+    std::string nxt="";
+
+    // Check for multiturn
     if(pFind.multiturnSafe(*pFind.getPath(),allowedMoves)){
-        std::vector<std::string> cmds={};
-        std::string nxt="";
-       for(int x=0;x<allowedMoves;x++){
+        setMode('A',allowedMoves);
+        
+        for(int x=0;x<allowedMoves;x++){
             nxt += runModel();
-    } else {
-        setMode();
-        return {discoveryMode()};
+            cmds.push_back(nxt);
+            nxt="";
+        }
+        return cmds;
     }
+    
+    setMode('M',allowedMoves);
+    
+        nxt += runModel();
+        cmds.push_back(nxt);
+        nxt="";
+
+    
+    return cmds;
 }
 
 
@@ -56,12 +70,23 @@ std::vector<std::string> AI::traverseMode(int allowedMoves){
     }
 
 
-    void AI::setMode(){
-        if(pFind.multiturnSafe(*pFind.getPath())){
+    void AI::setMode(char type, int allowedMoves){
+
+        if(type=='A'){
+            if(pFind.multiturnSafe(*pFind.getPath(),allowedMoves)){
             state = 'T';
+            pFind.setState('T');
         } else {
-            state = 'D';
-        }
+            pFind.setState('D');
+        }    
+        
+    }
+
+    if(type=='M'){
+        pFind.setState('D');
+        state = 'D';
+    }
+        
     }
 
 

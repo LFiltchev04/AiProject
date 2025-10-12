@@ -91,10 +91,9 @@ int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
     return tentativeG + h(/*head will be provided as node position by caller*/ nodePos); // placeholder not used here
 }
 
-// this is not actually LPA, its bog standard A*, but it kind of looks like it at a higher level
-void pathfinder::LPApathfind(){
+//this is basically the whole AI
+void pathfinder::aStar(){
   //  std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
-    // clear data
     while(!bestGuess.empty()){
         bestGuess.pop();
     } 
@@ -104,32 +103,27 @@ void pathfinder::LPApathfind(){
 
     startCoord = mapInstance.currentPos();
     
-    // ensure map consistency flag is reset before recomputing the path
+
     mapInstance.consistent = true;
     
-    // Early termination checks
+    
     if(startCoord == targetCoord){
-        // Already at target
         return;
     }
     
     if(mapInstance.isWall(targetCoord)){
-        // Target is a wall, no path possible
-        //std::cerr<<"LPApathfind: target is a wall, no path possible\n";                                                                                                                                                                                                                                                                                                                                                                                                       
+                                                                                                                                                                                                                                                                                                                                                                                                              
         return;
     }
     
-    // seed start node
     searchNode startNode;
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
     startNode.global = 0;
     startNode.priority = h(startCoord);
     bestGuess.push(startNode);
-    // record the actual start coordinate (avoid recording an uninitialized Vec2)
     recordNode(startNode.nodePosition);
 
-    // fast lookup for best g found per cell
     std::unordered_map<size_t,int> bestG;                                                                                                                                                           
     bestG[hashCords(startCoord.x, startCoord.y)] = 0;
     std::unordered_set<size_t> closed;
@@ -142,7 +136,6 @@ void pathfinder::LPApathfind(){
         //on how far away you can reasonably search, also meaning your map size is bounded, at around (150,150) it runs into the limiter
         //if its larger it would need to be given more allowance for searching.
         if(nodesExplored > 10000 && bestGuess.size() > 900){
-            std::cerr << "LPApathfind: explored too many nodes without progress, target likely unreachable\n";
             break;
         }
         searchNode parrent = bestGuess.top();
@@ -155,7 +148,6 @@ void pathfinder::LPApathfind(){
         closed.insert(pKey);
         nodesExplored++;
 
-        // checks it its goal
         if(parrent.nodePosition == targetCoord){
             constrctPath(parrent.nodePosition);
             return;
@@ -168,7 +160,7 @@ void pathfinder::LPApathfind(){
             Vec2 nb = parrent.nodePosition + dir;
             size_t nbKey = hashCords(nb.x, nb.y);
 
-            // skip walls and already-closed nodes
+
             if(mapInstance.isWall(nb) || closed.count(nbKey)){
                  ninetyClockwise(dir);
                  continue;
@@ -176,11 +168,18 @@ void pathfinder::LPApathfind(){
 
              int tentativeG;
 
-             if(mapInstance.wasSeen(nb)){
-                int tentativeG = parrent.global + 1;
-             }else{
-                int tentativeG = parrent.global + 3;
-             }
+             if(state == 'T'){
+                if(mapInstance.wasSeen(nb)){
+                    tentativeG = parrent.global + 1;
+                }else{
+                    tentativeG = parrent.global + 3;
+                }
+                
+            } else {
+                tentativeG = parrent.global + 1;
+            }
+
+
             
             auto it = bestG.find(nbKey);
             if(it != bestG.end() && tentativeG >= it->second){
@@ -199,7 +198,6 @@ void pathfinder::LPApathfind(){
             bestGuess.push(neighbour);
 
             //move it off this to make the sparse maps mean anything
-            //also remove the node reset/record functionality and use the pointers to reconstruct the path, why did i even do this to begin with
             mapInstance.fastAccess[nbKey].pathfindComponent = neighbour;
 
             ninetyClockwise(dir);
@@ -208,8 +206,7 @@ void pathfinder::LPApathfind(){
         
     }
 
-    // no path found -> leave completePath empty
-    std::cerr << "LPApathfind: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")\n";
+    std::cerr << "aStar: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")"<<std::endl;
 
 }
 
@@ -226,6 +223,7 @@ void pathfinder::constrctPath(Vec2 goalNode){
         completePath.pop();
     }
      
+    
 
     Vec2 cur = goalNode;
     int safety = 0;
@@ -242,7 +240,6 @@ void pathfinder::constrctPath(Vec2 goalNode){
         if(parent.x == startCoord.x && parent.y == startCoord.y) break;
         cur = parent;
     }
-    // caller should handle empty stack / no-path case
 
         
 }
@@ -268,7 +265,7 @@ char pathfinder::pathTranslator(){
     } 
 
     if(completePath.top()==Vec2{999,999}){
-        std::cout<<"no route to path, returning nothing"<<std::endl;
+        std::cout<<"no route to path"<<std::endl;
         return ' ';
     }
 
@@ -329,9 +326,8 @@ char pathfinder::pathTranslator(){
 void pathfinder::recomputeFrom(){
     //this recomputes from the start point to the end, so it should redo the whole thing, meaning drop the stack and redo from starting point
 
-    //dumps the stack, unfortunatley cant be more efficient
     dumpSearch();
-    LPApathfind();
+    aStar();
 
 
 }
@@ -343,7 +339,6 @@ bool pathfinder::pathInvalid(){
 void pathfinder::dumpSearch(){
     
     for(Vec2 iter:forCleanup){
-        // get a reference to the stored node (modify map entry, not copy)
         auto &itr = mapInstance.fastAccess.at(hashCords(iter.x,iter.y));
 
         //std::cout<<"IT WILL DUMP COORDINATE: "<< "("<<itr.pathfindComponent.priority<<","<<itr.pathfindComponent.priority<<")"<<std::endl;
@@ -364,19 +359,21 @@ void pathfinder::recordNode(Vec2 pos){
 
 Vec2 pathfinder::followingCoord(){
     if(completePath.empty()){
-        // safe fallback — no next coord available
         return mapInstance.currentPos();
     }
     return completePath.top();
 }
 
-//not the best solution, but not too bad
-bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
-    for(int x=0;x<3;x++){
+bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy, int turns){
+    for(int x=0;x<turns;x++){
+        if(stkCpy.empty()){
+            return false;
+        }
+        
         if(mapInstance.wasSeen(stkCpy.top())){
             stkCpy.pop();
         }else{
-            break;
+            return false;
         }
     }
 

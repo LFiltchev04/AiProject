@@ -2,7 +2,6 @@
 #define INTERNALMAP_HPP
 
 #include "vec2.hpp"
-#include "logger.hpp"
 #include "percepts.hpp"
 #include <unordered_map>
 #include "utils.hpp"
@@ -39,12 +38,12 @@ struct emptySeenNodes{
 struct priorityTarget{
     Vec2 pos;
     char type;
+
 };
 
 class internalMap{
     char heading;
     Vec2 cAbsPos;
-    std::vector<priorityTarget> priorityTargets;
     
     //theese are needed for the sparse memory mapping scheme, basically you push the maximal extent of vision at every point recorded at a given X or Y coordinate to their own hashmap
     //when you later want to find out whether a certain one is empty you need to call an appropriate function
@@ -53,10 +52,12 @@ class internalMap{
 
 
     void writeToSparse(Vec2 pos, emptySeenNodes);
-    void addPriority(Vec2 pos, std::string type);
+    void addPriority(Vec2 pos, char type);
 
     public:
     bool wasSeen(Vec2);
+
+    std::vector<priorityTarget> priorityTargets;
 
     bool consistent;
     //turns a relative space character into absolute space vector
@@ -104,7 +105,12 @@ class internalMap{
     Vec2 relativeHead(char);
 
     Vec2 vecToHeading(Vec2 direction);
+    
+    // Get the priority targets vector
+    const std::vector<priorityTarget>& getPriorityTargets() const;
 
+
+    void removePriorityTarget(Vec2 pos, char type);
     ~internalMap();
 };
 

@@ -1,6 +1,7 @@
 #include "internalMap.hpp"
 #include <unordered_map>
 #include "utils.hpp"
+#include "logger.hpp"
 
 
 internalMap::internalMap(){
@@ -15,7 +16,7 @@ consistent = true;
 //i am pretty sure i need to change the underlying functions to make sure 
 void internalMap::updateMap(Percepts nVizData){
 
-    // Helper lambda to get char safely
+    // so i dont need to do it every time
     auto pick = [](const std::string &s)->char{
         return s.empty() ? ' ' : s[0];
     };
@@ -42,6 +43,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.zeroOne = nVizData.forward.size()-1;
             }
 
+            addPriority({pos.x,cAbsPos.y + 1 + relDist},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -60,6 +63,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.oneZero = nVizData.left.size()-1;
             }
 
+            addPriority({pos.x - 1 - relDist,cAbsPos.y},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -70,10 +75,17 @@ void internalMap::updateMap(Percepts nVizData){
             Vec2 pos { cAbsPos.x + 1 + relDist, cAbsPos.y };
             char ch = pick(nVizData.right.at(relDist));
             
+            if(ch == 'o'){
+                continue;
+            }
+
+
             if(ch=='w'){
                 crrMax.zeroOne = nVizData.right.size()-1;
             }
-            
+
+            addPriority({pos.x + 1 + relDist,cAbsPos.y},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -99,6 +111,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.oneZero = nVizData.forward.size()-1;
             }
 
+            addPriority({pos.x + 1 + relDist,cAbsPos.y},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -117,6 +131,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.zeroOne = nVizData.left.size()-1;
             }
 
+            addPriority({pos.x,cAbsPos.y + 1 + relDist},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -134,6 +150,8 @@ void internalMap::updateMap(Percepts nVizData){
             if(ch=='w'){
                 crrMax.minusZero = nVizData.right.size()-1;
             }
+
+            addPriority({pos.x - 1 - relDist,cAbsPos.y},ch);
 
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
@@ -160,6 +178,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.zeroMinus = nVizData.forward.size()-1;
             }
 
+            addPriority({pos.x,cAbsPos.y - 1 - relDist},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -178,6 +198,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.oneZero = nVizData.right.size()-1;
             }
 
+            addPriority({pos.x + 1 + relDist,cAbsPos.y},ch);
+
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -195,6 +217,8 @@ void internalMap::updateMap(Percepts nVizData){
             if(ch=='w'){
                 crrMax.minusZero = nVizData.right.size()-1;
             }
+
+            addPriority({pos.x - 1 - relDist,cAbsPos.y},ch);
 
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
@@ -224,6 +248,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.minusZero = nVizData.forward.size()-1;
             }
 
+            addPriority({pos.x - 1 - relDist,cAbsPos.y},ch);
+
             fastAccess[key] = node(ch);
             //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
@@ -239,6 +265,8 @@ void internalMap::updateMap(Percepts nVizData){
             if(ch=='w'){
                 crrMax.zeroMinus = cAbsPos.y-nVizData.left.size()-1;
             }
+
+            addPriority({pos.x,cAbsPos.y - 1 - relDist},ch);
 
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
@@ -258,6 +286,8 @@ void internalMap::updateMap(Percepts nVizData){
                 crrMax.zeroOne = cAbsPos.y+nVizData.right.size()-1;
             }
 
+            addPriority({pos.x,cAbsPos.y + 1 + relDist},ch);
+            
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
@@ -657,14 +687,20 @@ Vec2 internalMap::relativeHead(char in){
 }
 
 
-void internalMap::addPriority(Vec2 pos, std::string type){
-    if(type == "w"){
+void internalMap::addPriority(Vec2 pos, char type){
+    if(type == 'w'){
+        return;
+    }
+
+    if(fastAccess.find(hashCords(pos.x,pos.y)) != fastAccess.end()){
         return;
     }
     
     priorityTarget temp;
     temp.pos = pos;
-    temp.type = type[0];
+    temp.type = type;
+
+    priorityTargets.push_back(temp);
 }
 
 
@@ -697,7 +733,15 @@ Vec2 internalMap::vecToHeading(Vec2 direction) {
 
 
 
-
+// Add to internalMap.cpp
+void internalMap::removePriorityTarget(Vec2 pos, char type) {
+    priorityTargets.erase(
+        std::remove_if(priorityTargets.begin(), priorityTargets.end(),
+            [pos, type](const priorityTarget& pt) {
+                return pt.pos == pos && pt.type == type;
+            }),
+        priorityTargets.end());
+}
 
 internalMap::~internalMap(){
 

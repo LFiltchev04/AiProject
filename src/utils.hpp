@@ -3,7 +3,6 @@
 #include <sstream>
 #include "json.hpp"
 #include <climits>
-#include <iomanip>    // added for std::setprecision
 #include <random>
 
 using json = nlohmann::json;
@@ -12,7 +11,6 @@ using json = nlohmann::json;
 #define UTILS_HPP
 
 
-//this encodes the sighted object types, i should probably feed it int representations of characters to match them to the actual char for convenience
 enum entity{
     empty,
     wall,
@@ -23,7 +21,6 @@ enum entity{
     goal
 };
 
-//aggregates the reporting data for visualization or persisting on disk, that too should probably go into a utils file
 struct logObj {
     entity sightType;
     Vec2 absLocation;
@@ -98,7 +95,6 @@ Vec2 inline getAbsolute(Vec2 pos, char heading, Vec2 relCoord){
     return relCoord + pos;
 }
 
-//computes linear sustance between coordinate pairs
 float inline linDist(Vec2 posOne, Vec2 posTwo){
     return std::abs(std::sqrt((posOne.x-posTwo.x)*(posOne.x-posTwo.x)+(posOne.y-posTwo.y)*(posOne.y-posTwo.y)));
 }
@@ -108,7 +104,6 @@ int inline manhattanDistance(Vec2 posOne, Vec2 posTwo){
 }
 
 std::string inline logObjParser(logObj input){
-    // placeholder safe implementation
     return std::string();
 }
 
@@ -136,14 +131,12 @@ struct searchNode{
             global = 0;
 
         }
-        //this is supposed to iterate the whole thing, lets hope i was not retarded while writing it
         searchNode(Vec2 pos, const searchNode &parrent,int comptedPriority){
         
             
             nodePosition = pos;
             parrentCoords.x = parrent.nodePosition.x;
             parrentCoords.y = parrent.nodePosition.y;
-            // do not use ++ on parent's global and ensure correct increment
             global = parrent.global + 1;
             priority = comptedPriority;
         }
@@ -169,7 +162,7 @@ struct doubleVec{
     }
     std::string to_string() const {
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(3); // adjust precision as desired
+        oss << std::fixed << std::setprecision(3); 
         oss << "[" << x << "," << y << "]";
         return oss.str();
     }
