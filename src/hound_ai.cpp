@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <iostream>
 #include <string>
+#include <limits>
 
 
 /***************************************************************
@@ -22,84 +23,118 @@ HoundAI::HoundAI(
 
 
 //the absolute position has to be passed from the map class, the rotations are handled there 
-Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos, double scent){
-
-    if (commData == nullptr){
-        return cAbsPos;
-    } 
-
-    auto brks = commData->bark.begin();     
-    auto dir = commData->direction.begin();
-
-    while(brks != commData->bark.end() && dir != commData->direction.end()){
-
-        Vec2 bPos = *dir;                 // reporter absolute position
-        double r1 = scent;                // radius from this hound (scent)
-        double r2 = static_cast<double>(*brks); // radius from the barker
-
-        // distance between the two circle centers
-        double d = linDist(cAbsPos, bPos);
-
-        // skip degenerate / impossible cases
-        if (d <= 1e-12){
-            // same center or invalid
-            ++brks; ++dir; 
-            continue; 
-        }           
-        if (d > r1 + r2 + 1e-9){
-            // circles too far apart
-            ++brks; 
-            ++dir;
-            continue; 
-        }   
-        if (d < std::fabs(r1 - r2) - 1e-9){
-            // one inside the other
-            ++brks;
-            ++dir;
-            continue; 
-        } 
-
-        // compute circle intersection (standard geometry)
-        double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
-        double h2 = r1*r1 - a*a;
-        if(h2 < 0){
-            h2 = 0;
-        } 
-        double h = std::sqrt(h2);
-
-        // unit vector from this hound to the barker
-        double ux = (bPos.x - cAbsPos.x) / d;
-        double uy = (bPos.y - cAbsPos.y) / d;
-
-        // point P2 which is the point along the line between centers at distance a from this hound
-        Vec2 P2;
-        P2.x = cAbsPos.x + ux * a;
-        P2.y = cAbsPos.y + uy * a;
-
-        // perpendicular offset to get the two intersection points
-        Vec2 off;
-        off.x = -uy * h;
-        off.y =  ux * h;
-
-    // compute intersection points (may be fractional), round to nearest integer grid
-    Vec2 inter1, inter2;
-    double fx1 = P2.x + off.x;
-    double fy1 = P2.y + off.y;
-    double fx2 = P2.x - off.x;
-    double fy2 = P2.y - off.y;
-    inter1.x = static_cast<int>(std::round(fx1));
-    inter1.y = static_cast<int>(std::round(fy1));
-    inter2.x = static_cast<int>(std::round(fx2));
-    inter2.y = static_cast<int>(std::round(fy2));
-
-    // choose one intersection to return — pick the one closer to the barker reporter
-    double d1 = linDist(inter1, bPos);
-    double d2 = linDist(inter2, bPos);
-    return (std::fabs(d1 - r2) < std::fabs(d2 - r2)) ? inter1 : inter2;
+std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
+    std::vector<Vec2> results;
+    
+    if (!commData || commData->bark.empty() || commData->direction.empty()) {
+        return results;
     }
-
-    // no valid intersection found, return current position as fallback
-    return cAbsPos;
+    
+    // Collect all circle centers and radii correctly
+    std::vector<Vec2> centers;
+    std::vector<double> radii;   
+    
+    // Add current hound
+    centers.push_back(cAbsPos);
+    radii.push_back(static_cast<double>(commData->bark[0])); // Assuming bark[0] is current hound's scent
+    
+    // Add peer hounds (make sure we have matching bark and direction data)
+    size_t numPeers = std::min(commData->bark.size() - 1, commData->direction.size());
+    for(size_t i = 0; i < numPeers; ++i){
+        centers.push_back(commData->direction[i]);
+        radii.push_back(static_cast<double>(commData->bark[i + 1])); // Skip bark[0] since it's current hound
+    }
+    
+    // Need at least 3 circles for exact triangulation
+    if (centers.size() < 3) {
+        return results;
+    }
+    
+    // Find all candidate points from pairs of circles
+    std::vector<Vec2> candidates;
+    
+    for (size_t i = 0; i < centers.size(); ++i) {
+        for (size_t j = i + 1; j < centers.size(); ++j) {
+            Vec2 c1 = centers[i];
+            Vec2 c2 = centers[j];
+            double r1 = radii[i];
+            double r2 = radii[j];
+            
+            // distance between the two circle centers
+            double d = linDist(c1, c2);
+            
+            // skip degenerate / impossible cases
+            if (d <= 1e-12 || d > r1 + r2 + 1e-9 || d < std::fabs(r1 - r2) - 1e-9) {
+                continue;
+            }
+            
+            // compute circle intersection (standard geometry)
+            double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
+            double h2 = r1*r1 - a*a;
+            if(h2 < 0) h2 = 0;
+            double h = std::sqrt(h2);
+            
+            // unit vector from c1 to c2
+            double ux = (c2.x - c1.x) / d;
+            double uy = (c2.y - c1.y) / d;
+            
+            // point P2 which is the point along the line between centers at distance a from c1
+            double p2x = c1.x + ux * a;
+            double p2y = c1.y + uy * a;
+            
+            // perpendicular offset to get the two intersection points
+            double offx = -uy * h;
+            double offy =  ux * h;
+            
+            // compute intersection points (may be fractional), round to nearest integer grid
+            Vec2 inter1, inter2;
+            inter1.x = static_cast<int>(std::round(p2x + offx));
+            inter1.y = static_cast<int>(std::round(p2y + offy));
+            inter2.x = static_cast<int>(std::round(p2x - offx));
+            inter2.y = static_cast<int>(std::round(p2y - offy));
+            
+            candidates.push_back(inter1);
+            if (!(inter1.x == inter2.x && inter1.y == inter2.y)) {
+                candidates.push_back(inter2);
+            }
+        }
+    }
+    
+    // Find the candidate that is closest to all circles (trilateration)
+    Vec2 bestCandidate;
+    double minMaxError = std::numeric_limits<double>::max();
+    bool foundValid = false;
+    
+    for (Vec2 candidate : candidates) {
+        double maxError = 0.0;
+        bool validForAllCircles = true;
+        
+        // Check how well this candidate fits all circles
+        for (size_t i = 0; i < centers.size(); ++i) {
+            double distToCenter = linDist(candidate, centers[i]);
+            double error = std::fabs(distToCenter - radii[i]);
+            
+            // If error is too large, this candidate is invalid
+            if (error > 2.0) { // tolerance for grid discretization
+                validForAllCircles = false;
+                break;
+            }
+            
+            maxError = std::max(maxError, error);
+        }
+        
+        if (validForAllCircles && maxError < minMaxError) {
+            minMaxError = maxError;
+            bestCandidate = candidate;
+            foundValid = true;
+        }
+    }
+    
+    if (foundValid) {
+        results.push_back(bestCandidate);
+    }
+    
+    return results;
 }
 
 
@@ -212,22 +247,53 @@ std::vector<std::string> HoundAI::Run(
 
     // If the AI's id is 0, it sets its message to 9.
     // This demonstrates how you can pass messages.
-    if (id == 0) {
-        comms->bark[0] = 9;
+    if (comms != nullptr) {
+        for (size_t i = 0; i < comms->bark.size(); ++i) {
+            comms->bark[i] = static_cast<unsigned>(pFind.getMap().currentPos().Distance(comms->direction[i]));
+        }
     }
+
+    Vec2 cAbsPos = pFind.getMap().currentPos();
 
     std::vector<std::string> cmds={};
     std::vector<std::string> arr = {};
 
     
     pFind.updateMap(percepts);
-    Vec2 targ = trackFox(comms,pFind.getMap().currentPos(),percepts.scent);
     
-    //if(!(targ==pFind.getMap().currentPos())){
-    //    // choose priority metric: manhattan distance from current position
-    //    int prio = manhattanDistance(pFind.getMap().currentPos(), targ);
-    //    foxTracks.emplace(prio, targ);
-   // }
+std::vector<Vec2> targs;
+
+     targs = trackFox(comms, pFind.getMap().currentPos());
+
+    /*
+    if(targs.size()>0){
+        for (const Vec2 &targ : targs) {
+        // ignore no-op matches to current pos
+        
+        if(targ != pFind.getMap().currentPos()){
+            int prio = manhattanDistance(pFind.getMap().currentPos(), targ);
+            foxTracks.emplace(prio, targ);
+            continue;    
+        }
+        std::cout<<"no fox detected"<<std::endl;
+    }
+    } else {
+        std::cout<<std::endl<<"no fox detected"<<std::endl;
+    }
+    
+
+*/
+
+try{
+    std::cout<<"the fox is here "<<targs.at(0).to_string()<<std::endl;
+}catch(const std::exception& e){
+    std::cerr << "Error: " << e.what() << std::endl;
+}
+    
+    if(targs.size()>0){
+        pFind.newTarget(targs.at(0));
+        std::cout<<"the fox is here "<<pFind.getTgt().to_string()<<std::endl;
+    }
 
     std::string rndm = discoveryMode();
         cmds.push_back(rndm);
@@ -236,18 +302,8 @@ std::vector<std::string> HoundAI::Run(
 
         return cmds;
 
-    //std::cout<<std::endl<<"the tgt:"<<pFind.getTgt().to_string()<<std::endl;;
-
-
-
-
-
-
-
-
-
-
 
     }
+
 
 

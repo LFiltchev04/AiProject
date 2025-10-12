@@ -102,6 +102,9 @@ class internalMap{
     void checkChange(Vec2 pos, char seenType);
 
     Vec2 relativeHead(char);
+
+    Vec2 vecToHeading(Vec2 direction);
+
     ~internalMap();
 };
 

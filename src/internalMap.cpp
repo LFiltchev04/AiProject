@@ -666,6 +666,34 @@ void internalMap::addPriority(Vec2 pos, std::string type){
 
 
 
+Vec2 internalMap::vecToHeading(Vec2 direction) {
+        Vec2 rotatedDir = direction;
+        
+        if (heading == 'F') {
+                    // No rotation needed - already aligned
+                    return direction;
+        }
+        else if (heading == 'R') {
+            // Rotate clockwise once
+            ninetyClockwise(rotatedDir);
+        }
+        else if (heading == 'B') {
+            // Rotate 180 degrees (2 clockwise rotations)
+            ninetyClockwise(rotatedDir);
+            ninetyClockwise(rotatedDir);
+        }
+        else if (heading == 'L') {
+            // Rotate counter-clockwise (3 clockwise rotations)
+            ninetyClockwise(rotatedDir);
+            ninetyClockwise(rotatedDir);
+            ninetyClockwise(rotatedDir);
+        }
+        
+        return rotatedDir;
+    }
+
+
+
 
 
 internalMap::~internalMap(){

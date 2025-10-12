@@ -123,7 +123,6 @@ double inline angleBetween(Vec2 a, Vec2 b) {
 
 
 
-
 struct searchNode{
         Vec2 nodePosition;
         Vec2 parrentCoords;
@@ -176,7 +175,17 @@ struct doubleVec{
     }
 };
 
+struct foxLog{
+    Vec2 lastKnown;
+    double manhattanDist;
+    int lastSeen;
 
+    foxLog(){
+        lastKnown = {0,0};
+        manhattanDist = 0.0;
+        lastSeen = 0;
+    }
+};
 
 //lgr mainLogger("http://127.0.0.1:3005");
 

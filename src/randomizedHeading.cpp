@@ -150,8 +150,10 @@ void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
 
 
 Vec2 semirandomHeading::getNext(Vec2 cAbsPos){
-    // always return the relative offset
 
+    //if i move theese in small increments to the absolute position they wont have to dump a lot of node guesses early
+    //also keeps the queues shorter
+    
     increment = cAbsPos;
     increment.x=randomHead.x/10;
     increment.y=randomHead.y/10;

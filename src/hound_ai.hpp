@@ -39,9 +39,10 @@ public:
         AgentComm * comms
     );
 
-    //attempts to fix a fox`s position using scent data and comms from other hounds, hounds bark their nearest fox, this is used to attemp a location calculation
-    Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos, double scent);
-    
+    //attempts to fix a fox's position using scent data and comms from other hounds.
+    //Uses trilateration with 3+ circles to return the exact fox location (returns 0 or 1 point)
+    std::vector<Vec2> trackFox(AgentComm* commData, Vec2 cAbsPos);
+
 
     //theese ought to be removed and put in the base class so i can use them for the foxes
 
