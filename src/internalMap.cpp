@@ -452,27 +452,30 @@ node internalMap::getPrior(Vec2 atPlace){
 
 
 bool internalMap::wasSeen(Vec2 analyzeThis){
-    
-    
     auto xIter = xOnlyAccess.find(analyzeThis.x);
     auto yIter = yOnlyAccess.find(analyzeThis.y);
     
-    if(xIter==xOnlyAccess.end() and yIter==yOnlyAccess.end()){
-        return false;
-    }
+    
 
-    for(std::pair<int,int> var:xIter->second){
-        if(analyzeThis.x>=var.first and analyzeThis.x<=var.second){
-            return true;
+    // Only check x ranges if we found the x coordinate
+    if(xIter != xOnlyAccess.end()){
+        for(const std::pair<int,int>& var : xIter->second){
+            if(analyzeThis.y >= var.first && analyzeThis.y <= var.second){
+                return true;
+            }
         }
     }
 
-    for(std::pair<int,int> var:yIter->second){
-        if(analyzeThis.y>=var.first and analyzeThis.y<=var.second){
-            return true;
+    // Only check y ranges if we found the y coordinate
+    if(yIter != yOnlyAccess.end()){
+        for(const std::pair<int,int>& var : yIter->second){
+            if(analyzeThis.x >= var.first && analyzeThis.x <= var.second){
+                return true;
+            }
         }
     }
 
+    return false;
 }
 
 

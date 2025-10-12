@@ -134,19 +134,12 @@ void pathfinder::LPApathfind(){
     bestG[hashCords(startCoord.x, startCoord.y)] = 0;
     std::unordered_set<size_t> closed;
 
-    // safety guard to avoid pathological infinite loops
-    int iterationGuard = 0;
-    const int ITERATION_LIMIT = 10000;
     int nodesExplored = 0;
     
     while(!bestGuess.empty()){
-        if(++iterationGuard > ITERATION_LIMIT){
-            std::cerr << "LPApathfind: iteration limit reached, aborting search\n";
-            break;
-        }
         
         //this needs to be here otherwise the search space will explode, there is inherintly no limit to the search space as its just throwing guesses at hashmaps, so there has to be an arbitrary upper limit
-        //on how far away you can reasonably search, also meaning you map size is bounded, when i set the coordinates to (100,100) it does not give up, i am hoping that the maximum map size is thereabout that
+        //on how far away you can reasonably search, also meaning your map size is bounded, at around (150,150) it runs into the limiter
         //if its larger it would need to be given more allowance for searching.
         if(nodesExplored > 10000 && bestGuess.size() > 900){
             std::cerr << "LPApathfind: explored too many nodes without progress, target likely unreachable\n";
@@ -170,7 +163,6 @@ void pathfinder::LPApathfind(){
 
 
 
-        // expand 4-neighbours around parrent.nodePosition
         Vec2 dir = {0,1};
         for(int d=0; d<4; ++d){
             Vec2 nb = parrent.nodePosition + dir;
@@ -182,7 +174,14 @@ void pathfinder::LPApathfind(){
                  continue;
              }
 
-            int tentativeG = parrent.global + 1;
+             int tentativeG;
+
+             if(mapInstance.wasSeen(nb)){
+                int tentativeG = parrent.global + 1;
+             }else{
+                int tentativeG = parrent.global + 3;
+             }
+            
             auto it = bestG.find(nbKey);
             if(it != bestG.end() && tentativeG >= it->second){
                 ninetyClockwise(dir);
@@ -194,13 +193,13 @@ void pathfinder::LPApathfind(){
 
             searchNode neighbour(nb, parrent, f);
             
-            // ensure neighbour.global is correct (constructor sets parrent.global+1)
             neighbour.global = tentativeG;
             neighbour.priority = f;
             recordNode(neighbour.nodePosition);
             bestGuess.push(neighbour);
 
-            // write into the real map entry (getPrior returns by value — use fastAccess directly)
+            //move it off this to make the sparse maps mean anything
+            //also remove the node reset/record functionality and use the pointers to reconstruct the path, why did i even do this to begin with
             mapInstance.fastAccess[nbKey].pathfindComponent = neighbour;
 
             ninetyClockwise(dir);
