@@ -44,7 +44,6 @@ struct priorityTarget{
 class internalMap{
     char heading;
     Vec2 cAbsPos;
-    std::vector<priorityTarget> priorityTargets;
     
     //theese are needed for the sparse memory mapping scheme, basically you push the maximal extent of vision at every point recorded at a given X or Y coordinate to their own hashmap
     //when you later want to find out whether a certain one is empty you need to call an appropriate function
@@ -56,9 +55,12 @@ class internalMap{
     void addPriority(Vec2 pos, std::string type);
 
     public:
+    
+    bool consistent;
+    std::vector<priorityTarget> priorityTargets;
     bool wasSeen(Vec2);
 
-    bool consistent;
+    
     //turns a relative space character into absolute space vector
     Vec2 trueDir(char direction);
 
@@ -101,8 +103,8 @@ class internalMap{
     //used to determine if a planned path is no longer optimal/possible, checks if a node is inconsistent with a prior observation/plan path
     void checkChange(Vec2 pos, char seenType);
 
+    //internal use
     Vec2 relativeHead(char);
-
     Vec2 vecToHeading(Vec2 direction);
 
 

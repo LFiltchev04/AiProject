@@ -248,12 +248,11 @@ std::vector<std::string> HoundAI::Run(
     // If the AI's id is 0, it sets its message to 9.
     // This demonstrates how you can pass messages.
     
-    comms->bark[id]=percepts.scent;
     
     
     if (comms != nullptr) {
-        for (size_t i = 0; i < comms->bark.size(); ++i) {
-            comms->bark[i] = static_cast<unsigned>(pFind.getMap().currentPos().Distance(comms->direction[i]));
+        for (int i = 0; i < comms->bark.size(); ++i) {
+            comms->bark[i] = static_cast<unsigned>(percepts.scent);
         }
     }
 

@@ -121,7 +121,7 @@ void AI::setMode(){
 
     if(pFind.multiturnSafe(*pFind.getPath())){
         std::cout<<"can make 3";
-        state = MULTISTEP;
+        state = SINGELSTEP;
     }else{
         std::cout<<"cannot make 3";
         state = SINGELSTEP;

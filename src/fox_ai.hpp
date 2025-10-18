@@ -20,4 +20,7 @@ public:
         Percepts& percepts,
         AgentComm * comms
     );
+
+    Vec2 closeGoal();
+    Vec2 closeExit();
 };

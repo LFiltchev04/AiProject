@@ -97,14 +97,64 @@ std::vector<std::string> FoxAI::Run(
     }
     */
     
-
+    pFind.getMap().updateMap(percepts);
 
     std::vector<std::string> test = discoveryMode();
     
-    for(std::string var : test){
-        std::cout <<"commands in foxVec "<<var<<std::endl;
+    
+
+    std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
+
+
+    for(priorityTarget var : temp){
+        std::cout <<"priority target at "<<var.pos.to_string()<<" of type: "<<var.type<<std::endl;
     }
+   
+    pFind.newTarget(closeGoal());
     
-    
+        
     return test;
+}
+
+
+Vec2 FoxAI::closeExit(){
+    std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
+
+    if(temp.size()<1){
+        return pFind.getTgt();
+    }
+
+    int dist = INT_MIN;
+    Vec2 tempV;
+    for(priorityTarget var: temp){
+        if(var.type=='?'){
+            if(manhattanDistance(pFind.getMap().currentPos(),var.pos)>dist){
+                tempV = var.pos;
+            }
+        }
+    }
+
+    return tempV;
+    
+}
+
+
+Vec2 FoxAI::closeGoal(){
+    std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
+
+    if(temp.size()<1){
+        return pFind.getTgt();
+    }
+
+    int dist = INT_MIN;
+    Vec2 tempV;
+    for(priorityTarget var: temp){
+        if(var.type=='!'){
+            if(manhattanDistance(pFind.getMap().currentPos(),var.pos)>dist){
+                tempV = var.pos;
+            }
+        }
+    }
+
+    return tempV;
 }

@@ -137,7 +137,7 @@ void pathfinder::LPApathfind(){
     
     while(!bestGuess.empty()){
         if(++iterationGuard > ITERATION_LIMIT){
-            std::cerr << "iteration limiter\n";
+            std::cerr << "iteration limiter"<<std::endl;
             break;
         }
         
