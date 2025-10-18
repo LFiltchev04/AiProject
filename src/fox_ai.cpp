@@ -96,10 +96,15 @@ std::vector<std::string> FoxAI::Run(
         cmds.push_back(arr[0]);
     }
     */
-    pFind.updateMap(percepts);
-    std::string nextS = discoveryMode();
-    cmds.push_back(nextS);
+    
 
 
-    return cmds;
+    std::vector<std::string> test = discoveryMode();
+    
+    for(std::string var : test){
+        std::cout <<"commands in foxVec "<<var<<std::endl;
+    }
+    
+    
+    return test;
 }

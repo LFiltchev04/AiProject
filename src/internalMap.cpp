@@ -120,7 +120,7 @@ void internalMap::updateMap(Percepts nVizData){
             size_t key = hashCords(pos.x, pos.y);
             fastAccess[key] = node(ch);
             checkChange(pos, ch);
-            std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
+            //std::cout << "saw a:" << ch << " at: " << pos.x << " <-x|y->" << pos.y << std::endl;
         }
 
         for(int relDist = 0; relDist < nVizData.right.size(); ++relDist){
@@ -453,26 +453,26 @@ node internalMap::getPrior(Vec2 atPlace){
 
 bool internalMap::wasSeen(Vec2 analyzeThis){
     
-    
     auto xIter = xOnlyAccess.find(analyzeThis.x);
     auto yIter = yOnlyAccess.find(analyzeThis.y);
     
-    if(xIter==xOnlyAccess.end() and yIter==yOnlyAccess.end()){
-        return false;
+    if(xIter != xOnlyAccess.end()){
+        for(const std::pair<int,int>& var : xIter->second){
+            if(analyzeThis.y >= var.first && analyzeThis.y <= var.second){
+                return true;
+            }
+        }
     }
-
-    for(std::pair<int,int> var:xIter->second){
-        if(analyzeThis.x>=var.first and analyzeThis.x<=var.second){
-            return true;
+    
+    if(yIter != yOnlyAccess.end()){
+        for(const std::pair<int,int>& var : yIter->second){
+            if(analyzeThis.x >= var.first && analyzeThis.x <= var.second){
+                return true;
+            }
         }
     }
 
-    for(std::pair<int,int> var:yIter->second){
-        if(analyzeThis.y>=var.first and analyzeThis.y<=var.second){
-            return true;
-        }
-    }
-
+    return false;
 }
 
 
@@ -528,7 +528,7 @@ void internalMap::changeHeading(char in){
             heading = 'R';
         }
 
-    std::cout<<"heading set to3:"<<this->heading<<std::endl;
+    //std::cout<<"heading set to3:"<<this->heading<<std::endl;
         return;
     }
 
@@ -656,6 +656,15 @@ Vec2 internalMap::relativeHead(char in){
 
 void internalMap::addPriority(Vec2 pos, std::string type){
     if(type == "w"){
+        return;
+    }
+
+    if(type == "o"){
+        //just to be shure the following will work
+        return;
+    }
+
+    if(fastAccess[hashCords(pos.x,pos.y)].type == type[0]){
         return;
     }
     

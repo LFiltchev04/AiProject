@@ -34,7 +34,6 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
     std::vector<Vec2> centers;
     std::vector<double> radii;   
     
-    // Add current hound
     centers.push_back(cAbsPos);
     radii.push_back(static_cast<double>(commData->bark[0])); // Assuming bark[0] is current hound's scent
     
@@ -45,7 +44,7 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
         radii.push_back(static_cast<double>(commData->bark[i + 1])); // Skip bark[0] since it's current hound
     }
     
-    // Need at least 3 circles for exact triangulation
+    // Need at least 3 circles
     if (centers.size() < 3) {
         return results;
     }
@@ -65,28 +64,26 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
             
             // skip degenerate / impossible cases
             if (d <= 1e-12 || d > r1 + r2 + 1e-9 || d < std::fabs(r1 - r2) - 1e-9) {
+                std::cout<<"track impossible from:" << id <<std::endl;
                 continue;
             }
             
-            // compute circle intersection (standard geometry)
+            // compute circle intersection 
             double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
             double h2 = r1*r1 - a*a;
             if(h2 < 0) h2 = 0;
             double h = std::sqrt(h2);
             
-            // unit vector from c1 to c2
             double ux = (c2.x - c1.x) / d;
             double uy = (c2.y - c1.y) / d;
             
-            // point P2 which is the point along the line between centers at distance a from c1
             double p2x = c1.x + ux * a;
             double p2y = c1.y + uy * a;
             
-            // perpendicular offset to get the two intersection points
             double offx = -uy * h;
             double offy =  ux * h;
             
-            // compute intersection points (may be fractional), round to nearest integer grid
+            // compute intersection points
             Vec2 inter1, inter2;
             inter1.x = static_cast<int>(std::round(p2x + offx));
             inter1.y = static_cast<int>(std::round(p2y + offy));
@@ -115,7 +112,7 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
             double error = std::fabs(distToCenter - radii[i]);
             
             // If error is too large, this candidate is invalid
-            if (error > 2.0) { // tolerance for grid discretization
+            if (error > 3.0) { // tolerance for grid discretization
                 validForAllCircles = false;
                 break;
             }
@@ -131,7 +128,10 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
     }
     
     if (foundValid) {
+        std::cout<<"valid track:"<<foundValid<<std::endl;
         results.push_back(bestCandidate);
+    }else{
+        results = candidates;
     }
     
     return results;
@@ -288,20 +288,9 @@ std::vector<Vec2> targs;
 
 */
 
-try{
-    std::cout<<"the fox is here "<<targs.at(0).to_string()<<std::endl;
-}catch(const std::exception& e){
-    std::cerr << "Error: " << e.what() << std::endl;
-}
-    
-    if(targs.size()>0){
-        pFind.newTarget(targs.at(0));
-        std::cout<<"the fox is here "<<pFind.getTgt().to_string()<<std::endl;
-    }
 
-    std::string rndm = discoveryMode();
-        cmds.push_back(rndm);
-            //std::cout<<std::endl<<"the head:"<<semiRand.getNext().to_string()<<std::endl;
+    cmds = discoveryMode();
+    //std::cout<<std::endl<<"the head:"<<semiRand.getNext().to_string()<<std::endl;
     std::cout<<std::endl<<"the head:"<<pFind.getTgt().to_string()<<std::endl;
 
         return cmds;

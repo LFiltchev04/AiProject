@@ -105,6 +105,7 @@ class internalMap{
 
     Vec2 vecToHeading(Vec2 direction);
 
+
     ~internalMap();
 };
 

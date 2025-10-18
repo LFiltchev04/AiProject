@@ -153,10 +153,8 @@ struct searchNode{
 };
 
 enum mode{
-    DISCOVERY,
-    MULTITURN,
-    TRACK,
-    PANIC
+    MULTISTEP,
+    SINGELSTEP
 };
 
 struct doubleVec{

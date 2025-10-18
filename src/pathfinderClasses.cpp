@@ -82,20 +82,18 @@ void pathfinder::newTarget(Vec2 tgt){
 }
 
 int pathfinder::h(Vec2 head){
-    // heuristic must be computed from the node position to target
     return manhattanDistance(head, targetCoord);
 }
 
 int pathfinder::getNodeScore(Vec2 nodePos, int tentativeG){
-    // f = g + h ; caller must pass tentativeG
     return tentativeG + h(/*head will be provided as node position by caller*/ nodePos); // placeholder not used here
 }
 
-// this is not actually LPA, its bog standard A*, but it kind of looks like it at a higher level
+// this is not actually LPA, its bog standard A*, but it kind of behaves like one when the other parts are considered
 void pathfinder::LPApathfind(){
   //  std::cout<<std::endl<<std::endl<<"RECOMPUTING"<<std::endl<<std::endl<<std::endl;
-    // clear data
-    while(!bestGuess.empty()){
+
+  while(!bestGuess.empty()){
         bestGuess.pop();
     } 
     while(!completePath.empty()){
@@ -115,7 +113,7 @@ void pathfinder::LPApathfind(){
     
     if(mapInstance.isWall(targetCoord)){
         // Target is a wall, no path possible
-        //std::cerr<<"LPApathfind: target is a wall, no path possible\n";                                                                                                                                                                                                                                                                                                                                                                                                       
+        //std::cerr<<"target is a wall, no path possible";                                                                                                                                                                                                                                                                                                                                                                                                       
         return;
     }
     
@@ -126,22 +124,20 @@ void pathfinder::LPApathfind(){
     startNode.global = 0;
     startNode.priority = h(startCoord);
     bestGuess.push(startNode);
-    // record the actual start coordinate (avoid recording an uninitialized Vec2)
+    //i have to remove this and start using a local hashmap, literally removes all benefit from the sparse map for most cases
     recordNode(startNode.nodePosition);
 
-    // fast lookup for best g found per cell
     std::unordered_map<size_t,int> bestG;                                                                                                                                                           
     bestG[hashCords(startCoord.x, startCoord.y)] = 0;
     std::unordered_set<size_t> closed;
 
-    // safety guard to avoid pathological infinite loops
     int iterationGuard = 0;
     const int ITERATION_LIMIT = 10000;
     int nodesExplored = 0;
     
     while(!bestGuess.empty()){
         if(++iterationGuard > ITERATION_LIMIT){
-            std::cerr << "LPApathfind: iteration limit reached, aborting search\n";
+            std::cerr << "iteration limiter\n";
             break;
         }
         
@@ -149,7 +145,7 @@ void pathfinder::LPApathfind(){
         //on how far away you can reasonably search, also meaning you map size is bounded, when i set the coordinates to (100,100) it does not give up, i am hoping that the maximum map size is thereabout that
         //if its larger it would need to be given more allowance for searching.
         if(nodesExplored > 10000 && bestGuess.size() > 900){
-            std::cerr << "LPApathfind: explored too many nodes without progress, target likely unreachable\n";
+            
             break;
         }
         searchNode parrent = bestGuess.top();
@@ -170,13 +166,11 @@ void pathfinder::LPApathfind(){
 
 
 
-        // expand 4-neighbours around parrent.nodePosition
         Vec2 dir = {0,1};
         for(int d=0; d<4; ++d){
             Vec2 nb = parrent.nodePosition + dir;
             size_t nbKey = hashCords(nb.x, nb.y);
 
-            // skip walls and already-closed nodes
             if(mapInstance.isWall(nb) || closed.count(nbKey)){
                  ninetyClockwise(dir);
                  continue;
@@ -200,7 +194,7 @@ void pathfinder::LPApathfind(){
             recordNode(neighbour.nodePosition);
             bestGuess.push(neighbour);
 
-            // write into the real map entry (getPrior returns by value — use fastAccess directly)
+            //this is pretty stupid
             mapInstance.fastAccess[nbKey].pathfindComponent = neighbour;
 
             ninetyClockwise(dir);
@@ -269,14 +263,13 @@ char pathfinder::pathTranslator(){
     } 
 
     if(completePath.top()==Vec2{999,999}){
-        std::cout<<"no route to path, returning nothing"<<std::endl;
+       // std::cout<<"no route to path, returning nothing"<<std::endl;
         return ' ';
     }
 
     Vec2 cPos = mapInstance.currentPos();
    // std::cout<<std::endl<<std::endl<<std::endl<< cPos.to_string()<<"THIS IS THE UPCOMING MOVE< VERY IMPORTANT"<<std::endl<<std::endl<<std::endl;
 
-    // drop any path nodes equal to current position (safe-check empty after popping)
     while(!completePath.empty() && completePath.top() == cPos){
         completePath.pop();
     }
@@ -286,7 +279,7 @@ char pathfinder::pathTranslator(){
 
     Vec2 nextTile = completePath.top();
 
-    // convenience: compute absolute positions of the four relative moves
+    
     Vec2 fpos = mapInstance.relativeHead('F') + cPos;
     Vec2 rpos = mapInstance.relativeHead('R') + cPos;
     Vec2 lpos = mapInstance.relativeHead('L') + cPos;
@@ -298,7 +291,7 @@ char pathfinder::pathTranslator(){
     //std::cout<<"B "<<bpos.x<<" tst "<<bpos.y<<std::endl;
     //std::cout<<"L "<<lpos.x<<" tst "<<lpos.y<<std::endl;
 
-    std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN COUNT:"<<turn<<std::endl;
+    //std::cout<<std::endl<<std::endl<<std::endl<<"LOOK HERE-TURN COUNT:"<<turn<<std::endl;
     //std::cout<<fpos.x<<" f-ward "<<fpos.y<<" THE DIR"<<std::endl;
     //std::cout<< nextTile.x<<" tl "<<nextTile.y<<" THE GOAL"<<std::endl<<std::endl<<std::endl;
     turn++;
@@ -315,9 +308,10 @@ char pathfinder::pathTranslator(){
       //  std::cout<<"going left"<<mapInstance.getHeading()<<std::endl;
         return 'L';
     }
+    //has to be like that otherwise the foxes break
     if(bpos == nextTile){
       ///  std::cout<<"should head back?"<<mapInstance.getHeading()<<std::endl;
-        return 'B';
+        return 'R';
     }
 
    // std::cout<<"THE INTERPRETER DEFAULTED"<<std::endl;

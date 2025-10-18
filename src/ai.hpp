@@ -43,18 +43,19 @@ public:
     //the pathfinder and the map object are quite coupled and as a result the function calls to get to anything are long and very ugly.
     pathfinder pFind;
 
-     std::string discoveryMode();
+     std::vector<std::string> discoveryMode();
 
     //allows multiple moves per turn in areas that are seen
     std::vector<std::string> traverseMode();
 
     void setMode();
+    mode getMode();
 
     Vec2 randomHead();
     std::vector<std::string> multiturn();
     std::string discovery();
     
-    std::string runModel();
+    std::vector<std::string> runModel();
 
 
 };

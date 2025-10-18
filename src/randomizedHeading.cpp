@@ -72,8 +72,8 @@ Vec2 semirandomHeading::fortyFiveCwise(){
 void semirandomHeading::iterate( Vec2 cPos, Vec2 absDir){
     // Always refresh or adjust the relative offset so discovery produces new targets
 
-    std::cout<<"Prior "<<prior.to_string()<<std::endl;
-    std::cout<<"PriorPrior "<<priorPrior.to_string()<<std::endl;
+    //std::cout<<"Prior "<<prior.to_string()<<std::endl;
+    //std::cout<<"PriorPrior "<<priorPrior.to_string()<<std::endl;
 
     if(prior==cPos and priorPrior==prior){
         //std::cout<<"Prior "<<prior.to_string()<<std::endl;
