@@ -249,10 +249,10 @@ Vec2 FoxAI::closeGoal(){
             pFind.newTarget(closeExit());
             
             //the meaningless boolean passed to it is to enable the model to run in multiturn mode whenever its safe
-            return runModel(true);
+            return runModel(true,2);
         }else{
             pFind.newTarget(closeGoal());
-            return runModel(true);
+            return runModel(true,2);
         }
 
 

@@ -37,7 +37,7 @@ std::vector<std::string> AI::Run(
     
     
         pFind.newTarget(curPos+offset);
-        return runModel(false);
+        return runModel(false,2);
 
         
     }
@@ -45,7 +45,7 @@ std::vector<std::string> AI::Run(
 
    
 
-std::vector<std::string> AI::runModel(bool allowMulti){
+std::vector<std::string> AI::runModel(bool allowMulti, int maxSteps){
 
     std::vector<std::string> rslt;
 
@@ -78,11 +78,10 @@ std::vector<std::string> AI::runModel(bool allowMulti){
         }
         
 
-        //allowMulti = false;
         if(state == MULTISTEP and allowMulti){
-            for(int x = 0; x<2;x++){
+            for(int x = 0; x<maxSteps;x++){
                 if(pFind.getPath()->empty() || pFind.getMap().currentPos() == pFind.getTgt()){
-                    break; // Stop if path is empty or reached target
+                    break;
                 }
                 
                 std::string nxt="";

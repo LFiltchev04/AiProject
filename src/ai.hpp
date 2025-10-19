@@ -54,7 +54,7 @@ public:
     std::vector<std::string> multiturn();
     std::string discovery();
     
-    std::vector<std::string> runModel(bool);
+    std::vector<std::string> runModel(bool,int);
 
 
 };
