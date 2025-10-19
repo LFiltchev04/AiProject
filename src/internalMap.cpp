@@ -410,17 +410,14 @@ Vec2 internalMap::trueDir(char direction){
 void internalMap::iterateState(std::string cmdIn){
     if(cmdIn.empty()) return;
     char c = cmdIn[0];
-    // compute absolute target cell for this relative command
     Vec2 rel = trueDir(c);
     Vec2 absTarget = cAbsPos + rel;
 
     if(c == 'F'){
-        // only move forward if the absolute target cell is not a wall
         if(!isWall(absTarget)){
             iterateCpos(rel);
         }
     } else {
-        // rotations should update heading immediately (do not gate on a relative coord)
         changeHeading(c);
     }
      

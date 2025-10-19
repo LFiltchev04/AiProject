@@ -49,6 +49,7 @@ std::vector<std::string> AI::runModel(bool allowMulti){
 
     std::vector<std::string> rslt;
 
+    
     if(pFind.getMap().currentPos()==pFind.getTgt()){
         rslt.push_back(" ");
         
@@ -77,10 +78,20 @@ std::vector<std::string> AI::runModel(bool allowMulti){
         }
         
 
+        //allowMulti = false;
         if(state == MULTISTEP and allowMulti){
-            for(int x = 0; x<3;x++){
+            for(int x = 0; x<2;x++){
+                if(pFind.getPath()->empty() || pFind.getMap().currentPos() == pFind.getTgt()){
+                    break; // Stop if path is empty or reached target
+                }
+                
                 std::string nxt="";
                 char nextStep = pFind.pathTranslator(); 
+                
+                if(nextStep == ' '){
+                    break; // Invalid move, stop
+                }
+                
                 nxt += nextStep;
         
                 pFind.getMap().iterateState(nxt);
