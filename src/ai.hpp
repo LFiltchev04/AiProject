@@ -3,7 +3,6 @@
 #include<algorithm>
 #include<string>
 #include<random>
-#include<map>
 #include<cstdlib>
 #include<iostream>
 #include"percepts.hpp"
@@ -11,6 +10,7 @@
 #include "pathfinderClasses.hpp"
 #include "randomizedHeading.hpp"
 #include "utils.hpp"
+#include <queue>
 
 
 class AI {

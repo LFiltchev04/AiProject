@@ -1,8 +1,8 @@
 #include "vec2.hpp"
 #include "internalMap.hpp"
-#include "logger.hpp"
 #include "utils.hpp"
 #include <stack>
+#include <queue>
 
 
 class pathfinder {
@@ -22,7 +22,7 @@ class pathfinder {
     //should have been a vector
     std::stack<Vec2> completePath;
 
-    //it should be pointers but it causes problems i dont want to bother with
+    //it should be pointers
 
     public:
         std::vector<Vec2> forCleanup;

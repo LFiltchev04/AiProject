@@ -689,14 +689,12 @@ void internalMap::addPriority(Vec2 pos, std::string type){
         return;
     }
 
-    // Check if this position already exists in priorityTargets
     for(const auto& target : priorityTargets){
         if(target.pos == pos && target.type == type[0]){
-            return; // Already exists, don't add duplicate
+            return; 
         }
     }
     
-    // Check if position already exists in fastAccess with the same type (without creating new entry)
     auto it = fastAccess.find(hashCords(pos.x, pos.y));
     if(it != fastAccess.end() && it->second.type == type[0]){
         return;
@@ -714,20 +712,16 @@ Vec2 internalMap::vecToHeading(Vec2 direction) {
         Vec2 rotatedDir = direction;
         
         if (heading == 'F') {
-                    // No rotation needed - already aligned
                     return direction;
         }
         else if (heading == 'R') {
-            // Rotate clockwise once
             ninetyClockwise(rotatedDir);
         }
         else if (heading == 'B') {
-            // Rotate 180 degrees (2 clockwise rotations)
             ninetyClockwise(rotatedDir);
             ninetyClockwise(rotatedDir);
         }
         else if (heading == 'L') {
-            // Rotate counter-clockwise (3 clockwise rotations)
             ninetyClockwise(rotatedDir);
             ninetyClockwise(rotatedDir);
             ninetyClockwise(rotatedDir);

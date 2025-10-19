@@ -23,33 +23,32 @@ HoundAI::HoundAI(
 
 
 //the absolute position has to be passed from the map class, the rotations are handled there 
-std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
-    std::vector<Vec2> results;
+Vec2 HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
+    Vec2 invalidResult = {-9999, -9999}; 
     
     if (!commData || commData->bark.empty() || commData->direction.empty()) {
-        return results;
+        return invalidResult;
     }
     
-    // Collect all circle centers and radii correctly
+    //The two match? 
     std::vector<Vec2> centers;
     std::vector<double> radii;   
     
     centers.push_back(cAbsPos);
-    radii.push_back(static_cast<double>(commData->bark[0])); // Assuming bark[0] is current hound's scent
+    radii.push_back(static_cast<double>(commData->bark[0])); 
     
-    // Add peer hounds (make sure we have matching bark and direction data)
     size_t numPeers = std::min(commData->bark.size() - 1, commData->direction.size());
     for(size_t i = 0; i < numPeers; ++i){
-        centers.push_back(commData->direction[i]);
-        radii.push_back(static_cast<double>(commData->bark[i + 1])); // Skip bark[0] since it's current hound
+        Vec2 relativePos = commData->direction[i];
+
+        
+        reorient(pFind.getMap().getHeading(),relativePos);
+        
+        centers.push_back(relativePos);
+        radii.push_back(static_cast<double>(commData->bark[i + 1])); 
     }
+
     
-    // Need at least 3 circles
-    if (centers.size() < 3) {
-        return results;
-    }
-    
-    // Find all candidate points from pairs of circles
     std::vector<Vec2> candidates;
     
     for (size_t i = 0; i < centers.size(); ++i) {
@@ -59,19 +58,21 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
             double r1 = radii[i];
             double r2 = radii[j];
             
-            // distance between the two circle centers
             double d = linDist(c1, c2);
             
-            // skip degenerate / impossible cases
+            //If they are in the same place 
             if (d <= 1e-12 || d > r1 + r2 + 1e-9 || d < std::fabs(r1 - r2) - 1e-9) {
-                std::cout<<"track impossible from:" << id <<std::endl;
+                //std::cout<<"track impossible from:" << id <<std::endl;
                 continue;
             }
             
-            // compute circle intersection 
             double a = (r1*r1 - r2*r2 + d*d) / (2.0 * d);
             double h2 = r1*r1 - a*a;
-            if(h2 < 0) h2 = 0;
+            
+            if(h2 < 0){
+              h2 = 0;
+            } 
+
             double h = std::sqrt(h2);
             
             double ux = (c2.x - c1.x) / d;
@@ -83,7 +84,6 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
             double offx = -uy * h;
             double offy =  ux * h;
             
-            // compute intersection points
             Vec2 inter1, inter2;
             inter1.x = static_cast<int>(std::round(p2x + offx));
             inter1.y = static_cast<int>(std::round(p2y + offy));
@@ -97,22 +97,20 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
         }
     }
     
-    // Find the candidate that is closest to all circles (trilateration)
-    Vec2 bestCandidate;
+    Vec2 bestCandidate = invalidResult;
     double minMaxError = std::numeric_limits<double>::max();
     bool foundValid = false;
     
     for (Vec2 candidate : candidates) {
-        double maxError = 0.0;
+        double maxError = 1.0;
         bool validForAllCircles = true;
         
-        // Check how well this candidate fits all circles
         for (size_t i = 0; i < centers.size(); ++i) {
             double distToCenter = linDist(candidate, centers[i]);
             double error = std::fabs(distToCenter - radii[i]);
             
-            // If error is too large, this candidate is invalid
-            if (error > 3.0) { // tolerance for grid discretization
+           
+            if (error > 2.0) { 
                 validForAllCircles = false;
                 break;
             }
@@ -128,13 +126,11 @@ std::vector<Vec2> HoundAI::trackFox(AgentComm* commData, Vec2 cAbsPos){
     }
     
     if (foundValid) {
-        std::cout<<"valid track:"<<foundValid<<std::endl;
-        results.push_back(bestCandidate);
-    }else{
-        results = candidates;
+        //std::cout<<"valid track: " << bestCandidate.to_string() << " from hound " << id<<"located at "<<pFind.getMap().currentPos().to_string() << std::endl;
+
     }
     
-    return results;
+    return bestCandidate;
 }
 
 
@@ -249,53 +245,42 @@ std::vector<std::string> HoundAI::Run(
     // This demonstrates how you can pass messages.
     
     
-    
+    //NOTHING ABOVE THIS
     if (comms != nullptr) {
         for (int i = 0; i < comms->bark.size(); ++i) {
             comms->bark[i] = static_cast<unsigned>(percepts.scent);
         }
     }
+    pFind.getMap().updateMap(percepts);
+
+
+
+
+
+
 
     Vec2 cAbsPos = pFind.getMap().currentPos();
 
-    std::vector<std::string> cmds={};
-    std::vector<std::string> arr = {};
+    Vec2 foxCandidate = trackFox(comms, cAbsPos);
+    
+    if(foxCandidate.x != -9999 && foxCandidate.y != -9999){
+        std::cout<<"candidate found" << foxCandidate.to_string()<<std::endl<<std::endl<<std::endl<<std::endl;
+        return houindIterate(foxCandidate);
+    }
+
 
     
-    pFind.updateMap(percepts);
-    
-std::vector<Vec2> targs;
+   
+    return discoveryMode();
 
-     targs = trackFox(comms, pFind.getMap().currentPos());
 
-    /*
-    if(targs.size()>0){
-        for (const Vec2 &targ : targs) {
-        // ignore no-op matches to current pos
+    }
+
+
+
+    std::vector<std::string> HoundAI::houindIterate(Vec2 foxL){
         
-        if(targ != pFind.getMap().currentPos()){
-            int prio = manhattanDistance(pFind.getMap().currentPos(), targ);
-            foxTracks.emplace(prio, targ);
-            continue;    
-        }
-        std::cout<<"no fox detected"<<std::endl;
+        pFind.newTarget(foxL);
+        return runModel(false,3);
     }
-    } else {
-        std::cout<<std::endl<<"no fox detected"<<std::endl;
-    }
-    
-
-*/
-
-
-    cmds = discoveryMode();
-    //std::cout<<std::endl<<"the head:"<<semiRand.getNext().to_string()<<std::endl;
-    std::cout<<std::endl<<"the head:"<<pFind.getTgt().to_string()<<std::endl;
-
-        return cmds;
-
-
-    }
-
-
 

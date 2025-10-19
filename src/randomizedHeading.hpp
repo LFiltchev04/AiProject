@@ -22,10 +22,8 @@ class semirandomHeading{
     doubleVec averageHeading;
 
     public:
-    // getFullRandom now returns a relative offset (doesn't take cPos)
     Vec2 getFullRandom();
     semirandomHeading();
-    // rotation helpers now operate on the offset and return an offset
     Vec2 fortyFiveCcWise();
     Vec2 fortyFiveCwise();
     void iterate(Vec2 cPos, Vec2 absDir);

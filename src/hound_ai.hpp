@@ -8,26 +8,10 @@
 
 class HoundAI : public AI {
 private:
-    // retain chosen target for a few turns to avoid indecision
-    Vec2 currentTarget;
-    int targetHoldRemaining = 0;
-    const int holdDuration = 8; // adjust to keep a target for N turns
-
+   Vec2 foxLocation;
+   
 public:
-    // min-heap of (priority, position) where lower priority is better
-    // Use a comparator that only compares the integer priority so Vec2 doesn't
-    // need an ordering operator.
-    struct FoxTrackCompare {
-        bool operator()(const std::pair<int, Vec2>& a, const std::pair<int, Vec2>& b) const {
-            return a.first > b.first; // smaller first == higher priority
-        }
-    };
-
-    std::priority_queue<
-        std::pair<int, Vec2>,
-        std::vector<std::pair<int, Vec2>>,
-        FoxTrackCompare
-    > foxTracks;
+   
 
     HoundAI(
         unsigned id,
@@ -41,8 +25,9 @@ public:
 
     //attempts to fix a fox's position using scent data and comms from other hounds.
     //Uses trilateration with 3+ circles to return the exact fox location (returns 0 or 1 point)
-    std::vector<Vec2> trackFox(AgentComm* commData, Vec2 cAbsPos);
+    Vec2 trackFox(AgentComm* commData, Vec2 cAbsPos);
 
+    std::vector<std::string> houindIterate(Vec2);
 
     //theese ought to be removed and put in the base class so i can use them for the foxes
 

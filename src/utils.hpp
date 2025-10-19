@@ -64,26 +64,26 @@ inline void ninetyClockwise(Vec2 & relCord){
 
 //rotates the relative position so that it faces forward
 inline void reorient(char heading, Vec2& relLoc){
-    if(heading == 'f'){
+    if(heading == 'F' or heading == 'f'){
         return;
     }
 
-    if(heading == 'r'){
+    if(heading == 'R' or heading == 'r'){
         ninetyClockwise(relLoc);
-        ninetyClockwise(relLoc);
-        ninetyClockwise(relLoc);
-
-        return;
-    }
-
-    if(heading == 'b'){
         ninetyClockwise(relLoc);
         ninetyClockwise(relLoc);
 
         return;
     }
 
-    if(heading == 'l'){
+    if(heading == 'B' or heading == 'b'){
+        ninetyClockwise(relLoc);
+        ninetyClockwise(relLoc);
+
+        return;
+    }
+
+    if(heading == 'L' or heading == 'l'){
         ninetyClockwise(relLoc);
 
         return;
@@ -136,7 +136,6 @@ struct searchNode{
             global = 0;
 
         }
-        //this is supposed to iterate the whole thing, lets hope i was not retarded while writing it
         searchNode(Vec2 pos, const searchNode &parrent,int comptedPriority){
         
             
@@ -167,7 +166,7 @@ struct doubleVec{
     }
     std::string to_string() const {
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(3); // adjust precision as desired
+        oss << std::fixed << std::setprecision(3); 
         oss << "[" << x << "," << y << "]";
         return oss.str();
     }

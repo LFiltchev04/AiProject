@@ -102,22 +102,19 @@ void pathfinder::LPApathfind(){
 
     startCoord = mapInstance.currentPos();
     
-    // ensure map consistency flag is reset before recomputing the path
     mapInstance.consistent = true;
     
-    // Early termination checks
+    
     if(startCoord == targetCoord){
-        // Already at target
+        
         return;
     }
     
     if(mapInstance.isWall(targetCoord)){
-        // Target is a wall, no path possible
-        //std::cerr<<"target is a wall, no path possible";                                                                                                                                                                                                                                                                                                                                                                                                       
+                                                                                                                                                                                                                                                                                                                                                                                                               
         return;
     }
     
-    // seed start node
     searchNode startNode;
     startNode.nodePosition = startCoord;
     startNode.parrentCoords = startCoord;
@@ -137,7 +134,6 @@ void pathfinder::LPApathfind(){
     
     while(!bestGuess.empty()){
         if(++iterationGuard > ITERATION_LIMIT){
-            std::cerr << "iteration limiter"<<std::endl;
             break;
         }
         
@@ -188,7 +184,6 @@ void pathfinder::LPApathfind(){
 
             searchNode neighbour(nb, parrent, f);
             
-            // ensure neighbour.global is correct (constructor sets parrent.global+1)
             neighbour.global = tentativeG;
             neighbour.priority = f;
             recordNode(neighbour.nodePosition);
@@ -203,9 +198,7 @@ void pathfinder::LPApathfind(){
         
     }
 
-    // no path found -> leave completePath empty
-    std::cerr << "LPApathfind: no path found to target (" << targetCoord.x << "," << targetCoord.y << ")\n";
-
+    
 }
 
 
@@ -233,8 +226,8 @@ void pathfinder::constrctPath(Vec2 goalNode){
         auto it = mapInstance.fastAccess.find(k);
         if(it == mapInstance.fastAccess.end()) break;
         Vec2 parent = it->second.pathfindComponent.parrentCoords;
-        // stop if invalid parent or reached start
-        if(parent.x == cur.x && parent.y == cur.y) break;
+
+        if(parent.x == cur.x and parent.y == cur.y) break;
         completePath.push(parent);
         if(parent.x == startCoord.x && parent.y == startCoord.y) break;
         cur = parent;
@@ -272,7 +265,7 @@ char pathfinder::pathTranslator(){
     Vec2 cPos = mapInstance.currentPos();
    // std::cout<<std::endl<<std::endl<<std::endl<< cPos.to_string()<<"THIS IS THE UPCOMING MOVE< VERY IMPORTANT"<<std::endl<<std::endl<<std::endl;
 
-    while(!completePath.empty() && completePath.top() == cPos){
+    while(!completePath.empty() and completePath.top() == cPos){
         completePath.pop();
     }
     if(completePath.empty()){
@@ -325,8 +318,6 @@ char pathfinder::pathTranslator(){
 
 void pathfinder::recomputeFrom(){
     //this recomputes from the start point to the end, so it should redo the whole thing, meaning drop the stack and redo from starting point
-
-    //dumps the stack, unfortunatley cant be more efficient
     dumpSearch();
     LPApathfind();
 
@@ -340,7 +331,6 @@ bool pathfinder::pathInvalid(){
 void pathfinder::dumpSearch(){
     
     for(Vec2 iter:forCleanup){
-        // get a reference to the stored node (modify map entry, not copy)
         auto &itr = mapInstance.fastAccess.at(hashCords(iter.x,iter.y));
 
         //std::cout<<"IT WILL DUMP COORDINATE: "<< "("<<itr.pathfindComponent.priority<<","<<itr.pathfindComponent.priority<<")"<<std::endl;
@@ -361,13 +351,12 @@ void pathfinder::recordNode(Vec2 pos){
 
 Vec2 pathfinder::followingCoord(){
     if(completePath.empty()){
-        // safe fallback — no next coord available
         return mapInstance.currentPos();
     }
     return completePath.top();
 }
 
-//not the best solution, but not too bad
+//not the best solution, foxes need separate 
 bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
 
     if(stkCpy.size()<3){

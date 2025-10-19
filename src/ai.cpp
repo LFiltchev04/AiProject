@@ -88,7 +88,7 @@ std::vector<std::string> AI::runModel(bool allowMulti, int maxSteps){
                 char nextStep = pFind.pathTranslator(); 
                 
                 if(nextStep == ' '){
-                    break; // Invalid move, stop
+                    break; 
                 }
                 
                 nxt += nextStep;
@@ -131,10 +131,10 @@ void AI::setMode(){
     }
 
     if(pFind.multiturnSafe(*pFind.getPath())){
-        std::cout<<"can make 3";
+        //std::cout<<"can make 3";
         state = MULTISTEP;
     }else{
-        std::cout<<"cannot make 3";
+        //std::cout<<"cannot make 3";
         state = SINGELSTEP;
     }
 }

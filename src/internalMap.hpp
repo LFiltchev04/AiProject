@@ -2,7 +2,6 @@
 #define INTERNALMAP_HPP
 
 #include "vec2.hpp"
-#include "logger.hpp"
 #include "percepts.hpp"
 #include <unordered_map>
 #include "utils.hpp"

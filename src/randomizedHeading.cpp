@@ -6,7 +6,7 @@
 semirandomHeading::semirandomHeading(){
     //random enough
     unsigned seed = std::chrono::steady_clock::now().time_since_epoch().count();
-    randGen.seed(seed);                // <--- seed the RNG
+    randGen.seed(seed);                
 
     std::uniform_int_distribution<int> tmp(-5,5);
     randInt = tmp;
@@ -32,7 +32,6 @@ Vec2 semirandomHeading::getFullRandom(){
         temp.y = static_cast<int>(-30.0+30.0*(tempY/5.0));
     }
 
-    // store as a relative offset
     randomHead = temp;
 
     return temp;
@@ -154,13 +153,10 @@ Vec2 semirandomHeading::getNext(Vec2 cAbsPos){
     //if i move theese in small increments to the absolute position they wont have to dump a lot of node guesses early
     //also keeps the queues shorter
     
-    // Calculate offset (divide by 10 for incremental movement, ensure non-zero)
     int offsetX = randomHead.x / 10;
     int offsetY = randomHead.y / 10;
     
-    // Ensure we have at least some movement (avoid zero offset)
     if(offsetX == 0 && offsetY == 0){
-        // If both are zero, use the full random head to ensure movement
         offsetX = randomHead.x != 0 ? (randomHead.x > 0 ? 1 : -1) : 1;
         offsetY = randomHead.y != 0 ? (randomHead.y > 0 ? 1 : -1) : 1;
     }

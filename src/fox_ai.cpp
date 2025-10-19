@@ -20,50 +20,7 @@ std::vector<std::string> FoxAI::Run(
     AgentComm * comms
 ) {
 
-    // DO NOT LEAVE THIS CODE (COMMENTED OUT OR IN) IN
-    // YOUR SUBMISSION
-
-    /*std::cout << "\n=========================\n";
-    std::cout << "FOX ID: " << id << std::endl;
-    std::cout << "CURRENT: ";
-    for (size_t i = 0; i < percepts.current.size(); i++) {
-        std::cout << percepts.current[i] << " ";
-    }
-    std::cout << "\nFORWARD: ";
-    for (size_t i = 0; i < percepts.forward.size(); i++) {
-        std::cout << percepts.forward[i] << " ";
-    }
-    std::cout << "\nBACKWARD: ";
-    for (size_t i = 0; i < percepts.backward.size(); i++) {
-        std::cout << percepts.backward[i] << " ";
-    }
-    std::cout << "\nLEFT: ";
-    for (size_t i = 0; i < percepts.left.size(); i++) {
-        std::cout << percepts.left[i] << " ";
-    }
-    std::cout << "\nRIGHT: ";
-    for (size_t i = 0; i < percepts.right.size(); i++) {
-        std::cout << percepts.right[i] << " ";
-    }
-    std::cout << "\nSIGHTINGS:\n";
-    for (size_t i = 0; i < percepts.sightings.size(); i++) {
-        if (percepts.sightings[i].type == AgentType::FOX) std::cout << "   FOX ";
-        else std::cout << "  HOUND ";
-        std::cout << "Dir " << percepts.sightings[i].direction << " ";
-        std::cout << "Dis " << percepts.sightings[i].distance << "\n";
-    }
-    std::cout << "SCENT: " << percepts.scent << std::endl;
-    std::cout << "COMMS:\n";
-    if (comms == nullptr) std::cout << "No communication.\n";
-    else {
-        for (size_t i = 0; i < comms->size(); i++) {
-            std::cout << "HOUND " << i << " a: " << (*comms)[i].a
-                << " b: " << (*comms)[i].b
-                << " c: " << (*comms)[i].c
-                << std::endl;
-        }
-    }*/
-
+    
 
     /***************************************************************
     YOUR FOX AI CODE GOES HERE.
@@ -82,7 +39,6 @@ std::vector<std::string> FoxAI::Run(
     // following in your solution.
 
     std::vector<std::string> cmds;
-
 
     /*
     if (percepts.current[0] == goal) cmds.push_back("U");
@@ -132,7 +88,7 @@ std::vector<std::string> FoxAI::Run(
             res = {"U"};
         }
         if(percepts.current[0]=="?"){
-            if(pointCount>=2){
+            if(pointCount>=6){
                 res = {"U"};
             }else{
                 return discoveryMode();
@@ -157,20 +113,20 @@ std::vector<std::string> FoxAI::Run(
     
     std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
     for(priorityTarget var : temp){
-        std::cout <<"priority target at "<<var.pos.to_string()<<" of type: "<<var.type<<std::endl;
+        //std::cout <<"priority target at "<<var.pos.to_string()<<" of type: "<<var.type<<std::endl;
     }
 
-    if(pointCount>=2){
+    if(pointCount>=6){
         if(closeExit()!=pFind.getMap().currentPos()){
-            std::cout<<"heading for exit: "<< pFind.getTgt().to_string() <<std::endl;
-            std::cout<<"i am at: "<<pFind.getMap().currentPos().to_string();
+            //std::cout<<"heading for exit: "<< pFind.getTgt().to_string() <<std::endl;
+            //std::cout<<"i am at: "<<pFind.getMap().currentPos().to_string();
             
             return foxTraverse('?');
         }
     }else{
         if(closeGoal()!=pFind.getMap().currentPos()){
-            std::cout<<"heading for goal: "<< pFind.getTgt().to_string() <<std::endl;
-                        std::cout<<"i am at: "<<pFind.getMap().currentPos().to_string();
+            //std::cout<<"heading for goal: "<< pFind.getTgt().to_string() <<std::endl;
+            //            std::cout<<"i am at: "<<pFind.getMap().currentPos().to_string();
 
             return foxTraverse('!');
         }
