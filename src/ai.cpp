@@ -37,13 +37,15 @@ std::vector<std::string> AI::Run(
     
     
         pFind.newTarget(curPos+offset);
-        return runModel();
+        return runModel(false);
 
         
     }
 
 
-std::vector<std::string> AI::runModel(){
+   
+
+std::vector<std::string> AI::runModel(bool allowMulti){
 
     std::vector<std::string> rslt;
 
@@ -74,19 +76,8 @@ std::vector<std::string> AI::runModel(){
             printPathDebug.pop();
         }
         
-        if(state == SINGELSTEP){
-            std::string nxt="";
-            char nextStep = pFind.pathTranslator(); 
-    
-            nxt += nextStep;
-        
-            pFind.getMap().iterateState(nxt);
 
-            rslt.push_back(nxt);
-            return rslt;
-        }
-
-        if(state == MULTISTEP){
+        if(state == MULTISTEP and allowMulti){
             for(int x = 0; x<3;x++){
                 std::string nxt="";
                 char nextStep = pFind.pathTranslator(); 
@@ -101,15 +92,25 @@ std::vector<std::string> AI::runModel(){
 
         }
 
+        
+            std::string nxt="";
+            char nextStep = pFind.pathTranslator(); 
+    
+            nxt += nextStep;
+        
+            pFind.getMap().iterateState(nxt);
+
+            rslt.push_back(nxt);
+            return rslt;
+        
+
        
 
         //std::cout<<"heading now:"<<nextStep<<pFind.getMap().trueDir(nextStep).x<<" "<<pFind.getMap().trueDir(nextStep).y<<std::endl;
 }
 
 
-std::vector<std::string> AI::traverseMode(){
-    
-}
+
 
 
 void AI::setMode(){
@@ -121,7 +122,7 @@ void AI::setMode(){
 
     if(pFind.multiturnSafe(*pFind.getPath())){
         std::cout<<"can make 3";
-        state = SINGELSTEP;
+        state = MULTISTEP;
     }else{
         std::cout<<"cannot make 3";
         state = SINGELSTEP;

@@ -23,4 +23,6 @@ public:
 
     Vec2 closeGoal();
     Vec2 closeExit();
+
+    std::vector<std::string> foxTraverse(char type);
 };

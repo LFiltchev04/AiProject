@@ -97,38 +97,82 @@ std::vector<std::string> FoxAI::Run(
     }
     */
     
+    //NOTHING ABOVE THIS LINE
     pFind.getMap().updateMap(percepts);
 
-    std::vector<std::string> test = discoveryMode();
-    
-    
+    if(percepts.current[0]=="?" or percepts.current[0]=="!"){
+        pointCount++;  // Increment when picking up
+        std::vector<std::string> res = {"U"};
 
+        std::string scnd = runModel(false)[0];
+        res.push_back(scnd);
+
+        // Remove the picked-up target from the priority list
+        Vec2 cPos = pFind.getMap().currentPos();
+        pFind.getMap().priorityTargets.erase(
+            std::remove_if(
+                pFind.getMap().priorityTargets.begin(),
+                pFind.getMap().priorityTargets.end(),
+                [&cPos](const priorityTarget& var) { 
+                    return var.pos == cPos; 
+                }
+            ),
+            pFind.getMap().priorityTargets.end()
+        );
+        
+        return res;
+
+    }
+
+    
     std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
-
-
     for(priorityTarget var : temp){
         std::cout <<"priority target at "<<var.pos.to_string()<<" of type: "<<var.type<<std::endl;
     }
-   
-    pFind.newTarget(closeGoal());
+
+    if(pointCount>=2){
+        if(closeExit()!=pFind.getMap().currentPos()){
+            return foxTraverse('?');
+        }
+    }else{
+        if(closeGoal()!=pFind.getMap().currentPos()){
+            return foxTraverse('!');
+        }
+    }
+
     
-        
-    return test;
+
+    return discoveryMode();   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Vec2 FoxAI::closeExit(){
     std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
 
     if(temp.size()<1){
-        return pFind.getTgt();
+        return pFind.getMap().currentPos();
     }
 
-    int dist = INT_MIN;
-    Vec2 tempV;
+    int dist = INT_MAX;
+    Vec2 tempV = pFind.getMap().currentPos();
     for(priorityTarget var: temp){
         if(var.type=='?'){
-            if(manhattanDistance(pFind.getMap().currentPos(),var.pos)>dist){
+            int d = manhattanDistance(pFind.getMap().currentPos(),var.pos);
+            if(d < dist){
+                dist = d;  // Update the distance
                 tempV = var.pos;
             }
         }
@@ -143,14 +187,14 @@ Vec2 FoxAI::closeGoal(){
     std::vector<priorityTarget> temp = pFind.getMap().priorityTargets;
 
     if(temp.size()<1){
-        return pFind.getTgt();
+        return pFind.getMap().currentPos();
     }
 
-    int dist = INT_MIN;
-    Vec2 tempV;
+    int dist = INT_MAX;
+    Vec2 tempV = pFind.getMap().currentPos();
     for(priorityTarget var: temp){
         if(var.type=='!'){
-            if(manhattanDistance(pFind.getMap().currentPos(),var.pos)>dist){
+            if(manhattanDistance(pFind.getMap().currentPos(),var.pos)<dist){
                 tempV = var.pos;
             }
         }
@@ -158,3 +202,21 @@ Vec2 FoxAI::closeGoal(){
 
     return tempV;
 }
+
+
+
+ std::vector<std::string> FoxAI::foxTraverse(char type){
+        
+        if(pointCount==2){
+            pFind.newTarget(closeExit());
+            
+            //the meaningless boolean passed to it is to enable the model to run in multiturn mode whenever its safe
+            return runModel(true);
+        }else{
+            pFind.newTarget(closeGoal());
+            return runModel(true);
+        }
+
+
+
+    }

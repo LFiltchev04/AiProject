@@ -220,13 +220,15 @@ void pathfinder::constrctPath(Vec2 goalNode){
     while(!completePath.empty()){
         completePath.pop();
     }
+
+    completePath.push(goalNode);
      
 
     Vec2 cur = goalNode;
     int safety = 0;
-    const int SAFETY_LIMIT = 10000;
+    const int safetyLimit = 400;
 
-    while(safety++ < SAFETY_LIMIT){
+    while(safety++ < safetyLimit){
         size_t k = hashCords(cur.x, cur.y);
         auto it = mapInstance.fastAccess.find(k);
         if(it == mapInstance.fastAccess.end()) break;
@@ -237,8 +239,8 @@ void pathfinder::constrctPath(Vec2 goalNode){
         if(parent.x == startCoord.x && parent.y == startCoord.y) break;
         cur = parent;
     }
-    // caller should handle empty stack / no-path case
 
+    
         
 }
 
@@ -367,6 +369,10 @@ Vec2 pathfinder::followingCoord(){
 
 //not the best solution, but not too bad
 bool pathfinder::multiturnSafe(std::stack<Vec2> stkCpy){
+
+    if(stkCpy.size()<3){
+        return false;
+    }
     for(int x=0;x<3;x++){
         if(mapInstance.wasSeen(stkCpy.top())){
             stkCpy.pop();

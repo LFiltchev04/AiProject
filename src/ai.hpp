@@ -18,6 +18,7 @@ class AI {
     
     mode state;
     Vec2 tgt;
+    bool toggleTraverse;
 
     int wallBumps = 0;
 
@@ -45,8 +46,6 @@ public:
 
      std::vector<std::string> discoveryMode();
 
-    //allows multiple moves per turn in areas that are seen
-    std::vector<std::string> traverseMode();
 
     void setMode();
     mode getMode();
@@ -55,7 +54,7 @@ public:
     std::vector<std::string> multiturn();
     std::string discovery();
     
-    std::vector<std::string> runModel();
+    std::vector<std::string> runModel(bool);
 
 
 };

@@ -692,7 +692,16 @@ void internalMap::addPriority(Vec2 pos, std::string type){
         return;
     }
 
-    if(fastAccess[hashCords(pos.x,pos.y)].type == type[0]){
+    // Check if this position already exists in priorityTargets
+    for(const auto& target : priorityTargets){
+        if(target.pos == pos && target.type == type[0]){
+            return; // Already exists, don't add duplicate
+        }
+    }
+    
+    // Check if position already exists in fastAccess with the same type (without creating new entry)
+    auto it = fastAccess.find(hashCords(pos.x, pos.y));
+    if(it != fastAccess.end() && it->second.type == type[0]){
         return;
     }
     
